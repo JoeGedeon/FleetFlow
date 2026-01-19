@@ -14,7 +14,6 @@ export const MoveMastersAPI = {
 
     job.proposedChanges = payload;
     job.status = JobStatus.PENDING_APPROVAL;
-
     job.permissions.driverCanEdit = false;
     job.permissions.clientCanSign = false;
 
@@ -27,7 +26,6 @@ export const MoveMastersAPI = {
     job.billing.approvedTotal = approvedTotal;
     job.billing.approvedBy = 'office';
     job.status = JobStatus.AWAITING_SIGNATURE;
-
     job.permissions.clientCanSign = true;
 
     return Promise.resolve(job);
@@ -46,12 +44,38 @@ export const MoveMastersAPI = {
     const job = JOB_DB[jobId];
 
     if (!job.clientSigned) {
-      throw new Error('Client must sign before loading can begin');
+      throw new Error('Client must sign before loading begins');
     }
 
     job.status = JobStatus.LOADING;
     job.permissions.driverCanEdit = true;
 
+    return Promise.resolve(job);
+  },
+
+  submitLoadingEvidence(jobId, evidence) {
+    const job = JOB_DB[jobId];
+
+    job.loadingEvidence = {
+      ...evidence,
+      submittedAt: new Date().toISOString()
+    };
+
+    job.status = JobStatus.AWAITING_DISPATCH;
+    job.permissions.driverCanEdit = false;
+
+    return Promise.resolve(job);
+  },
+
+  routeToWarehouse(jobId) {
+    const job = JOB_DB[jobId];
+    job.status = JobStatus.IN_WAREHOUSE;
+    return Promise.resolve(job);
+  },
+
+  routeToDelivery(jobId) {
+    const job = JOB_DB[jobId];
+    job.status = JobStatus.OUT_FOR_DELIVERY;
     return Promise.resolve(job);
   }
 };
