@@ -20,6 +20,7 @@ export function createJob(jobId) {
     status: JobStatus.SURVEY,
 
     proposedChanges: {},
+
     billing: {
       approvedTotal: null,
       approvedBy: null,
@@ -40,6 +41,18 @@ export function createJob(jobId) {
       vaultId: null,
       intakePhotos: [],
       outtakePhotos: []
-    }
+    },
+
+    // 👇 NEW
+    labor: [
+      {
+        id: 'driver-1',
+        role: 'driver',
+        name: 'Lead Driver',
+        payType: 'percent', // percent | hourly | flat
+        rate: 15, // percent
+        payout: 0
+      }
+    ]
   };
 }
