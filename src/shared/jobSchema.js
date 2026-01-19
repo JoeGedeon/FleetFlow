@@ -1,8 +1,9 @@
 export const JobStatus = {
   SURVEY: 'survey',
-  LOADING: 'loading',
+  PENDING_APPROVAL: 'pending_approval',
+  APPROVED_AWAITING_SIGNATURE: 'approved_awaiting_signature',
+  LOADING_AUTHORIZED: 'loading_authorized',
   TRANSIT: 'transit',
-  DELIVERY: 'delivery',
   COMPLETED: 'completed'
 };
 
@@ -26,6 +27,8 @@ export function createJob(jobId) {
     permissions: {
       driverCanEdit: true,
       clientCanSign: false
-    }
+    },
+
+    clientSigned: false
   };
 }
