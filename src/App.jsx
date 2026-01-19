@@ -1,17 +1,21 @@
-import { useState } from 'react';
-import { useJobStore } from './state/useJobStore';
-import InventoryPanel from './components/InventoryPanel';
+import { useEffect, useState } from 'react';
+import { MoveMastersAPI } from './api/moveMastersApi';
 
 export default function App() {
+  const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
-  const { job, addInventoryItem, updateStatus } = useJobStore();
+
+  useEffect(() => {
+    MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
+  }, []);
+
+  if (!job) return <p>Connecting to MoveMasters.OS…</p>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>FleetFlow Dashboard</h1>
+    <div style={{ padding: 20 }}>
+      <h1>Fleet Flow</h1>
 
       <div>
-        <strong>Role:</strong>
         {['driver', 'office', 'client'].map(r => (
           <button key={r} onClick={() => setRole(r)}>
             {r}
@@ -19,25 +23,34 @@ export default function App() {
         ))}
       </div>
 
-      <div style={{ marginTop: '10px' }}>
-        <strong>Status:</strong> {job.status}
-      </div>
+      <p>Status: {job.status}</p>
 
-      {role === 'driver' && job.status === 'survey' && (
-        <InventoryPanel
-          inventory={job.inventory}
-          addItem={addInventoryItem}
-        />
-      )}
-
-      {role === 'office' && (
-        <button onClick={() => updateStatus('loading')}>
-          Approve Survey
+      {role === 'driver' && job.permissions.driverCanEdit && (
+        <button
+          onClick={() =>
+            MoveMastersAPI.submitFieldUpdate(job.id, {
+              cfDelta: 120,
+              stairs: 1,
+              bulky: 0
+            }).then(setJob)
+          }
+        >
+          Submit Survey to Office
         </button>
       )}
 
-      {job.status === 'loading' && (
-        <p>Loading phase active</p>
+      {role === 'office' && job.status === 'loading' && (
+        <button
+          onClick={() =>
+            MoveMastersAPI.approveChanges(job.id, 3850).then(setJob)
+          }
+        >
+          Approve & Send Back to Field
+        </button>
+      )}
+
+      {role === 'client' && job.permissions.clientCanSign && (
+        <p>Client may now sign and proceed.</p>
       )}
     </div>
   );
