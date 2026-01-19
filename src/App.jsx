@@ -23,6 +23,11 @@ export default function App() {
     fontWeight: role === r ? 'bold' : 'normal'
   });
 
+  const totalLaborCost = job.labor?.reduce(
+    (sum, worker) => sum + (worker.payout || 0),
+    0
+  ) || 0;
+
   return (
     <div style={{ padding: 20 }}>
       <h1>Fleet Flow</h1>
@@ -43,6 +48,46 @@ export default function App() {
       <p>
         <strong>Status:</strong> {job.status}
       </p>
+
+      {/* ================= LABOR PANEL (NEW) ================= */}
+      <div style={{ marginTop: 20, padding: 12, border: '1px solid #ccc' }}>
+        <h3>Labor Breakdown</h3>
+
+        {job.labor && job.labor.length > 0 ? (
+          job.labor.map(worker => (
+            <div key={worker.id} style={{ marginBottom: 4 }}>
+              {worker.name} ({worker.role}) — $
+              {(worker.payout || 0).toFixed(2)}
+            </div>
+          ))
+        ) : (
+          <p>No labor assigned.</p>
+        )}
+
+        <p style={{ marginTop: 8 }}>
+          <strong>Total Labor Cost:</strong> ${totalLaborCost.toFixed(2)}
+        </p>
+
+        {/* OFFICE ONLY: ADD HELPER */}
+        {role === 'office' && (
+          <button
+            style={{ marginTop: 10 }}
+            onClick={() =>
+              MoveMastersAPI.addHelper(job.id, {
+                id: `helper-${Date.now()}`,
+                role: 'helper',
+                name: 'Helper',
+                payType: 'flat',
+                rate: 150,
+                payout: 0
+              }).then(setJob)
+            }
+          >
+            Add Helper ($150 Flat)
+          </button>
+        )}
+      </div>
+      {/* ===================================================== */}
 
       {/* DRIVER VIEW */}
       {role === 'driver' && (
