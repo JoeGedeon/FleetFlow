@@ -49,8 +49,16 @@ export default function App() {
         </button>
       )}
 
+
       {role === 'client' && job.permissions.clientCanSign && (
-        <p>Client may now sign and proceed.</p>
+  <button
+    onClick={() =>
+      MoveMastersAPI.signByClient(job.id).then(setJob)
+    }
+  >
+    Sign & Authorize Move
+  </button>
+)}
       )}
     </div>
   );
