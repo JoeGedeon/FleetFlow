@@ -1,0 +1,10 @@
+{
+  id: 'uuid',
+  name: 'King Mattress',
+  quantity: 1,
+  condition: 'Good',
+  notes: '',
+  photos: [],
+  addedBy: 'driver',
+  verified: false
+}
