@@ -8,7 +8,7 @@ export default function App() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>FreeFlow Dashboard</h1>
+      <h1>FleetFlow Dashboard</h1>
 
       <div>
         <strong>Role:</strong>
