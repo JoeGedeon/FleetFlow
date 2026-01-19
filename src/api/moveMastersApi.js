@@ -30,3 +30,12 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   }
 };
+
+signByClient(jobId) {
+  const job = JOB_DB[jobId];
+
+  job.status = 'transit';
+  job.permissions.clientCanSign = false;
+
+  return Promise.resolve(job);
+}
