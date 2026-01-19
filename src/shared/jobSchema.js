@@ -1,8 +1,8 @@
 export const JobStatus = {
   SURVEY: 'survey',
   PENDING_APPROVAL: 'pending_approval',
-  APPROVED_AWAITING_SIGNATURE: 'approved_awaiting_signature',
-  LOADING_AUTHORIZED: 'loading_authorized',
+  AWAITING_SIGNATURE: 'awaiting_client_signature',
+  LOADING: 'loading',
   TRANSIT: 'transit',
   COMPLETED: 'completed'
 };
