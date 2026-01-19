@@ -26,7 +26,7 @@ export const MoveMastersAPI = {
 
     job.billing.approvedTotal = approvedTotal;
     job.billing.approvedBy = 'office';
-    job.status = JobStatus.APPROVED_AWAITING_SIGNATURE;
+    job.status = JobStatus.AWAITING_SIGNATURE;
 
     job.permissions.clientCanSign = true;
 
@@ -46,10 +46,10 @@ export const MoveMastersAPI = {
     const job = JOB_DB[jobId];
 
     if (!job.clientSigned) {
-      throw new Error('Client must sign before loading can be authorized');
+      throw new Error('Client must sign before loading can begin');
     }
 
-    job.status = JobStatus.LOADING_AUTHORIZED;
+    job.status = JobStatus.LOADING;
     job.permissions.driverCanEdit = true;
 
     return Promise.resolve(job);
