@@ -10,15 +10,22 @@ export default function App() {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
   }, []);
 
-  if (!job) return <div style={{ padding: 20 }}>Connecting…</div>;
+  if (!job) {
+    return <div style={{ padding: 20 }}>Connecting to MoveMasters.OS…</div>;
+  }
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Fleet Flow</h1>
 
-      <div style={{ marginBottom: 10 }}>
+      {/* ROLE SWITCHER */}
+      <div style={{ marginBottom: 12 }}>
         {['driver', 'office', 'client'].map(r => (
-          <button key={r} onClick={() => setRole(r)} style={{ marginRight: 5 }}>
+          <button
+            key={r}
+            onClick={() => setRole(r)}
+            style={{ marginRight: 6 }}
+          >
             {r}
           </button>
         ))}
@@ -29,12 +36,26 @@ export default function App() {
       {/* DRIVER */}
       {role === 'driver' && (
         <>
+          {job.status === JobStatus.SURVEY && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.submitFieldUpdate(job.id, {
+                  cfDelta: 120,
+                  stairs: 1,
+                  bulky: 0
+                }).then(setJob)
+              }
+            >
+              Submit Survey to Office
+            </button>
+          )}
+
           {job.status === JobStatus.LOADING && (
             <button
               onClick={() =>
                 MoveMastersAPI.submitLoadingEvidence(job.id, {
-                  loadedTruckPhotos: ['photo1.jpg'],
-                  emptyOriginPhotos: ['photo2.jpg']
+                  loadedTruckPhotos: ['loaded1.jpg'],
+                  emptyOriginPhotos: ['empty1.jpg']
                 }).then(setJob)
               }
             >
@@ -59,6 +80,30 @@ export default function App() {
       {/* OFFICE */}
       {role === 'office' && (
         <>
+          {job.status === JobStatus.PENDING_APPROVAL && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
+              }
+            >
+              Approve Pricing & Send to Client
+            </button>
+          )}
+
+          {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
+            <p>Waiting for client signature.</p>
+          )}
+
+          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.authorizeLoading(job.id).then(setJob)
+              }
+            >
+              Authorize Loading
+            </button>
+          )}
+
           {job.status === JobStatus.AWAITING_DISPATCH && (
             <>
               <button
@@ -79,20 +124,26 @@ export default function App() {
               </button>
             </>
           )}
-
-          {job.status === JobStatus.IN_WAREHOUSE && (
-            <p>Job is in warehouse custody.</p>
-          )}
-
-          {job.status === JobStatus.OUT_FOR_DELIVERY && (
-            <p>Job dispatched for delivery.</p>
-          )}
         </>
       )}
 
       {/* CLIENT */}
       {role === 'client' && (
         <>
+          {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.signByClient(job.id).then(setJob)
+              }
+            >
+              Sign & Accept Updated Price
+            </button>
+          )}
+
+          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
+            <p>Signature received. Awaiting office authorization.</p>
+          )}
+
           {job.status === JobStatus.AWAITING_DISPATCH && (
             <p>Loading completed. Dispatch decision pending.</p>
           )}
