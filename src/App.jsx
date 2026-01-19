@@ -10,110 +10,99 @@ export default function App() {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
   }, []);
 
-  if (!job) {
-    return <div style={{ padding: 20 }}>Connecting to MoveMasters.OS…</div>;
-  }
+  if (!job) return <div style={{ padding: 20 }}>Connecting…</div>;
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Fleet Flow</h1>
 
-      {/* ROLE SWITCHER */}
       <div style={{ marginBottom: 10 }}>
         {['driver', 'office', 'client'].map(r => (
-          <button
-            key={r}
-            onClick={() => setRole(r)}
-            style={{ marginRight: 5 }}
-          >
+          <button key={r} onClick={() => setRole(r)} style={{ marginRight: 5 }}>
             {r}
           </button>
         ))}
       </div>
 
-      <p>
-        <strong>Status:</strong> {job.status}
-      </p>
+      <p><strong>Status:</strong> {job.status}</p>
 
-      {/* DRIVER VIEW */}
+      {/* DRIVER */}
       {role === 'driver' && (
         <>
-          {job.status === JobStatus.SURVEY && job.permissions.driverCanEdit && (
+          {job.status === JobStatus.LOADING && (
             <button
               onClick={() =>
-                MoveMastersAPI.submitFieldUpdate(job.id, {
-                  cfDelta: 120,
-                  stairs: 1,
-                  bulky: 0
+                MoveMastersAPI.submitLoadingEvidence(job.id, {
+                  loadedTruckPhotos: ['photo1.jpg'],
+                  emptyOriginPhotos: ['photo2.jpg']
                 }).then(setJob)
               }
             >
-              Submit Survey to Office
+              Submit Load Complete
             </button>
           )}
 
-          {job.status === JobStatus.LOADING && (
-            <p>Loading Authorized. Driver may begin loading.</p>
+          {job.status === JobStatus.AWAITING_DISPATCH && (
+            <p>Load submitted. Awaiting office dispatch decision.</p>
           )}
 
-          {job.status !== JobStatus.SURVEY &&
-            job.status !== JobStatus.LOADING && (
-              <p>Waiting for office approval.</p>
-            )}
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
+            <p>Proceed to delivery.</p>
+          )}
+
+          {job.status === JobStatus.IN_WAREHOUSE && (
+            <p>Proceed to warehouse intake.</p>
+          )}
         </>
       )}
 
-      {/* OFFICE VIEW */}
+      {/* OFFICE */}
       {role === 'office' && (
         <>
-          {job.status === JobStatus.PENDING_APPROVAL && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
-              }
-            >
-              Approve Pricing & Send to Client
-            </button>
-          )}
-
-          {job.status === JobStatus.AWAITING_SIGNATURE &&
-            job.clientSigned && (
+          {job.status === JobStatus.AWAITING_DISPATCH && (
+            <>
               <button
                 onClick={() =>
-                  MoveMastersAPI.authorizeLoading(job.id).then(setJob)
+                  MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
                 }
               >
-                Authorize Loading
+                Route to Warehouse
               </button>
-            )}
 
-          {job.status === JobStatus.AWAITING_SIGNATURE &&
-            !job.clientSigned && (
-              <p>Waiting for client signature.</p>
-            )}
+              <button
+                onClick={() =>
+                  MoveMastersAPI.routeToDelivery(job.id).then(setJob)
+                }
+                style={{ marginLeft: 10 }}
+              >
+                Route to Direct Delivery
+              </button>
+            </>
+          )}
+
+          {job.status === JobStatus.IN_WAREHOUSE && (
+            <p>Job is in warehouse custody.</p>
+          )}
+
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
+            <p>Job dispatched for delivery.</p>
+          )}
         </>
       )}
 
-      {/* CLIENT VIEW */}
+      {/* CLIENT */}
       {role === 'client' && (
         <>
-          {job.permissions.clientCanSign && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.signByClient(job.id).then(setJob)
-              }
-            >
-              Sign & Accept Updated Price
-            </button>
+          {job.status === JobStatus.AWAITING_DISPATCH && (
+            <p>Loading completed. Dispatch decision pending.</p>
           )}
 
-          {!job.permissions.clientCanSign &&
-            job.status === JobStatus.AWAITING_SIGNATURE && (
-              <p>Signature received. Awaiting office authorization.</p>
-            )}
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
+            <p>Your items are en route.</p>
+          )}
 
-          {job.status === JobStatus.LOADING && (
-            <p>Loading in progress.</p>
+          {job.status === JobStatus.IN_WAREHOUSE && (
+            <p>Your items are in secure storage.</p>
           )}
         </>
       )}
