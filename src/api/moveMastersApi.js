@@ -1,9 +1,10 @@
-
 import { createJob, JobStatus } from '../shared/jobSchema';
 
 let JOB_DB = {
   'FLEETFLOW-001': createJob('FLEETFLOW-001')
 };
+
+/* ================= LABOR CALCULATION ================= */
 
 const calculateLabor = job => {
   const revenue = job.billing.approvedTotal || 0;
@@ -29,10 +30,16 @@ const calculateLabor = job => {
   return job;
 };
 
+/* ================= API ================= */
+
 export const MoveMastersAPI = {
+  /* ---------- CORE ---------- */
+
   getJob(jobId) {
     return Promise.resolve(JOB_DB[jobId]);
   },
+
+  /* ---------- SURVEY & PRICING ---------- */
 
   submitFieldUpdate(jobId, payload) {
     const job = JOB_DB[jobId];
@@ -64,6 +71,8 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
+  /* ---------- LOADING ---------- */
+
   submitLoadingEvidence(jobId, evidence) {
     const job = JOB_DB[jobId];
     job.loadingEvidence = evidence;
@@ -71,6 +80,8 @@ export const MoveMastersAPI = {
     job.permissions.driverCanEdit = false;
     return Promise.resolve(job);
   },
+
+  /* ---------- ROUTING ---------- */
 
   routeToWarehouse(jobId) {
     const job = JOB_DB[jobId];
@@ -83,6 +94,8 @@ export const MoveMastersAPI = {
     job.status = JobStatus.OUT_FOR_DELIVERY;
     return Promise.resolve(job);
   },
+
+  /* ---------- WAREHOUSE ---------- */
 
   warehouseIntake(jobId, intake) {
     const job = JOB_DB[jobId];
@@ -97,21 +110,11 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  arriveAtDelivery(jobId) {
-    const job = JOB_DB[jobId];
-    job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
-    return Promise.resolve(job);
-  },
+  /* ---------- 🔒 PAYMENT GATE (THIS WAS MISSING) ---------- */
 
-  submitDeliveryEvidence(jobId, evidence) {
+  arriveAtDestination(jobId) {
     const job = JOB_DB[jobId];
-    job.deliveryEvidence = evidence;
-    return Promise.resolve(job);
-  },
-
-  confirmDeliveryByClient(jobId) {
-    const job = JOB_DB[jobId];
-    job.deliveryConfirmedByClient = true;
+    job.status = JobStatus.PAYMENT_PENDING;
     return Promise.resolve(job);
   },
 
@@ -122,6 +125,21 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
+  /* ---------- DELIVERY CLOSE ---------- */
+
+  confirmDeliveryByClient(jobId) {
+    const job = JOB_DB[jobId];
+    job.deliveryConfirmedByClient = true;
+    job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
+    return Promise.resolve(job);
+  },
+
+  submitDeliveryEvidence(jobId, evidence) {
+    const job = JOB_DB[jobId];
+    job.deliveryEvidence = evidence;
+    return Promise.resolve(job);
+  },
+
   signOffByDriver(jobId) {
     const job = calculateLabor(JOB_DB[jobId]);
     job.driverSigned = true;
@@ -129,11 +147,7 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  completeUnload(jobId) {
-    const job = calculateLabor(JOB_DB[jobId]);
-    job.status = JobStatus.COMPLETED;
-    return Promise.resolve(job);
-  },
+  /* ---------- LABOR ---------- */
 
   addHelper(jobId, helper) {
     const job = JOB_DB[jobId];
@@ -141,7 +155,8 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  // 📎 JOB COMMUNICATIONS
+  /* ---------- JOB COMMUNICATIONS ---------- */
+
   addJobMessage(jobId, message) {
     const job = JOB_DB[jobId];
 
