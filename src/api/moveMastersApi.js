@@ -110,13 +110,23 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  /* ---------- 🔒 PAYMENT GATE (THIS WAS MISSING) ---------- */
+  /* ---------- ARRIVAL (NEW, SAFE ADDITION) ---------- */
 
-  arriveAtDestination(jobId) {
+  confirmArrivalByDriver(jobId) {
     const job = JOB_DB[jobId];
+    job.arrivedConfirmedByDriver = true;
     job.status = JobStatus.PAYMENT_PENDING;
     return Promise.resolve(job);
   },
+
+  confirmArrivalByClient(jobId) {
+    const job = JOB_DB[jobId];
+    job.arrivedConfirmedByClient = true;
+    job.status = JobStatus.PAYMENT_PENDING;
+    return Promise.resolve(job);
+  },
+
+  /* ---------- PAYMENT GATE ---------- */
 
   confirmPayment(jobId) {
     const job = JOB_DB[jobId];
