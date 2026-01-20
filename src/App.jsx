@@ -342,3 +342,13 @@ export default function App() {
     </div>
   );
 }
+
+{job.status === JobStatus.OUT_FOR_DELIVERY && (
+  <button
+    onClick={() =>
+      MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
+    }
+  >
+    Confirm Items Delivered
+  </button>
+)}
