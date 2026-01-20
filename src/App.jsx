@@ -58,6 +58,7 @@ export default function App() {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
   }, []);
 
+  // 🔴 FIXED JSX SYNTAX ERROR HERE
   if (!job) {
     return <div style={{ padding: 20 }}>Connecting…</div>;
   }
@@ -204,7 +205,9 @@ export default function App() {
         <>
           <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
           <p style={{ color: job.status === JobStatus.LOADING ? 'green' : 'gray' }}>
-            {job.status === JobStatus.LOADING ? 'Cleared to Work' : 'Awaiting Authorization'}
+            {job.status === JobStatus.LOADING
+              ? 'Cleared to Work'
+              : 'Awaiting Authorization'}
           </p>
 
           <JobCommunications
@@ -225,6 +228,22 @@ export default function App() {
 
       {role === 'office' && (
         <>
+          {job.status === JobStatus.PENDING_APPROVAL && (
+            <button onClick={() =>
+              MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
+            }>
+              Approve Pricing & Send to Client
+            </button>
+          )}
+
+          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
+            <button onClick={() =>
+              MoveMastersAPI.authorizeLoading(job.id).then(setJob)
+            }>
+              Authorize Loading
+            </button>
+          )}
+
           <JobCommunications
             job={job}
             role="office"
@@ -243,6 +262,18 @@ export default function App() {
 
       {role === 'client' && (
         <>
+          {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
+            <button onClick={() =>
+              MoveMastersAPI.signByClient(job.id).then(setJob)
+            }>
+              Sign & Accept Price
+            </button>
+          )}
+
+          {job.status === JobStatus.COMPLETED && (
+            <p>Move complete. Thank you.</p>
+          )}
+
           <JobCommunications
             job={job}
             role="client"
