@@ -335,6 +335,16 @@ export default function App() {
             <p>Move complete. Thank you.</p>
           )}
 
+          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && !job.deliveryConfirmedByClient && (
+  <button
+    onClick={() =>
+      MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
+    }
+  >
+    Confirm Items Delivered
+  </button>
+)}
+
           <JobCommunications
             job={job}
             role="client"
