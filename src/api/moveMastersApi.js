@@ -90,6 +90,28 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
+  // 🔒 DELIVERY CONFIRMATION GATES
+
+  confirmDeliveryByClient(jobId) {
+    const job = JOB_DB[jobId];
+    job.deliveryConfirmedByClient = true;
+    job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
+    return Promise.resolve(job);
+  },
+
+  submitDeliveryEvidence(jobId, evidence) {
+    const job = JOB_DB[jobId];
+    job.deliveryEvidence = evidence;
+    return Promise.resolve(job);
+  },
+
+  signOffByDriver(jobId) {
+    const job = calculateLabor(JOB_DB[jobId]);
+    job.driverSigned = true;
+    job.status = JobStatus.COMPLETED;
+    return Promise.resolve(job);
+  },
+
   confirmPayment(jobId) {
     const job = JOB_DB[jobId];
     job.billing.paymentReceived = true;
@@ -109,7 +131,7 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  // ✅ JOB COMMUNICATIONS (CORRECTLY PLACED)
+  // 📎 JOB COMMUNICATIONS
   addJobMessage(jobId, message) {
     const job = JOB_DB[jobId];
 
