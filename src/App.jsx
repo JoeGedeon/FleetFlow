@@ -14,6 +14,7 @@ function JobCommunications({ job, role, onSend }) {
     role === 'office'
   );
 
+
   return (
     <div style={{ marginTop: 20, border: '1px solid #999', padding: 10 }}>
       <h4>Job Communications</h4>
