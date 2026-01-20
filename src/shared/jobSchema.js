@@ -10,8 +10,8 @@ export const JobStatus = {
   OUT_FOR_DELIVERY: 'out_for_delivery',
 
   // 🔒 DELIVERY CLOSE LOOP
-  DELIVERY_AWAITING_CLIENT_CONFIRMATION: 'delivery_awaiting_client_confirmation',
   DELIVERY_AWAITING_DRIVER_EVIDENCE: 'delivery_awaiting_driver_evidence',
+  DELIVERY_AWAITING_CLIENT_CONFIRMATION: 'delivery_awaiting_client_confirmation',
 
   PAYMENT_PENDING: 'payment_pending',
   UNLOAD_AUTHORIZED: 'unload_authorized',
@@ -36,12 +36,14 @@ export function createJob(jobId) {
       clientCanSign: false
     },
 
+    // 🔑 PRICING SIGNATURE
     clientSigned: false,
 
     loadingEvidence: null,
 
     // 🔒 DELIVERY CONFIRMATION FIELDS
     deliveryConfirmedByClient: false,
+    clientFinalSigned: false, // ← FINAL RECEIPT ACKNOWLEDGMENT (THIS IS THE MISSING HANDSHAKE)
     deliveryEvidence: null,
     driverSigned: false,
 
