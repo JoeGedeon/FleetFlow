@@ -181,6 +181,21 @@ export default function App() {
         </>
       )}
 
+      {job.status === JobStatus.OUT_FOR_DELIVERY && (
+  <div style={{ marginTop: 12 }}>
+    <div style={{
+      marginBottom: 10,
+      padding: 10,
+      border: '2px solid green',
+      backgroundColor: '#e8fbe8',
+      color: 'green',
+      fontWeight: 'bold'
+    }}>
+      ✔ OUT FOR DELIVERY — Proceed to destination
+    </div>
+  </div>
+)}
+
       {/* ================= HELPER ================= */}
 
       {role === 'helper' && (
