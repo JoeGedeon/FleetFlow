@@ -25,28 +25,24 @@ function JobCommunications({ job, role, onSend }) {
         ))}
       </div>
 
-      {role !== 'office' && (
-        <>
-          <textarea
-            rows={2}
-            value={text}
-            placeholder="Enter job-related message"
-            onChange={e => setText(e.target.value)}
-            style={{ width: '100%' }}
-          />
+      <textarea
+        rows={2}
+        value={text}
+        placeholder="Enter job-related message"
+        onChange={e => setText(e.target.value)}
+        style={{ width: '100%' }}
+      />
 
-          <button
-            disabled={!text.trim()}
-            onClick={() => {
-              onSend(text);
-              setText('');
-            }}
-            style={{ marginTop: 6 }}
-          >
-            Send to Office
-          </button>
-        </>
-      )}
+      <button
+        disabled={!text.trim()}
+        onClick={() => {
+          onSend(text);
+          setText('');
+        }}
+        style={{ marginTop: 6 }}
+      >
+        Send Message
+      </button>
     </div>
   );
 }
@@ -83,11 +79,7 @@ export default function App() {
       {/* ROLE SWITCHER */}
       <div style={{ marginBottom: 16 }}>
         {['driver', 'helper', 'office', 'client'].map(r => (
-          <button
-            key={r}
-            onClick={() => setRole(r)}
-            style={roleButtonStyle(r)}
-          >
+          <button key={r} onClick={() => setRole(r)} style={roleButtonStyle(r)}>
             {r.toUpperCase()}
           </button>
         ))}
@@ -100,71 +92,59 @@ export default function App() {
 
       {/* ================= DRIVER ================= */}
 
-      {job.status === JobStatus.LOADING && (
-  <div style={{
-    marginBottom: 12,
-    padding: 10,
-    border: '2px solid green',
-    backgroundColor: '#e8fbe8',
-    color: 'green',
-    fontWeight: 'bold'
-  }}>
-    ✔ LOAD AUTHORIZED — You may begin loading
-  </div>
-)}
-      
       {role === 'driver' && (
         <>
+          {job.status === JobStatus.LOADING && (
+            <div style={{
+              marginBottom: 12,
+              padding: 10,
+              border: '2px solid green',
+              backgroundColor: '#e8fbe8',
+              color: 'green',
+              fontWeight: 'bold'
+            }}>
+              ✔ LOAD AUTHORIZED — Begin Loading
+            </div>
+          )}
+
           {job.status === JobStatus.SURVEY && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.submitFieldUpdate(job.id, {
-                  cfDelta: 120,
-                  stairs: 1,
-                  bulky: 0
-                }).then(setJob)
-              }
-            >
+            <button onClick={() =>
+              MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 })
+                .then(setJob)
+            }>
               Submit Survey to Office
             </button>
           )}
 
           {job.status === JobStatus.LOADING && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.submitLoadingEvidence(job.id, {
-                  loadedTruckPhotos: ['loaded.jpg'],
-                  emptyOriginPhotos: ['empty.jpg']
-                }).then(setJob)
-              }
-            >
+            <button onClick={() =>
+              MoveMastersAPI.submitLoadingEvidence(job.id, {
+                loadedTruckPhotos: ['loaded.jpg'],
+                emptyOriginPhotos: ['empty.jpg']
+              }).then(setJob)
+            }>
               Submit Load Complete
             </button>
           )}
 
-          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
-            <>
-              <button
-                onClick={() =>
-                  MoveMastersAPI.submitDeliveryEvidence(job.id, {
-                    inPlacePhotos: ['placed.jpg'],
-                    assembledPhotos: ['assembled.jpg'],
-                    emptyTruckPhotos: ['empty_truck.jpg']
-                  }).then(setJob)
-                }
-              >
-                Submit Delivery Evidence
-              </button>
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
+            <div style={{
+              marginTop: 10,
+              padding: 10,
+              border: '2px solid green',
+              backgroundColor: '#e8fbe8',
+              fontWeight: 'bold'
+            }}>
+              ✔ OUT FOR DELIVERY
+            </div>
+          )}
 
-              <button
-                style={{ marginLeft: 10 }}
-                onClick={() =>
-                  MoveMastersAPI.signOffByDriver(job.id).then(setJob)
-                }
-              >
-                Driver Sign & Close Contract
-              </button>
-            </>
+          {job.status === JobStatus.UNLOAD_AUTHORIZED && (
+            <button onClick={() =>
+              MoveMastersAPI.completeUnload(job.id).then(setJob)
+            }>
+              Unload & Complete Job
+            </button>
           )}
 
           <JobCommunications
@@ -181,37 +161,15 @@ export default function App() {
         </>
       )}
 
-      {job.status === JobStatus.OUT_FOR_DELIVERY && (
-  <div style={{ marginTop: 12 }}>
-    <div style={{
-      marginBottom: 10,
-      padding: 10,
-      border: '2px solid green',
-      backgroundColor: '#e8fbe8',
-      color: 'green',
-      fontWeight: 'bold'
-    }}>
-      ✔ OUT FOR DELIVERY — Proceed to destination
-    </div>
-  </div>
-)}
-
       {/* ================= HELPER ================= */}
 
       {role === 'helper' && (
         <>
           <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
-          <p>
-            {job.status === JobStatus.LOADING ||
-            job.status === JobStatus.OUT_FOR_DELIVERY ? (
-              <span style={{ color: 'green', fontWeight: 'bold' }}>
-                Cleared to Work
-              </span>
-            ) : (
-              <span style={{ color: 'gray' }}>
-                Awaiting Authorization
-              </span>
-            )}
+          <p style={{ color: job.status === JobStatus.LOADING ? 'green' : 'gray' }}>
+            {job.status === JobStatus.LOADING
+              ? 'Cleared to Work'
+              : 'Awaiting Authorization'}
           </p>
 
           <JobCommunications
@@ -233,43 +191,43 @@ export default function App() {
       {role === 'office' && (
         <>
           {job.status === JobStatus.PENDING_APPROVAL && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
-              }
-            >
-              Approve Pricing & Send to Client
-            </button>
-          )}
-
-          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.authorizeLoading(job.id).then(setJob)
-              }
-            >
-              Authorize Loading
+            <button onClick={() =>
+              MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
+            }>
+              Approve Pricing
             </button>
           )}
 
           {job.status === JobStatus.AWAITING_DISPATCH && (
             <>
-              <button
-                onClick={() =>
-                  MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
-                }
-              >
+              <button onClick={() =>
+                MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
+              }>
                 Route to Warehouse
               </button>
-              <button
-                style={{ marginLeft: 10 }}
-                onClick={() =>
-                  MoveMastersAPI.routeToDelivery(job.id).then(setJob)
-                }
-              >
+
+              <button onClick={() =>
+                MoveMastersAPI.routeToDelivery(job.id).then(setJob)
+              }>
                 Route to Direct Delivery
               </button>
             </>
+          )}
+
+          {job.status === JobStatus.AWAITING_OUTTAKE && (
+            <button onClick={() =>
+              MoveMastersAPI.authorizeOuttake(job.id).then(setJob)
+            }>
+              Release From Warehouse
+            </button>
+          )}
+
+          {job.status === JobStatus.PAYMENT_PENDING && (
+            <button onClick={() =>
+              MoveMastersAPI.confirmPayment(job.id).then(setJob)
+            }>
+              Confirm Payment
+            </button>
           )}
 
           <JobCommunications
@@ -286,39 +244,23 @@ export default function App() {
         </>
       )}
 
-
-      {job.status === JobStatus.AWAITING_OUTTAKE && (
-  <button
-    onClick={() =>
-      MoveMastersAPI.authorizeOuttake(job.id).then(setJob)
-    }
-  >
-    Release From Warehouse
-  </button>
-)}
-      
-
       {/* ================= CLIENT ================= */}
 
       {role === 'client' && (
         <>
           {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.signByClient(job.id).then(setJob)
-              }
-            >
-              Sign & Accept Updated Price
+            <button onClick={() =>
+              MoveMastersAPI.signByClient(job.id).then(setJob)
+            }>
+              Sign & Accept Price
             </button>
           )}
 
-          {job.status === JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
-              }
-            >
-              Confirm Items Delivered
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
+            <button onClick={() =>
+              MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
+            }>
+              Confirm Delivery
             </button>
           )}
 
@@ -338,19 +280,7 @@ export default function App() {
             }
           />
         </>
-
-      {job.status === JobStatus.OUT_FOR_DELIVERY && (
-  <button
-    onClick={() =>
-      MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
-    }
-  >
-    Confirm Items Delivered
-  </button>
-)}
-
       )}
     </div>
   );
 }
-
