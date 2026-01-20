@@ -76,9 +76,7 @@ export default function App() {
       </div>
 
       <div className="status-bar">
-        <span className="status-chip">
-          {job.status === JobStatus.COMPLETED ? 'Delivered' : job.status}
-        </span>
+        <span className="status-chip">{job.status}</span>
       </div>
 
       {/* ================= DRIVER ================= */}
@@ -88,11 +86,10 @@ export default function App() {
           {job.status === JobStatus.SURVEY && (
             <button
               onClick={() =>
-                MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 })
-                  .then(setJob)
+                MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
               }
             >
-              Submit Survey to Office
+              Submit Survey
             </button>
           )}
 
@@ -112,23 +109,19 @@ export default function App() {
             </>
           )}
 
-          {job.status === JobStatus.IN_WAREHOUSE && (
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
             <button
               onClick={() =>
-                MoveMastersAPI.warehouseIntake(job.id, {
-                  facilityId: 'WH-22',
-                  vaultId: 'VAULT-7',
-                  intakePhotos: ['intake.jpg']
-                }).then(setJob)
+                MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
               }
             >
-              Confirm Warehouse Intake
+              Truck Arrived
             </button>
           )}
 
           {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
             <>
-              <div className="auth-box">📸 DELIVERY IN PROGRESS</div>
+              <div className="auth-box">📸 DELIVERY COMPLETE</div>
 
               <button
                 onClick={() =>
@@ -139,7 +132,7 @@ export default function App() {
                   }).then(setJob)
                 }
               >
-                Submit Delivery Evidence
+                Upload Delivery Photos
               </button>
 
               <button
@@ -147,7 +140,7 @@ export default function App() {
                   MoveMastersAPI.signOffByDriver(job.id).then(setJob)
                 }
               >
-                Driver Sign & Close
+                Driver Sign & Close Job
               </button>
             </>
           )}
@@ -172,9 +165,7 @@ export default function App() {
         <>
           <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
           <p className={`helper-status ${job.status === JobStatus.LOADING ? 'green' : 'gray'}`}>
-            {job.status === JobStatus.LOADING
-              ? 'Cleared to Work'
-              : 'Awaiting Authorization'}
+            {job.status === JobStatus.LOADING ? 'Cleared to Work' : 'Awaiting Authorization'}
           </p>
 
           <JobCommunications
@@ -201,7 +192,7 @@ export default function App() {
                 MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
               }
             >
-              Approve Pricing & Send to Client
+              Approve Pricing
             </button>
           )}
 
@@ -212,36 +203,6 @@ export default function App() {
               }
             >
               Authorize Loading
-            </button>
-          )}
-
-          {job.status === JobStatus.AWAITING_DISPATCH && (
-            <>
-              <button
-                onClick={() =>
-                  MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
-                }
-              >
-                Route to Warehouse
-              </button>
-
-              <button
-                onClick={() =>
-                  MoveMastersAPI.routeToDelivery(job.id).then(setJob)
-                }
-              >
-                Route to Direct Delivery
-              </button>
-            </>
-          )}
-
-          {job.status === JobStatus.AWAITING_OUTTAKE && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.authorizeOuttake(job.id).then(setJob)
-              }
-            >
-              Release From Warehouse
             </button>
           )}
 
@@ -286,10 +247,20 @@ export default function App() {
           {job.status === JobStatus.OUT_FOR_DELIVERY && (
             <button
               onClick={() =>
-                MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
+                MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
               }
             >
               Truck Arrived
+            </button>
+          )}
+
+          {job.status === JobStatus.UNLOAD_AUTHORIZED && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
+              }
+            >
+              Sign Delivery Acknowledgement
             </button>
           )}
 
