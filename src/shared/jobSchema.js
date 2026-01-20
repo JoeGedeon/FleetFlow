@@ -6,6 +6,7 @@ export const JobStatus = {
   AWAITING_DISPATCH: 'awaiting_dispatch_decision',
 
   IN_WAREHOUSE: 'in_warehouse',
+  AWAITING_WAREHOUSE_DISPATCH: 'awaiting_warehouse_dispatch',
   AWAITING_OUTTAKE: 'awaiting_outtake',
 
   OUT_FOR_DELIVERY: 'out_for_delivery',
