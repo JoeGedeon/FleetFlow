@@ -73,9 +73,9 @@ export default function App() {
 
   const helper = job.labor.find(w => w.role === 'helper');
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Fleet Flow</h1>
+      return (
+  <div className="app-container">
+      <h1>FleetFLOW</h1>
 
       {/* ROLE SWITCHER */}
       <div style={{ marginBottom: 16 }}>
