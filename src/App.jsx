@@ -153,6 +153,41 @@ export default function App() {
             </div>
           )}
 
+          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
+  <>
+    <div style={{
+      marginBottom: 12,
+      padding: 10,
+      border: '2px solid orange',
+      backgroundColor: '#fff6e5',
+      fontWeight: 'bold'
+    }}>
+      📸 DELIVERY COMPLETE — Upload evidence & sign off
+    </div>
+
+    <button
+      onClick={() =>
+        MoveMastersAPI.submitDeliveryEvidence(job.id, {
+          inPlacePhotos: ['placed.jpg'],
+          assembledPhotos: ['assembled.jpg'],
+          emptyTruckPhotos: ['empty_truck.jpg']
+        }).then(setJob)
+      }
+    >
+      Submit Delivery Evidence
+    </button>
+
+    <button
+      style={{ marginLeft: 10 }}
+      onClick={() =>
+        MoveMastersAPI.signOffByDriver(job.id).then(setJob)
+      }
+    >
+      Driver Sign & Close Contract
+    </button>
+  </>
+)}
+
           {job.status === JobStatus.UNLOAD_AUTHORIZED && (
             <button onClick={() =>
               MoveMastersAPI.completeUnload(job.id).then(setJob)
