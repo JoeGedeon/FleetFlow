@@ -1,7 +1,8 @@
 /* ================= ROOT ================= */
+/* ================= ROOT ================= */
 
 :root {
-  --bg-main: #0f172a;
+  --bg-main: #020617;
   --bg-panel: #020617;
   --bg-card: #020617;
   --border-soft: #1e293b;
@@ -33,13 +34,29 @@ body {
 h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin: 0;
 }
 
 h4 {
   margin: 0 0 0.5rem;
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+/* ================= HEADER ================= */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #020617;
+  border-bottom: 1px solid var(--border-soft);
+  padding: 18px 24px;
+}
+
+header .title {
+  letter-spacing: 0.12em;
+  font-weight: 800;
 }
 
 /* ================= LAYOUT ================= */
@@ -73,7 +90,7 @@ h4 {
   background: transparent;
   color: var(--text-muted);
   font-weight: 600;
-  cursor: pointer;
+  cursor: default;
   transition: all 0.2s ease;
 }
 
@@ -91,21 +108,31 @@ h4 {
 /* ================= STATUS ================= */
 
 .status-bar {
-  font-size: 0.85rem;
-  color: var(--text-muted);
   margin-bottom: 20px;
 }
 
 .status-chip {
   display: inline-block;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   background: #020617;
   border: 1px solid var(--border-soft);
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
-/* ================= ACTIONS ================= */
+/* ================= ACTION PANEL ================= */
+
+.action-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* ================= ACTION BUTTONS ================= */
 
 button.action {
   background: var(--blue);
@@ -113,7 +140,7 @@ button.action {
   border: none;
   padding: 12px 18px;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   margin-top: 10px;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
@@ -135,7 +162,7 @@ button.action:disabled {
   cursor: not-allowed;
 }
 
-/* ================= GREEN AUTH BOX ================= */
+/* ================= AUTHORIZATION ================= */
 
 .auth-box {
   border: 1px solid var(--green);
@@ -143,7 +170,7 @@ button.action:disabled {
   color: var(--green);
   padding: 14px;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 14px;
 }
 
@@ -187,14 +214,14 @@ button.action:disabled {
 
 .labor-total {
   margin-top: 8px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-main);
 }
 
-/* ================= HELPERS ================= */
+/* ================= HELPER ================= */
 
 .helper-status {
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .helper-status.green {
