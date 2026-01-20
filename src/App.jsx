@@ -338,12 +338,8 @@ export default function App() {
             }
           />
         </>
-      )}
-    </div>
-  );
-}
 
-{job.status === JobStatus.OUT_FOR_DELIVERY && (
+      {job.status === JobStatus.OUT_FOR_DELIVERY && (
   <button
     onClick={() =>
       MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
@@ -352,3 +348,9 @@ export default function App() {
     Confirm Items Delivered
   </button>
 )}
+
+      )}
+    </div>
+  );
+}
+
