@@ -15,11 +15,9 @@ const calculateLabor = job => {
     if (worker.payType === 'percent') {
       payout = (revenue * worker.rate) / 100;
     }
-
     if (worker.payType === 'flat') {
       payout = worker.rate;
     }
-
     if (worker.payType === 'hourly') {
       payout = worker.rate * (worker.hours || 0);
     }
@@ -33,8 +31,6 @@ const calculateLabor = job => {
 /* ================= API ================= */
 
 export const MoveMastersAPI = {
-  /* ---------- CORE ---------- */
-
   getJob(jobId) {
     return Promise.resolve(JOB_DB[jobId]);
   },
@@ -77,7 +73,6 @@ export const MoveMastersAPI = {
     const job = JOB_DB[jobId];
     job.loadingEvidence = evidence;
     job.status = JobStatus.AWAITING_DISPATCH;
-    job.permissions.driverCanEdit = false;
     return Promise.resolve(job);
   },
 
@@ -95,38 +90,41 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  /* ---------- WAREHOUSE ---------- */
+  /* ---------- 🏬 WAREHOUSE INBOUND ---------- */
 
-  warehouseIntake(jobId, intake) {
+  warehouseInbound(jobId, payload) {
     const job = JOB_DB[jobId];
-    job.warehouse = intake;
+    job.warehouse = {
+      ...job.warehouse,
+      ...payload,
+      inboundAt: new Date().toISOString(),
+      inboundBy: payload.by || 'warehouse'
+    };
     job.status = JobStatus.AWAITING_OUTTAKE;
     return Promise.resolve(job);
   },
 
-  authorizeOuttake(jobId) {
+  /* ---------- 🏬 WAREHOUSE OUTBOUND ---------- */
+
+  warehouseOutbound(jobId, payload) {
     const job = JOB_DB[jobId];
+    job.warehouse = {
+      ...job.warehouse,
+      ...payload,
+      outboundAt: new Date().toISOString(),
+      outboundBy: payload.by || 'warehouse'
+    };
     job.status = JobStatus.OUT_FOR_DELIVERY;
     return Promise.resolve(job);
   },
 
-  /* ---------- ARRIVAL (NEW, SAFE ADDITION) ---------- */
+  /* ---------- DELIVERY GATES ---------- */
 
-  confirmArrivalByDriver(jobId) {
+  arriveAtDestination(jobId) {
     const job = JOB_DB[jobId];
-    job.arrivedConfirmedByDriver = true;
     job.status = JobStatus.PAYMENT_PENDING;
     return Promise.resolve(job);
   },
-
-  confirmArrivalByClient(jobId) {
-    const job = JOB_DB[jobId];
-    job.arrivedConfirmedByClient = true;
-    job.status = JobStatus.PAYMENT_PENDING;
-    return Promise.resolve(job);
-  },
-
-  /* ---------- PAYMENT GATE ---------- */
 
   confirmPayment(jobId) {
     const job = JOB_DB[jobId];
@@ -134,8 +132,6 @@ export const MoveMastersAPI = {
     job.status = JobStatus.UNLOAD_AUTHORIZED;
     return Promise.resolve(job);
   },
-
-  /* ---------- DELIVERY CLOSE ---------- */
 
   confirmDeliveryByClient(jobId) {
     const job = JOB_DB[jobId];
@@ -169,20 +165,13 @@ export const MoveMastersAPI = {
 
   addJobMessage(jobId, message) {
     const job = JOB_DB[jobId];
-
     job.communications.push({
       id: Date.now(),
       fromRole: message.fromRole,
-      fromId: message.fromId || null,
       toRole: message.toRole,
       text: message.text,
       timestamp: new Date().toISOString()
     });
-
     return Promise.resolve(job);
-  },
-
-  getJobMessages(jobId) {
-    return Promise.resolve(JOB_DB[jobId].communications);
   }
 };
