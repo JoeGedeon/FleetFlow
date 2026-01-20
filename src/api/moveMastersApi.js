@@ -58,6 +58,7 @@ export const MoveMastersAPI = {
   signByClient(jobId) {
     const job = JOB_DB[jobId];
     job.clientSigned = true;
+    job.clientSignedAt = new Date().toISOString();
     job.permissions.clientCanSign = false;
     return Promise.resolve(job);
   },
@@ -102,8 +103,6 @@ export const MoveMastersAPI = {
       inboundAt: new Date().toISOString(),
       inboundBy: payload.by || 'warehouse'
     };
-
-    // 🔑 HAND BACK TO OFFICE
     job.status = JobStatus.AWAITING_WAREHOUSE_DISPATCH;
     return Promise.resolve(job);
   },
@@ -130,7 +129,7 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  /* ---------- DELIVERY GATES ---------- */
+  /* ---------- DELIVERY ARRIVAL & PAYMENT ---------- */
 
   arriveAtDestination(jobId) {
     const job = JOB_DB[jobId];
@@ -142,9 +141,14 @@ export const MoveMastersAPI = {
   confirmPayment(jobId) {
     const job = JOB_DB[jobId];
     job.billing.paymentReceived = true;
-    job.status = JobStatus.UNLOAD_AUTHORIZED;
+
+    // 🔑 CLIENT MUST AUTHORIZE UNLOAD AFTER PAYMENT
+    job.status = JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION;
+
     return Promise.resolve(job);
   },
+
+  /* ---------- CLIENT UNLOAD AUTHORIZATION ---------- */
 
   confirmDeliveryByClient(jobId) {
     const job = JOB_DB[jobId];
@@ -153,6 +157,8 @@ export const MoveMastersAPI = {
     job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
     return Promise.resolve(job);
   },
+
+  /* ---------- DRIVER CLOSEOUT ---------- */
 
   submitDeliveryEvidence(jobId, evidence) {
     const job = JOB_DB[jobId];
