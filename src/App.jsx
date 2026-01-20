@@ -58,26 +58,28 @@ export default function App() {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
   }, []);
 
-  if (!job) return <div style={{ padding: 20 }}>Connecting…</
+  if (!job) {
+    return <div style={{ padding: 20 }}>Connecting…</div>;
+  }
 
   const helper = job.labor.find(w => w.role === 'helper');
 
-      return (
-  <div className="app-container">
+  return (
+    <div className="app-container">
       <h1>FleetFLOW</h1>
 
-    {/* ROLE SWITCHER */}
-<div className="role-switcher">
-  {['driver', 'helper', 'office', 'client'].map(r => (
-    <button
-      key={r}
-      onClick={() => setRole(r)}
-      className={role === r ? 'active' : ''}
-    >
-      {r.toUpperCase()}
-    </button>
-  ))}
-</div>
+      {/* ROLE SWITCHER */}
+      <div className="role-switcher">
+        {['driver', 'helper', 'office', 'client'].map(r => (
+          <button
+            key={r}
+            onClick={() => setRole(r)}
+            className={role === r ? 'active' : ''}
+          >
+            {r.toUpperCase()}
+          </button>
+        ))}
+      </div>
 
       <p>
         <strong>Status:</strong>{' '}
@@ -122,18 +124,18 @@ export default function App() {
           )}
 
           {job.status === JobStatus.IN_WAREHOUSE && (
-  <button
-    onClick={() =>
-      MoveMastersAPI.warehouseIntake(job.id, {
-        facilityId: 'WH-22',
-        vaultId: 'VAULT-7',
-        intakePhotos: ['intake.jpg']
-      }).then(setJob)
-    }
-  >
-    Confirm Warehouse Intake
-  </button>
-)}
+            <button
+              onClick={() =>
+                MoveMastersAPI.warehouseIntake(job.id, {
+                  facilityId: 'WH-22',
+                  vaultId: 'VAULT-7',
+                  intakePhotos: ['intake.jpg']
+                }).then(setJob)
+              }
+            >
+              Confirm Warehouse Intake
+            </button>
+          )}
 
           {job.status === JobStatus.OUT_FOR_DELIVERY && (
             <div style={{
@@ -148,46 +150,38 @@ export default function App() {
           )}
 
           {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
-  <>
-    <div style={{
-      marginBottom: 12,
-      padding: 10,
-      border: '2px solid orange',
-      backgroundColor: '#fff6e5',
-      fontWeight: 'bold'
-    }}>
-      📸 DELIVERY COMPLETE — Upload evidence & sign off
-    </div>
+            <>
+              <div style={{
+                marginBottom: 12,
+                padding: 10,
+                border: '2px solid orange',
+                backgroundColor: '#fff6e5',
+                fontWeight: 'bold'
+              }}>
+                📸 DELIVERY COMPLETE — Upload evidence & sign off
+              </div>
 
-    <button
-      onClick={() =>
-        MoveMastersAPI.submitDeliveryEvidence(job.id, {
-          inPlacePhotos: ['placed.jpg'],
-          assembledPhotos: ['assembled.jpg'],
-          emptyTruckPhotos: ['empty_truck.jpg']
-        }).then(setJob)
-      }
-    >
-      Submit Delivery Evidence
-    </button>
+              <button
+                onClick={() =>
+                  MoveMastersAPI.submitDeliveryEvidence(job.id, {
+                    inPlacePhotos: ['placed.jpg'],
+                    assembledPhotos: ['assembled.jpg'],
+                    emptyTruckPhotos: ['empty_truck.jpg']
+                  }).then(setJob)
+                }
+              >
+                Submit Delivery Evidence
+              </button>
 
-    <button
-      style={{ marginLeft: 10 }}
-      onClick={() =>
-        MoveMastersAPI.signOffByDriver(job.id).then(setJob)
-      }
-    >
-      Driver Sign & Close Contract
-    </button>
-  </>
-)}
-
-          {job.status === JobStatus.UNLOAD_AUTHORIZED && (
-            <button onClick={() =>
-              MoveMastersAPI.completeUnload(job.id).then(setJob)
-            }>
-              Unload & Complete Job
-            </button>
+              <button
+                style={{ marginLeft: 10 }}
+                onClick={() =>
+                  MoveMastersAPI.signOffByDriver(job.id).then(setJob)
+                }
+              >
+                Driver Sign & Close Contract
+              </button>
+            </>
           )}
 
           <JobCommunications
@@ -204,25 +198,13 @@ export default function App() {
         </>
       )}
 
-      {job.status === JobStatus.OUT_FOR_DELIVERY && (
-  <button
-    onClick={() =>
-      MoveMastersAPI.arriveAtDelivery(job.id).then(setJob)
-    }
-  >
-    Arrived at Delivery Location
-  </button>
-)}
-
       {/* ================= HELPER ================= */}
 
       {role === 'helper' && (
         <>
           <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
           <p style={{ color: job.status === JobStatus.LOADING ? 'green' : 'gray' }}>
-            {job.status === JobStatus.LOADING
-              ? 'Cleared to Work'
-              : 'Awaiting Authorization'}
+            {job.status === JobStatus.LOADING ? 'Cleared to Work' : 'Awaiting Authorization'}
           </p>
 
           <JobCommunications
@@ -243,54 +225,6 @@ export default function App() {
 
       {role === 'office' && (
         <>
-          {job.status === JobStatus.PENDING_APPROVAL && (
-            <button onClick={() =>
-              MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
-            }>
-              Approve Pricing & Send to Client
-            </button>
-          )}
-
-          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
-            <button onClick={() =>
-              MoveMastersAPI.authorizeLoading(job.id).then(setJob)
-            }>
-              Authorize Loading
-            </button>
-          )}
-
-          {job.status === JobStatus.AWAITING_DISPATCH && (
-            <>
-              <button onClick={() =>
-                MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
-              }>
-                Route to Warehouse
-              </button>
-
-              <button onClick={() =>
-                MoveMastersAPI.routeToDelivery(job.id).then(setJob)
-              }>
-                Route to Direct Delivery
-              </button>
-            </>
-          )}
-
-          {job.status === JobStatus.AWAITING_OUTTAKE && (
-            <button onClick={() =>
-              MoveMastersAPI.authorizeOuttake(job.id).then(setJob)
-            }>
-              Release From Warehouse
-            </button>
-          )}
-
-          {job.status === JobStatus.PAYMENT_PENDING && (
-            <button onClick={() =>
-              MoveMastersAPI.confirmPayment(job.id).then(setJob)
-            }>
-              Confirm Payment
-            </button>
-          )}
-
           <JobCommunications
             job={job}
             role="office"
@@ -309,36 +243,6 @@ export default function App() {
 
       {role === 'client' && (
         <>
-          {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
-            <button onClick={() =>
-              MoveMastersAPI.signByClient(job.id).then(setJob)
-            }>
-              Sign & Accept Price
-            </button>
-          )}
-
-          {job.status === JobStatus.OUT_FOR_DELIVERY && (
-            <button onClick={() =>
-              MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
-            }>
-              Confirm Delivery
-            </button>
-          )}
-
-          {job.status === JobStatus.COMPLETED && (
-            <p>Move complete. Thank you.</p>
-          )}
-
-          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && !job.deliveryConfirmedByClient && (
-  <button
-    onClick={() =>
-      MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
-    }
-  >
-    Confirm Items Delivered
-  </button>
-)}
-
           <JobCommunications
             job={job}
             role="client"
