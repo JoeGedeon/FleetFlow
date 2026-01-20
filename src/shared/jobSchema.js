@@ -37,22 +37,33 @@ export function createJob(jobId) {
     },
 
     clientSigned: false,
+    clientSignedAt: null,
 
     loadingEvidence: null,
 
+    arrivedAt: null,
+
     deliveryConfirmedByClient: false,
+    deliveryConfirmedAt: null,
+
     deliveryEvidence: null,
+
     driverSigned: false,
+    driverSignedAt: null,
 
     warehouse: {
       facilityId: null,
       vaultId: null,
+
       intakePhotos: [],
       outtakePhotos: [],
+
       inboundAt: null,
       outboundAt: null,
+
       inboundBy: null,
       outboundBy: null,
+
       inventoryNotes: ''
     },
 
