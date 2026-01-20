@@ -100,6 +100,19 @@ export default function App() {
 
       {/* ================= DRIVER ================= */}
 
+      {job.status === JobStatus.LOADING && (
+  <div style={{
+    marginBottom: 12,
+    padding: 10,
+    border: '2px solid green',
+    backgroundColor: '#e8fbe8',
+    color: 'green',
+    fontWeight: 'bold'
+  }}>
+    ✔ LOAD AUTHORIZED — You may begin loading
+  </div>
+)}
+      
       {role === 'driver' && (
         <>
           {job.status === JobStatus.SURVEY && (
