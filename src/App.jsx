@@ -2,6 +2,49 @@ import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
 
+function JobCommunications({ job, role, onSend }) {
+  const [text, setText] = useState('');
+
+  const visibleMessages = job.communications.filter(msg =>
+    msg.fromRole === role ||
+    msg.toRole === role ||
+    role === 'office'
+  );
+
+  return (
+    <div style={{ marginTop: 20, border: '1px solid #999', padding: 10 }}>
+      <h4>Job Communications</h4>
+
+      <div style={{ maxHeight: 150, overflowY: 'auto', marginBottom: 10 }}>
+        {visibleMessages.map(m => (
+          <div key={m.id} style={{ fontSize: 12, marginBottom: 6 }}>
+            <strong>{m.fromRole}:</strong> {m.text}
+          </div>
+        ))}
+      </div>
+
+      <textarea
+        rows={2}
+        value={text}
+        placeholder="Enter job-related message"
+        onChange={e => setText(e.target.value)}
+        style={{ width: '100%' }}
+      />
+
+      <button
+        disabled={!text.trim()}
+        onClick={() => {
+          onSend(text);
+          setText('');
+        }}
+        style={{ marginTop: 6 }}
+      >
+        Send to Office
+      </button>
+    </div>
+  );
+}
+
 export default function App() {
   const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
