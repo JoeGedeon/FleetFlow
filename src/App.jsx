@@ -58,18 +58,7 @@ export default function App() {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
   }, []);
 
-  if (!job) return <div style={{ padding: 20 }}>Connecting…</div>;
-
-  const roleButtonStyle = r => ({
-    marginRight: 8,
-    padding: '6px 12px',
-    borderRadius: 20,
-    border: '1px solid #000',
-    cursor: 'pointer',
-    backgroundColor: role === r ? '#000' : '#fff',
-    color: role === r ? '#fff' : '#000',
-    fontWeight: role === r ? 'bold' : 'normal'
-  });
+  if (!job) return <div style={{ padding: 20 }}>Connecting…</
 
   const helper = job.labor.find(w => w.role === 'helper');
 
