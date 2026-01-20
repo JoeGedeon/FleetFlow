@@ -127,6 +127,20 @@ export default function App() {
             </button>
           )}
 
+          {job.status === JobStatus.IN_WAREHOUSE && (
+  <button
+    onClick={() =>
+      MoveMastersAPI.warehouseIntake(job.id, {
+        facilityId: 'WH-22',
+        vaultId: 'VAULT-7',
+        intakePhotos: ['intake.jpg']
+      }).then(setJob)
+    }
+  >
+    Confirm Warehouse Intake
+  </button>
+)}
+
           {job.status === JobStatus.OUT_FOR_DELIVERY && (
             <div style={{
               marginTop: 10,
