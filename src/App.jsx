@@ -190,7 +190,21 @@ export default function App() {
 
       {role === 'office' && (
         <>
-          
+          {job.status === JobStatus.PENDING_APPROVAL && (
+            <button onClick={() =>
+              MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
+            }>
+              Approve Pricing & Send to Client
+            </button>
+          )}
+
+          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
+            <button onClick={() =>
+              MoveMastersAPI.authorizeLoading(job.id).then(setJob)
+            }>
+              Authorize Loading
+            </button>
+          )}
 
           {job.status === JobStatus.AWAITING_DISPATCH && (
             <>
@@ -216,21 +230,14 @@ export default function App() {
             </button>
           )}
 
-          {job.status === JobStatus.PENDING_APPROVAL && !job.clientSigned && (
-  <button onClick={() =>
-    MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
-  }>
-    Approve Pricing & Send to Client
-  </button>
-)}
+          {job.status === JobStatus.PAYMENT_PENDING && (
+            <button onClick={() =>
+              MoveMastersAPI.confirmPayment(job.id).then(setJob)
+            }>
+              Confirm Payment
+            </button>
+          )}
 
-{job.status === JobStatus.PENDING_APPROVAL && job.clientSigned && (
-  <button onClick={() =>
-    MoveMastersAPI.authorizeLoading(job.id).then(setJob)
-  }>
-    Authorize Loading
-  </button>
-)}
           <JobCommunications
             job={job}
             role="office"
