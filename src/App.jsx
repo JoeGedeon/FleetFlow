@@ -13,12 +13,12 @@ function JobCommunications({ job, role, onSend }) {
   );
 
   return (
-    <div style={{ marginTop: 20, border: '1px solid #999', padding: 10 }}>
+    <div className="job-comm">
       <h4>Job Communications</h4>
 
-      <div style={{ maxHeight: 150, overflowY: 'auto', marginBottom: 10 }}>
+      <div className="messages">
         {visibleMessages.map(m => (
-          <div key={m.id} style={{ fontSize: 12, marginBottom: 6 }}>
+          <div key={m.id} className="message">
             <strong>{m.fromRole}:</strong> {m.text}
           </div>
         ))}
@@ -29,7 +29,6 @@ function JobCommunications({ job, role, onSend }) {
         value={text}
         placeholder="Enter job-related message"
         onChange={e => setText(e.target.value)}
-        style={{ width: '100%' }}
       />
 
       <button
@@ -38,7 +37,6 @@ function JobCommunications({ job, role, onSend }) {
           onSend(text);
           setText('');
         }}
-        style={{ marginTop: 6 }}
       >
         Send Message
       </button>
@@ -77,10 +75,11 @@ export default function App() {
         ))}
       </div>
 
-      <p>
-        <strong>Status:</strong>{' '}
-        {job.status === JobStatus.COMPLETED ? 'Delivered' : job.status}
-      </p>
+      <div className="status-bar">
+        <span className="status-chip">
+          {job.status === JobStatus.COMPLETED ? 'Delivered' : job.status}
+        </span>
+      </div>
 
       {/* ================= DRIVER ================= */}
 
@@ -89,7 +88,8 @@ export default function App() {
           {job.status === JobStatus.SURVEY && (
             <button
               onClick={() =>
-                MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
+                MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 })
+                  .then(setJob)
               }
             >
               Submit Survey to Office
@@ -128,7 +128,7 @@ export default function App() {
 
           {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
             <>
-              <div className="auth-box">📸 DELIVERY COMPLETE</div>
+              <div className="auth-box">📸 DELIVERY IN PROGRESS</div>
 
               <button
                 onClick={() =>
@@ -172,7 +172,9 @@ export default function App() {
         <>
           <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
           <p className={`helper-status ${job.status === JobStatus.LOADING ? 'green' : 'gray'}`}>
-            {job.status === JobStatus.LOADING ? 'Cleared to Work' : 'Awaiting Authorization'}
+            {job.status === JobStatus.LOADING
+              ? 'Cleared to Work'
+              : 'Awaiting Authorization'}
           </p>
 
           <JobCommunications
@@ -213,7 +215,6 @@ export default function App() {
             </button>
           )}
 
-          {/* 🔴 THIS IS WHAT YOU WERE MISSING */}
           {job.status === JobStatus.AWAITING_DISPATCH && (
             <>
               <button
@@ -288,7 +289,7 @@ export default function App() {
                 MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
               }
             >
-              Confirm Delivery
+              Truck Arrived
             </button>
           )}
 
