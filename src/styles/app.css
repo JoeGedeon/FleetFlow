@@ -1,8 +1,7 @@
 /* ================= ROOT ================= */
-/* ================= ROOT ================= */
 
 :root {
-  --bg-main: #020617;
+  --bg-main: #0f172a;
   --bg-panel: #020617;
   --bg-card: #020617;
   --border-soft: #1e293b;
@@ -34,29 +33,13 @@ body {
 h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  margin: 0;
+  margin-bottom: 1rem;
 }
 
 h4 {
   margin: 0 0 0.5rem;
   font-size: 0.9rem;
   color: var(--text-muted);
-}
-
-/* ================= HEADER ================= */
-
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #020617;
-  border-bottom: 1px solid var(--border-soft);
-  padding: 18px 24px;
-}
-
-header .title {
-  letter-spacing: 0.12em;
-  font-weight: 800;
 }
 
 /* ================= LAYOUT ================= */
@@ -90,7 +73,7 @@ header .title {
   background: transparent;
   color: var(--text-muted);
   font-weight: 600;
-  cursor: default;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -108,61 +91,45 @@ header .title {
 /* ================= STATUS ================= */
 
 .status-bar {
+  font-size: 0.85rem;
+  color: var(--text-muted);
   margin-bottom: 20px;
 }
 
 .status-chip {
   display: inline-block;
-  padding: 6px 14px;
+  padding: 6px 12px;
   border-radius: 999px;
   background: #020617;
   border: 1px solid var(--border-soft);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-weight: 600;
 }
 
-/* ================= ACTION PANEL ================= */
+/* ================= ACTIONS ================= */
 
-.action-panel {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-/* ================= ACTION BUTTONS ================= */
-
-button.action {
+button {
   background: var(--blue);
   color: #020617;
   border: none;
   padding: 12px 18px;
   border-radius: 10px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   margin-top: 10px;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-button.action.secondary {
-  background: transparent;
-  border: 1px solid var(--border-soft);
-  color: var(--text-main);
-}
-
-button.action:hover {
+button:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-button.action:disabled {
+button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* ================= AUTHORIZATION ================= */
+/* ================= AUTH BOX ================= */
 
 .auth-box {
   border: 1px solid var(--green);
@@ -170,7 +137,7 @@ button.action:disabled {
   color: var(--green);
   padding: 14px;
   border-radius: 12px;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 14px;
 }
 
@@ -195,7 +162,7 @@ button.action:disabled {
   color: var(--text-muted);
 }
 
-.job-comm textarea {
+textarea {
   width: 100%;
   background: transparent;
   border: 1px solid var(--border-soft);
@@ -205,23 +172,10 @@ button.action:disabled {
   resize: none;
 }
 
-/* ================= LABOR ================= */
-
-.labor-row {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.labor-total {
-  margin-top: 8px;
-  font-weight: 800;
-  color: var(--text-main);
-}
-
 /* ================= HELPER ================= */
 
 .helper-status {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .helper-status.green {
