@@ -31,6 +31,8 @@ const calculateLabor = job => {
 /* ================= API ================= */
 
 export const MoveMastersAPI = {
+  /* ---------- CORE ---------- */
+
   getJob(jobId) {
     return Promise.resolve(JOB_DB[jobId]);
   },
@@ -100,6 +102,16 @@ export const MoveMastersAPI = {
       inboundAt: new Date().toISOString(),
       inboundBy: payload.by || 'warehouse'
     };
+
+    // 🔑 HAND BACK TO OFFICE
+    job.status = JobStatus.AWAITING_WAREHOUSE_DISPATCH;
+    return Promise.resolve(job);
+  },
+
+  /* ---------- 🧠 OFFICE DISPATCH FROM WAREHOUSE ---------- */
+
+  dispatchFromWarehouse(jobId) {
+    const job = JOB_DB[jobId];
     job.status = JobStatus.AWAITING_OUTTAKE;
     return Promise.resolve(job);
   },
@@ -122,6 +134,7 @@ export const MoveMastersAPI = {
 
   arriveAtDestination(jobId) {
     const job = JOB_DB[jobId];
+    job.arrivedAt = new Date().toISOString();
     job.status = JobStatus.PAYMENT_PENDING;
     return Promise.resolve(job);
   },
@@ -136,6 +149,7 @@ export const MoveMastersAPI = {
   confirmDeliveryByClient(jobId) {
     const job = JOB_DB[jobId];
     job.deliveryConfirmedByClient = true;
+    job.deliveryConfirmedAt = new Date().toISOString();
     job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
     return Promise.resolve(job);
   },
@@ -149,6 +163,7 @@ export const MoveMastersAPI = {
   signOffByDriver(jobId) {
     const job = calculateLabor(JOB_DB[jobId]);
     job.driverSigned = true;
+    job.driverSignedAt = new Date().toISOString();
     job.status = JobStatus.COMPLETED;
     return Promise.resolve(job);
   },
