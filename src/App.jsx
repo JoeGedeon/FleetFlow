@@ -77,14 +77,18 @@ export default function App() {
   <div className="app-container">
       <h1>FleetFLOW</h1>
 
-      {/* ROLE SWITCHER */}
-      <div style={{ marginBottom: 16 }}>
-        {['driver', 'helper', 'office', 'client'].map(r => (
-          <button key={r} onClick={() => setRole(r)} style={roleButtonStyle(r)}>
-            {r.toUpperCase()}
-          </button>
-        ))}
-      </div>
+    {/* ROLE SWITCHER */}
+<div className="role-switcher">
+  {['driver', 'helper', 'office', 'client'].map(r => (
+    <button
+      key={r}
+      onClick={() => setRole(r)}
+      className={role === r ? 'active' : ''}
+    >
+      {r.toUpperCase()}
+    </button>
+  ))}
+</div>
 
       <p>
         <strong>Status:</strong>{' '}
