@@ -67,6 +67,7 @@ h4 {
 }
 
 .role-switcher button {
+  position: relative;
   padding: 8px 16px;
   border-radius: 999px;
   border: 1px solid var(--border-soft);
@@ -77,10 +78,29 @@ h4 {
   transition: all 0.2s ease;
 }
 
+/* Selected role */
 .role-switcher button.active {
   background: var(--blue);
   border-color: var(--blue);
   color: #020617;
+}
+
+/* Baton holder */
+.role-switcher button.baton {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* Baton indicator dot */
+.role-switcher button .baton-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  background: var(--amber);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
 }
 
 .role-switcher button:hover {
