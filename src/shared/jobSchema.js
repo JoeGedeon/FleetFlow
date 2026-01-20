@@ -9,6 +9,10 @@ export const JobStatus = {
   AWAITING_OUTTAKE: 'awaiting_outtake',
   OUT_FOR_DELIVERY: 'out_for_delivery',
 
+  // 🔒 DELIVERY CLOSE LOOP
+  DELIVERY_AWAITING_CLIENT_CONFIRMATION: 'delivery_awaiting_client_confirmation',
+  DELIVERY_AWAITING_DRIVER_EVIDENCE: 'delivery_awaiting_driver_evidence',
+
   PAYMENT_PENDING: 'payment_pending',
   UNLOAD_AUTHORIZED: 'unload_authorized',
   COMPLETED: 'completed'
@@ -36,6 +40,11 @@ export function createJob(jobId) {
 
     loadingEvidence: null,
 
+    // 🔒 DELIVERY CONFIRMATION FIELDS
+    deliveryConfirmedByClient: false,
+    deliveryEvidence: null,
+    driverSigned: false,
+
     warehouse: {
       facilityId: null,
       vaultId: null,
@@ -43,7 +52,10 @@ export function createJob(jobId) {
       outtakePhotos: []
     },
 
-    // 👇 NEW
+    // 📎 JOB COMMUNICATIONS (BUSINESS NOTES)
+    communications: [],
+
+    // 👷 LABOR (ISOLATED PER PERSON)
     labor: [
       {
         id: 'driver-1',
