@@ -190,13 +190,7 @@ export default function App() {
 
       {role === 'office' && (
         <>
-          {job.status === JobStatus.PENDING_APPROVAL && (
-            <button onClick={() =>
-              MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
-            }>
-              Approve Pricing
-            </button>
-          )}
+          
 
           {job.status === JobStatus.AWAITING_DISPATCH && (
             <>
