@@ -103,29 +103,29 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  // 👇 NEW
   addHelper(jobId, helper) {
     const job = JOB_DB[jobId];
     job.labor.push(helper);
     return Promise.resolve(job);
+  },
+
+  // ✅ JOB COMMUNICATIONS (CORRECTLY PLACED)
+  addJobMessage(jobId, message) {
+    const job = JOB_DB[jobId];
+
+    job.communications.push({
+      id: Date.now(),
+      fromRole: message.fromRole,
+      fromId: message.fromId || null,
+      toRole: message.toRole,
+      text: message.text,
+      timestamp: new Date().toISOString()
+    });
+
+    return Promise.resolve(job);
+  },
+
+  getJobMessages(jobId) {
+    return Promise.resolve(JOB_DB[jobId].communications);
   }
 };
-
-addJobMessage(jobId, message) {
-  const job = JOB_DB[jobId];
-
-  job.communications.push({
-    id: Date.now(),
-    fromRole: message.fromRole,
-    fromId: message.fromId || null,
-    toRole: message.toRole,
-    text: message.text,
-    timestamp: new Date().toISOString()
-  });
-
-  return Promise.resolve(job);
-},
-
-getJobMessages(jobId) {
-  return Promise.resolve(JOB_DB[jobId].communications);
-}
