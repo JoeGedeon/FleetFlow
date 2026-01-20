@@ -271,6 +271,18 @@ export default function App() {
         </>
       )}
 
+
+      {job.status === JobStatus.AWAITING_OUTTAKE && (
+  <button
+    onClick={() =>
+      MoveMastersAPI.authorizeOuttake(job.id).then(setJob)
+    }
+  >
+    Release From Warehouse
+  </button>
+)}
+      
+
       {/* ================= CLIENT ================= */}
 
       {role === 'client' && (
