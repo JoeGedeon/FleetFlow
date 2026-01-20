@@ -110,3 +110,22 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   }
 };
+
+addJobMessage(jobId, message) {
+  const job = JOB_DB[jobId];
+
+  job.communications.push({
+    id: Date.now(),
+    fromRole: message.fromRole,
+    fromId: message.fromId || null,
+    toRole: message.toRole,
+    text: message.text,
+    timestamp: new Date().toISOString()
+  });
+
+  return Promise.resolve(job);
+},
+
+getJobMessages(jobId) {
+  return Promise.resolve(JOB_DB[jobId].communications);
+}
