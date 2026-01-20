@@ -210,6 +210,16 @@ export default function App() {
         </>
       )}
 
+      {job.status === JobStatus.OUT_FOR_DELIVERY && (
+  <button
+    onClick={() =>
+      MoveMastersAPI.arriveAtDelivery(job.id).then(setJob)
+    }
+  >
+    Arrived at Delivery Location
+  </button>
+)}
+
       {/* ================= HELPER ================= */}
 
       {role === 'helper' && (
