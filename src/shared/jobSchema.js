@@ -6,6 +6,9 @@ export const JobStatus = {
   AWAITING_DISPATCH: 'awaiting_dispatch_decision',
 
 
+  EN_ROUTE_TO_WAREHOUSE: 'en_route_to_warehouse',
+
+
   IN_WAREHOUSE: 'in_warehouse',
   AWAITING_WAREHOUSE_DISPATCH: 'awaiting_warehouse_dispatch',
   AWAITING_OUTTAKE: 'awaiting_outtake',
