@@ -196,3 +196,14 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   }
 };
+
+arriveAtWarehouse(jobId) {
+  const job = JOB_DB[jobId];
+  job.warehouse = {
+    ...job.warehouse,
+    inboundAt: new Date().toISOString(),
+    inboundBy: 'driver'
+  };
+  job.status = JobStatus.IN_WAREHOUSE;
+  return Promise.resolve(job);
+},
