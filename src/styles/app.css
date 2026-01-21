@@ -205,3 +205,45 @@ textarea {
 .helper-status.gray {
   color: var(--text-muted);
 }
+
+.progress-tracker {
+  display: flex;
+  overflow-x: auto;
+  padding: 12px 0;
+  margin-bottom: 20px;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 24px;
+  opacity: 0.4;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.progress-step.complete,
+.progress-step.active {
+  opacity: 1;
+}
+
+.progress-step .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #bbb;
+  margin-bottom: 6px;
+}
+
+.progress-step.complete .dot {
+  background: #2ecc71;
+}
+
+.progress-step.active .dot {
+  background: #3498db;
+}
+
+.progress-step .label {
+  text-transform: capitalize;
+}
