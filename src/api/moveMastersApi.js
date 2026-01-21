@@ -79,25 +79,30 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
-  /* ---------- ROUTING ---------- */
+ /* ---------- ROUTING ---------- */
 
-  routeToWarehouse(jobId) {
-    const job = JOB_DB[jobId];
-    job.status = JobStatus.EN_ROUTE_TO_WAREHOUSE; // 🔑 NEW STATUS
-    return Promise.resolve(job);
-  },
-  {job.status === JobStatus.IN_WAREHOUSE && !job.warehouse?.inboundBy && (
-  <button onClick={() =>
-    MoveMastersAPI.arriveAtWarehouse(job.id).then(setJob)
-  }>
-    Arrive at Warehouse
-  </button>
-)}
-  routeToDelivery(jobId) {
-    const job = JOB_DB[jobId];
-    job.status = JobStatus.OUT_FOR_DELIVERY;
-    return Promise.resolve(job);
-  },
+routeToWarehouse(jobId) {
+  const job = JOB_DB[jobId];
+  job.status = JobStatus.EN_ROUTE_TO_WAREHOUSE;
+  return Promise.resolve(job);
+},
+
+arriveAtWarehouse(jobId) {
+  const job = JOB_DB[jobId];
+  job.warehouse = {
+    ...job.warehouse,
+    inboundAt: new Date().toISOString(),
+    inboundBy: 'driver'
+  };
+  job.status = JobStatus.IN_WAREHOUSE;
+  return Promise.resolve(job);
+},
+
+routeToDelivery(jobId) {
+  const job = JOB_DB[jobId];
+  job.status = JobStatus.OUT_FOR_DELIVERY;
+  return Promise.resolve(job);
+},
 
   /* ---------- DRIVER → WAREHOUSE HANDSHAKE ---------- */
 
