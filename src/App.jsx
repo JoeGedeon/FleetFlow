@@ -4,17 +4,18 @@ import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
 
 /* ================= STATUS FLOW ================= */
-
 const STATUS_FLOW = [
   JobStatus.SURVEY,
   JobStatus.PENDING_APPROVAL,
   JobStatus.AWAITING_SIGNATURE,
   JobStatus.LOADING,
   JobStatus.AWAITING_DISPATCH,
+
+  JobStatus.EN_ROUTE_TO_WAREHOUSE,
   JobStatus.IN_WAREHOUSE,
   JobStatus.AWAITING_WAREHOUSE_DISPATCH,
-  EN_ROUTE_TO_WAREHOUSE: 'en_route_to_warehouse',
   JobStatus.AWAITING_OUTTAKE,
+
   JobStatus.OUT_FOR_DELIVERY,
   JobStatus.PAYMENT_PENDING,
   JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION,
