@@ -4,7 +4,6 @@ let JOB_DB = {
   'FLEETFLOW-001': createJob('FLEETFLOW-001')
 };
 
-
 /* ================= LABOR CALCULATION ================= */
 
 const calculateLabor = job => {
@@ -84,13 +83,26 @@ export const MoveMastersAPI = {
 
   routeToWarehouse(jobId) {
     const job = JOB_DB[jobId];
-    job.status = JobStatus.IN_WAREHOUSE;
+    job.status = JobStatus.EN_ROUTE_TO_WAREHOUSE; // 🔑 NEW STATUS
     return Promise.resolve(job);
   },
 
   routeToDelivery(jobId) {
     const job = JOB_DB[jobId];
     job.status = JobStatus.OUT_FOR_DELIVERY;
+    return Promise.resolve(job);
+  },
+
+  /* ---------- DRIVER → WAREHOUSE HANDSHAKE ---------- */
+
+  arriveAtWarehouse(jobId) {
+    const job = JOB_DB[jobId];
+    job.warehouse = {
+      ...job.warehouse,
+      inboundAt: new Date().toISOString(),
+      inboundBy: 'driver'
+    };
+    job.status = JobStatus.IN_WAREHOUSE;
     return Promise.resolve(job);
   },
 
@@ -142,14 +154,11 @@ export const MoveMastersAPI = {
   confirmPayment(jobId) {
     const job = JOB_DB[jobId];
     job.billing.paymentReceived = true;
-
-    // 🔑 CLIENT MUST AUTHORIZE UNLOAD AFTER PAYMENT
     job.status = JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION;
-
     return Promise.resolve(job);
   },
 
-  /* ---------- CLIENT UNLOAD AUTHORIZATION ---------- */
+  /* ---------- CLIENT UNLOAD AUTH ---------- */
 
   confirmDeliveryByClient(jobId) {
     const job = JOB_DB[jobId];
@@ -197,14 +206,3 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   }
 };
-
-arriveAtWarehouse(jobId) {
-  const job = JOB_DB[jobId];
-  job.warehouse = {
-    ...job.warehouse,
-    inboundAt: new Date().toISOString(),
-    inboundBy: 'driver'
-  };
-  job.status = JobStatus.IN_WAREHOUSE;
-  return Promise.resolve(job);
-},
