@@ -136,7 +136,13 @@ export default function App() {
               </button>
             </>
           )}
-
+             {job.status === JobStatus.EN_ROUTE_TO_WAREHOUSE && (
+  <button onClick={() =>
+    MoveMastersAPI.arriveAtWarehouse(job.id).then(setJob)
+  }>
+    Arrive at Warehouse
+  </button>
+)}
           <JobCommunications
             job={job}
             role="driver"
