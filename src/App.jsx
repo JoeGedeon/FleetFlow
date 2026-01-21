@@ -119,6 +119,8 @@ export default function App() {
         </span>
       </div>
 
+      <ProgressTracker currentStatus={job.status} />
+
       {/* ================= DRIVER ================= */}
 
       {role === 'driver' && (
