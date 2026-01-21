@@ -5,6 +5,26 @@ import { JobStatus } from './shared/jobSchema';
 
 /* ================= JOB COMMUNICATIONS ================= */
 
+function ProgressTracker({ currentStatus }) {
+  const currentIndex = STATUS_FLOW.indexOf(currentStatus);
+
+  return (
+    <div className="progress-tracker">
+      {STATUS_FLOW.map((status, index) => (
+        <div
+          key={status}
+          className={`progress-step
+            ${index <= currentIndex ? 'complete' : ''}
+            ${index === currentIndex ? 'active' : ''}`}
+        >
+          <span className="dot" />
+          <span className="label">{status.replace(/_/g, ' ')}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function JobCommunications({ job, role, onSend }) {
   const [text, setText] = useState('');
 
