@@ -4,6 +4,7 @@ let JOB_DB = {
   'FLEETFLOW-001': createJob('FLEETFLOW-001')
 };
 
+
 /* ================= LABOR CALCULATION ================= */
 
 const calculateLabor = job => {
