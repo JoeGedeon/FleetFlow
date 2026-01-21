@@ -1,8 +1,9 @@
+import DriverEarnings from './components/DriverEarnings';
 import './styles/app.css';
 import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
-import DriverEarnings from './components/DriverEarnings';
+
 
 /* ================= STATUS FLOW ================= */
 const STATUS_FLOW = [
