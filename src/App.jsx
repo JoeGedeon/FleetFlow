@@ -13,6 +13,7 @@ const STATUS_FLOW = [
   JobStatus.AWAITING_DISPATCH,
   JobStatus.IN_WAREHOUSE,
   JobStatus.AWAITING_WAREHOUSE_DISPATCH,
+  EN_ROUTE_TO_WAREHOUSE: 'en_route_to_warehouse',
   JobStatus.AWAITING_OUTTAKE,
   JobStatus.OUT_FOR_DELIVERY,
   JobStatus.PAYMENT_PENDING,
