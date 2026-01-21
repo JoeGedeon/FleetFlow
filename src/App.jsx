@@ -3,6 +3,24 @@ import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
 
+/* ================= STATUS FLOW ================= */
+
+const STATUS_FLOW = [
+  JobStatus.SURVEY,
+  JobStatus.PENDING_APPROVAL,
+  JobStatus.AWAITING_SIGNATURE,
+  JobStatus.LOADING,
+  JobStatus.AWAITING_DISPATCH,
+  JobStatus.IN_WAREHOUSE,
+  JobStatus.AWAITING_WAREHOUSE_DISPATCH,
+  JobStatus.AWAITING_OUTTAKE,
+  JobStatus.OUT_FOR_DELIVERY,
+  JobStatus.PAYMENT_PENDING,
+  JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION,
+  JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE,
+  JobStatus.COMPLETED
+];
+
 /* ================= JOB COMMUNICATIONS ================= */
 
 function ProgressTracker({ currentStatus }) {
