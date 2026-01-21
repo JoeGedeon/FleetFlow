@@ -209,7 +209,14 @@ export default function App() {
               </button>
             </>
           )}
-
+             {/* OFFICE DISPATCH FROM WAREHOUSE */}
+{job.status === JobStatus.AWAITING_WAREHOUSE_DISPATCH && (
+  <button onClick={() =>
+    MoveMastersAPI.dispatchFromWarehouse(job.id).then(setJob)
+  }>
+    Dispatch Load From Warehouse
+  </button>
+)}
           {job.status === JobStatus.PAYMENT_PENDING && (
             <button onClick={() =>
               MoveMastersAPI.confirmPayment(job.id).then(setJob)
