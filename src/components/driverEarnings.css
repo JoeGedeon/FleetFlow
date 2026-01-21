@@ -1,0 +1,31 @@
+.earnings-panel {
+  border: 1px solid #ddd;
+  padding: 16px;
+  margin-top: 20px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.earnings-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.earnings-row.sub {
+  padding-left: 12px;
+  font-size: 14px;
+}
+
+.earnings-status {
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.earnings-status.locked {
+  color: #1a7f37;
+}
+
+.earnings-status.pending {
+  color: #b45309;
+}
