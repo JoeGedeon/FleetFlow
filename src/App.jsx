@@ -301,7 +301,14 @@ export default function App() {
               Sign Delivery Completion
             </button>
           )}
-
+             {/* CLIENT DELIVERY SIGNATURE — FINAL HANDSHAKE */}
+{job.status === JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION && (
+  <button onClick={() =>
+    MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
+  }>
+    Sign Delivery Completion
+  </button>
+)}
           {job.status === JobStatus.COMPLETED && (
             <p>Move complete. Thank you.</p>
           )}
