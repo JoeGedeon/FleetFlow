@@ -124,7 +124,7 @@ export default function App() {
       <ProgressTracker currentStatus={job.status} />
 
       {/* ================= DRIVER ================= */}
-
+       import DriverEarningsPanel from './components/DriverEarningsPanel';
       {role === 'driver' && (
         <>
           {job.status === JobStatus.SURVEY && (
