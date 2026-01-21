@@ -199,6 +199,13 @@ export default function App() {
         </>
       )}
 
+      {role === 'driver' && (
+  <>
+    ...
+    <DriverEarningsPanel job={job} />
+  </>
+)}
+
       {/* ================= HELPER ================= */}
 
       {role === 'helper' && (
