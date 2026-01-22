@@ -1,4 +1,4 @@
-import './driverEarnings.css';
+import './DriverEarnings.css';
 
 export default function DriverEarningsPanel({ job }) {
   const driver = job.labor.find(w => w.role === 'driver');
