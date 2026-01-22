@@ -1,9 +1,8 @@
-import DriverEarningsPanel from './components/DriverEarningsPanel';
 import './styles/app.css';
 import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
-
+import DriverEarningsPanel from './components/DriverEarningsPanel';
 
 
 /* ================= STATUS FLOW ================= */
