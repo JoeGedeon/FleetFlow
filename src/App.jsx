@@ -1,4 +1,4 @@
-import DriverEarnings from './components/DriverEarnings';
+import DriverEarningsPanel from './components/DriverEarningsPanel';
 import './styles/app.css';
 import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
