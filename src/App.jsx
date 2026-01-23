@@ -149,6 +149,8 @@ export default function App() {
     }))
   }
 />
+              </>
+    )}
 
     {job.status === JobStatus.LOADING && (
       <>
