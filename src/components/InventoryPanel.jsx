@@ -86,17 +86,17 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                 {role === 'office' && (
                   <>
                     {' '}| Rev CF:
-                    <input
-                      type="number"
-                      min="0"
-                      value={item.revisedCubicFeet || 0}
-                      style={{ width: 60, marginLeft: 6 }}
-                      onChange={e =>
-                        updateItem(item.id, {
-                          revisedCubicFeet: Number(e.target.value)
-                        })
-                      }
-                    />
+                    <<input
+  type="number"
+  min="0"
+  value={item.revisedCubicFeet ?? ''}
+  style={{ width: 60, marginLeft: 6 }}
+  onChange={e =>
+    updateItem(item.id, {
+      revisedCubicFeet: e.target.value === '' ? 0 : Number(e.target.value)
+    })
+  }
+/>
                   </>
                 )}
 
