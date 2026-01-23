@@ -72,6 +72,15 @@ export const MoveMastersAPI = {
 
     return Promise.resolve(normalizeJob(job));
   },
+  updateInventoryItem(jobId, itemId, updates) {
+  const job = JOB_DB[jobId];
+
+  job.inventory = job.inventory.map(item =>
+    item.id === itemId ? { ...item, ...updates } : item
+  );
+
+  return Promise.resolve(normalizeJob(job));
+  },
 
   // 🔑 THIS IS THE MISSING PIECE
   updateInventoryItem(jobId, itemId, updates) {
