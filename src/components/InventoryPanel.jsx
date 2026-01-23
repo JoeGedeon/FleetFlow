@@ -1,10 +1,16 @@
 import { useState } from 'react';
 
-export default function InventoryPanel({ inventory, addItem }) {
+export default function InventoryPanel({ inventory = [], addItem }) {
   const safeInventory = Array.isArray(inventory) ? inventory : [];
 
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
+  const [cubicFeet, setCubicFeet] = useState('');
+
+  const totalCubicFeet = safeInventory.reduce(
+    (sum, item) => sum + (item.cubicFeet || 0) * item.qty,
+    0
+  );
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -26,8 +32,17 @@ export default function InventoryPanel({ inventory, addItem }) {
           style={{ width: 70 }}
         />
 
+        <input
+          type="number"
+          min="0"
+          placeholder="Cu Ft"
+          value={cubicFeet}
+          onChange={e => setCubicFeet(e.target.value)}
+          style={{ width: 80 }}
+        />
+
         <button
-          type="button" // 🔑 prevents page reload
+          type="button"
           disabled={!itemName}
           onClick={() => {
             if (typeof addItem !== 'function') return;
@@ -35,11 +50,14 @@ export default function InventoryPanel({ inventory, addItem }) {
             addItem({
               id: Date.now(),
               name: itemName,
-              qty
+              qty,
+              cubicFeet: Number(cubicFeet) || 0,
+              source: 'driver'
             });
 
             setItemName('');
             setQty(1);
+            setCubicFeet('');
           }}
         >
           Add Item
@@ -49,13 +67,19 @@ export default function InventoryPanel({ inventory, addItem }) {
       {safeInventory.length === 0 ? (
         <p>No items added yet.</p>
       ) : (
-        <ul>
-          {safeInventory.map(item => (
-            <li key={item.id}>
-              {item.name} — qty: {item.qty}
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul>
+            {safeInventory.map(item => (
+              <li key={item.id}>
+                {item.name} — qty: {item.qty} — {item.cubicFeet} cu ft
+              </li>
+            ))}
+          </ul>
+
+          <p>
+            <strong>Total Volume:</strong> {totalCubicFeet} cu ft
+          </p>
+        </>
       )}
     </div>
   );
