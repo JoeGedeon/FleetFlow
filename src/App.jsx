@@ -146,6 +146,8 @@ export default function App() {
     MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
   }
 />
+              </>
+    )}
 
     {job.status === JobStatus.LOADING && (
       <>
