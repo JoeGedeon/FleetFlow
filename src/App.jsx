@@ -139,24 +139,16 @@ export default function App() {
         </button>
 
         <InventoryPanel
-          role="driver"
+  role="driver"
   inventory={Array.isArray(job.inventory) ? job.inventory : []}
-  addItem={item => {
-    setJob(prev => {
-      const safeInventory = Array.isArray(prev.inventory)
-        ? prev.inventory
-        : [];
-
-      return {
-        ...prev,
-        inventory: [...safeInventory, item]
-      };
-    });
-  }}
-          updateItem={() => {}}
+  canEdit={job.status === JobStatus.SURVEY}
+  addItem={item =>
+    setJob(prev => ({
+      ...prev,
+      inventory: [...(Array.isArray(prev.inventory) ? prev.inventory : []), item]
+    }))
+  }
 />
-      </>
-    )}
 
     {job.status === JobStatus.LOADING && (
       <>
