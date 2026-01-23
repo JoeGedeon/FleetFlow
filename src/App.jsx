@@ -335,6 +335,11 @@ export default function App() {
             </button>
           )}
 
+          <InventoryPanel
+  role="warehouse"
+  inventory={job.inventory}
+/>
+
           {job.status === JobStatus.AWAITING_OUTTAKE && (
             <button onClick={() =>
               MoveMastersAPI.warehouseOutbound(job.id, {
@@ -371,6 +376,11 @@ export default function App() {
               Sign & Accept Price
             </button>
           )}
+
+          <InventoryPanel
+  role="client"
+  inventory={job.inventory}
+/>
 
           {job.status === JobStatus.OUT_FOR_DELIVERY && (
             <button onClick={() =>
