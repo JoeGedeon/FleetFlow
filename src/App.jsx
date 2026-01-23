@@ -143,9 +143,10 @@ export default function App() {
   inventory={job.inventory}
   canEdit={job.status === JobStatus.SURVEY}
   addItem={...}
-/>
+        
   MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
 }
+/>
      
    
 />
