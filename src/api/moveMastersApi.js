@@ -132,7 +132,7 @@ export const MoveMastersAPI = {
 
   /* ---------- DRIVER → WAREHOUSE HANDSHAKE ---------- */
 
-  arriveAtWarehouse(jobId) {
+  driverArrivesAtWarehouse(jobId) {
     const job = JOB_DB[jobId];
     job.warehouse = {
       ...job.warehouse,
