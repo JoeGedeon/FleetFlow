@@ -138,20 +138,14 @@ export default function App() {
           Submit Survey to Office
         </button>
 
-        <InventoryPanel
+        <<InventoryPanel
   role="driver"
   inventory={job.inventory}
   canEdit={job.status === JobStatus.SURVEY}
-  addItem={...}
-        
-  MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
-}
+  addItem={item =>
+    MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
+  }
 />
-     
-   
-/>
-              </>
-    )}
 
     {job.status === JobStatus.LOADING && (
       <>
