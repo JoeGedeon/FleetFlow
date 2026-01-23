@@ -125,8 +125,7 @@ export default function App() {
 
       <ProgressTracker currentStatus={job.status} />
 
-      {/* ================= DRIVER ================= */}
-  {/* ================= DRIVER ================= */}
+    {/* ================= DRIVER ================= */}
 {role === 'driver' && (
   <>
     {job.status === JobStatus.SURVEY && (
@@ -141,6 +140,7 @@ export default function App() {
       </>
     )}
 
+    {/* INVENTORY ALWAYS VISIBLE TO DRIVER */}
     <InventoryPanel
       role="driver"
       inventory={job.inventory}
@@ -152,9 +152,6 @@ export default function App() {
           : null
       }
     />
-  </>
-)}
-
     {job.status === JobStatus.LOADING && (
       <>
         <div className="auth-box">✔ LOAD AUTHORIZED</div>
