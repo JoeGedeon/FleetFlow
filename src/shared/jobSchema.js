@@ -30,7 +30,12 @@ export function createJob(jobId) {
 
     proposedChanges: {},
 
-    inventory: [], // 🔑 DRIVER-CAPTURED INVENTORY (THIS WAS MISSING)
+    inventory: {
+      items: [],
+      driverEstimatedCubicFeet: 0,
+      officeAdjustedCubicFeet: 0,
+      finalCubicFeet: 0
+    },
 
     /* ================= BILLING ================= */
 
