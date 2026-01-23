@@ -145,10 +145,8 @@ export default function App() {
 addItem={item =>
   MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
 }
-      ...prev,
-      inventory: [...(Array.isArray(prev.inventory) ? prev.inventory : []), item]
-    }))
-  }
+     
+   
 />
               </>
     )}
