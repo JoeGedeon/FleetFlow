@@ -126,7 +126,7 @@ export default function App() {
       <ProgressTracker currentStatus={job.status} />
 
       {/* ================= DRIVER ================= */}
-      {role === 'driver' && (
+   {role === 'driver' && (
   <>
     {job.status === JobStatus.SURVEY && (
       <>
@@ -150,75 +150,72 @@ export default function App() {
       </>
     )}
 
-          {job.status === JobStatus.LOADING && (
-            <>
-              <div className="auth-box">✔ LOAD AUTHORIZED</div>
-              <button onClick={() =>
-                MoveMastersAPI.submitLoadingEvidence(job.id, {
-                  loadedTruckPhotos: ['loaded.jpg'],
-                  emptyOriginPhotos: ['empty.jpg']
-                }).then(setJob)
-              }>
-                Submit Load Complete
-              </button>
-            </>
-          )}
+    {job.status === JobStatus.LOADING && (
+      <>
+        <div className="auth-box">✔ LOAD AUTHORIZED</div>
+        <button
+          onClick={() =>
+            MoveMastersAPI.submitLoadingEvidence(job.id, {
+              loadedTruckPhotos: ['loaded.jpg'],
+              emptyOriginPhotos: ['empty.jpg']
+            }).then(setJob)
+          }
+        >
+          Submit Load Complete
+        </button>
+      </>
+    )}
 
-          {job.status === JobStatus.OUT_FOR_DELIVERY && (
-            <button onClick={() =>
-              MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
-            }>
-              Truck Arrived
-            </button>
-          )}
+    {job.status === JobStatus.OUT_FOR_DELIVERY && (
+      <button
+        onClick={() =>
+          MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
+        }
+      >
+        Truck Arrived
+      </button>
+    )}
 
-          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
-            <>
-              <div className="auth-box">📸 DELIVERY IN PROGRESS</div>
+    {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
+      <>
+        <div className="auth-box">📸 DELIVERY IN PROGRESS</div>
 
-              <button onClick={() =>
-                MoveMastersAPI.submitDeliveryEvidence(job.id, {
-                  inPlacePhotos: ['placed.jpg'],
-                  assembledPhotos: ['assembled.jpg'],
-                  emptyTruckPhotos: ['empty_truck.jpg']
-                }).then(setJob)
-              }>
-                Submit Delivery Evidence
-              </button>
+        <button
+          onClick={() =>
+            MoveMastersAPI.submitDeliveryEvidence(job.id, {
+              inPlacePhotos: ['placed.jpg'],
+              assembledPhotos: ['assembled.jpg'],
+              emptyTruckPhotos: ['empty_truck.jpg']
+            }).then(setJob)
+          }
+        >
+          Submit Delivery Evidence
+        </button>
 
-              <button onClick={() =>
-                MoveMastersAPI.signOffByDriver(job.id).then(setJob)
-              }>
-                Driver Sign & Close
-              </button>
-            </>
-          )}
-             {job.status === JobStatus.EN_ROUTE_TO_WAREHOUSE && (
-  <button onClick={() =>
-    MoveMastersAPI.arriveAtWarehouse(job.id).then(setJob)
-  }>
-    Arrive at Warehouse
-  </button>
-)}
-          <JobCommunications
-            job={job}
-            role="driver"
-            onSend={text =>
-              MoveMastersAPI.addJobMessage(job.id, {
-                fromRole: 'driver',
-                toRole: 'office',
-                text
-              }).then(setJob)
-            }
-          />
-        </>
-      )}
+        <button
+          onClick={() =>
+            MoveMastersAPI.signOffByDriver(job.id).then(setJob)
+          }
+        >
+          Driver Sign & Close
+        </button>
+      </>
+    )}
 
-      {role === 'driver' && (
-  <>
-    ...
     <DriverEarningsPanel job={job} />
-  
+
+    <JobCommunications
+      job={job}
+      role="driver"
+      onSend={text =>
+        MoveMastersAPI.addJobMessage(job.id, {
+          fromRole: 'driver',
+          toRole: 'office',
+          text
+        }).then(setJob)
+      }
+    />
+  </>
 )}
 
       {/* ================= HELPER ================= */}
