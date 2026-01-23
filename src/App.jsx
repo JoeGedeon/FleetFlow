@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
 
-
+import InventoryPanel from './components/InventoryPanel';
 
 /* ================= STATUS FLOW ================= */
 const STATUS_FLOW = [
