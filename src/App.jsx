@@ -139,14 +139,20 @@ export default function App() {
         </button>
 
         <InventoryPanel
-          inventory={job.inventory || []}
-          addItem={item =>
-  setJob(prev => ({
-    ...prev,
-    inventory: [...(prev.inventory || []), item]
-  }))
-}
-        />
+  inventory={Array.isArray(job.inventory) ? job.inventory : []}
+  addItem={item => {
+    setJob(prev => {
+      const safeInventory = Array.isArray(prev.inventory)
+        ? prev.inventory
+        : [];
+
+      return {
+        ...prev,
+        inventory: [...safeInventory, item]
+      };
+    });
+  }}
+/>
       </>
     )}
 
