@@ -127,14 +127,28 @@ export default function App() {
 
       {/* ================= DRIVER ================= */}
       {role === 'driver' && (
-        <>
-          {job.status === JobStatus.SURVEY && (
-            <button onClick={() =>
-              MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
-            }>
-              Submit Survey to Office
-            </button>
-          )}
+  <>
+    {job.status === JobStatus.SURVEY && (
+      <>
+        <button
+          onClick={() =>
+            MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
+          }
+        >
+          Submit Survey to Office
+        </button>
+
+        <InventoryPanel
+          inventory={job.inventory || []}
+          addItem={item =>
+            setJob({
+              ...job,
+              inventory: [...(job.inventory || []), item]
+            })
+          }
+        />
+      </>
+    )}
 
           {job.status === JobStatus.LOADING && (
             <>
