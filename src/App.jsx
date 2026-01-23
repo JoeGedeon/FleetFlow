@@ -139,6 +139,7 @@ export default function App() {
         </button>
 
         <InventoryPanel
+          role="driver"
   inventory={Array.isArray(job.inventory) ? job.inventory : []}
   addItem={item => {
     setJob(prev => {
