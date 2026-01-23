@@ -142,8 +142,9 @@ export default function App() {
   role="driver"
   inventory={Array.isArray(job.inventory) ? job.inventory : []}
   canEdit={job.status === JobStatus.SURVEY}
-  addItem={item =>
-    setJob(prev => ({
+addItem={item =>
+  MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
+}
       ...prev,
       inventory: [...(Array.isArray(prev.inventory) ? prev.inventory : []), item]
     }))
