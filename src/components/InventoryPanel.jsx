@@ -86,7 +86,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                 {role === 'office' && (
                   <>
                     {' '}| Rev CF:
-                    <<input
+                    <input
   type="number"
   min="0"
   value={item.revisedCubicFeet ?? ''}
