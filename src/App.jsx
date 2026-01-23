@@ -259,6 +259,11 @@ export default function App() {
             </button>
           )}
 
+            <InventoryPanel
+  role="office"
+  inventory={job.inventory}
+  addItem={() => {}}
+/>
           {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
             <button onClick={() =>
               MoveMastersAPI.authorizeLoading(job.id).then(setJob)
