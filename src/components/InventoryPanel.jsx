@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
-export default function InventoryPanel({ inventory = [], addItem }) {
+export default function InventoryPanel({ inventory, addItem }) {
+  const safeInventory = Array.isArray(inventory) ? inventory : [];
+
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
 
@@ -40,11 +42,11 @@ export default function InventoryPanel({ inventory = [], addItem }) {
         </button>
       </div>
 
-      {inventory.length === 0 ? (
+      {safeInventory.length === 0 ? (
         <p>No items added yet.</p>
       ) : (
         <ul>
-          {inventory.map(item => (
+          {safeInventory.map(item => (
             <li key={item.id}>
               {item.name} — qty: {item.qty}
             </li>
