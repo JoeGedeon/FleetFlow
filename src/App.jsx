@@ -265,7 +265,16 @@ export default function App() {
   role="office"
   inventory={job.inventory}
   addItem={() => {}}
+  updateItem={(itemId, updates) =>
+    setJob(prev => ({
+      ...prev,
+      inventory: prev.inventory.map(item =>
+        item.id === itemId ? { ...item, ...updates } : item
+      )
+    }))
+  }
 />
+          
           {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
             <button onClick={() =>
               MoveMastersAPI.authorizeLoading(job.id).then(setJob)
