@@ -138,7 +138,7 @@ export default function App() {
           Submit Survey to Office
         </button>
 
-        <<InventoryPanel
+        <InventoryPanel
   role="driver"
   inventory={job.inventory}
   canEdit={job.status === JobStatus.SURVEY}
