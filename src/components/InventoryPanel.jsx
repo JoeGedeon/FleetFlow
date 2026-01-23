@@ -5,10 +5,15 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
 
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
-  const [cubicFeet, setCubicFeet] = useState(0); // 🔑 THIS WAS MISSING
+  const [estimatedCF, setEstimatedCF] = useState(0);
 
-  const totalCubicFeet = safeInventory.reduce(
-    (sum, item) => sum + (item.cubicFeet || 0),
+  const totalEstimated = safeInventory.reduce(
+    (sum, i) => sum + (i.estimatedCubicFeet || 0),
+    0
+  );
+
+  const totalRevised = safeInventory.reduce(
+    (sum, i) => sum + (i.revisedCubicFeet || 0),
     0
   );
 
@@ -16,7 +21,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
     <div style={{ marginTop: 20 }}>
       <h3>Inventory</h3>
 
-      {/* DRIVER ADD ITEMS */}
+      {/* DRIVER INPUT */}
       {role === 'driver' && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
           <input
@@ -31,17 +36,16 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
             min="1"
             value={qty}
             onChange={e => setQty(Number(e.target.value))}
-            style={{ width: 70 }}
+            style={{ width: 60 }}
           />
 
-          {/* 🔑 CUBIC FEET INPUT */}
           <input
             type="number"
             min="0"
-            placeholder="CF"
-            value={cubicFeet}
-            onChange={e => setCubicFeet(Number(e.target.value))}
-            style={{ width: 70 }}
+            placeholder="Est. CF"
+            value={estimatedCF}
+            onChange={e => setEstimatedCF(Number(e.target.value))}
+            style={{ width: 80 }}
           />
 
           <button
@@ -52,12 +56,13 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                 id: Date.now(),
                 name: itemName,
                 qty,
-                cubicFeet // 🔑 USE THE VALUE, NOT ZERO
+                estimatedCubicFeet: estimatedCF,
+                revisedCubicFeet: 0
               });
 
               setItemName('');
               setQty(1);
-              setCubicFeet(0);
+              setEstimatedCF(0);
             }}
           >
             Add Item
@@ -73,19 +78,22 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
             {safeInventory.map(item => (
               <li key={item.id} style={{ marginBottom: 6 }}>
                 <strong>{item.name}</strong> — qty: {item.qty}
+                <br />
 
-                {/* OFFICE CAN EDIT CUBIC FEET */}
+                Est CF: {item.estimatedCubicFeet || 0}
+
+                {/* OFFICE REVISION */}
                 {role === 'office' && (
                   <>
-                    {' '}| CF:
+                    {' '}| Rev CF:
                     <input
                       type="number"
                       min="0"
-                      value={item.cubicFeet || 0}
+                      value={item.revisedCubicFeet || 0}
                       style={{ width: 60, marginLeft: 6 }}
                       onChange={e =>
                         updateItem(item.id, {
-                          cubicFeet: Number(e.target.value)
+                          revisedCubicFeet: Number(e.target.value)
                         })
                       }
                     />
@@ -93,15 +101,17 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                 )}
 
                 {/* READ-ONLY FOR OTHERS */}
-                {role !== 'office' && item.cubicFeet > 0 && (
-                  <> — CF: {item.cubicFeet}</>
+                {role !== 'office' && item.revisedCubicFeet > 0 && (
+                  <> | Rev CF: {item.revisedCubicFeet}</>
                 )}
               </li>
             ))}
           </ul>
 
           <div style={{ marginTop: 10 }}>
-            <strong>Total Cubic Feet:</strong> {totalCubicFeet}
+            <strong>Total Estimated CF:</strong> {totalEstimated}
+            <br />
+            <strong>Total Revised CF:</strong> {totalRevised}
           </div>
         </>
       )}
