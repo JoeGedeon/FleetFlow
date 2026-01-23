@@ -141,11 +141,11 @@ export default function App() {
         <InventoryPanel
           inventory={job.inventory || []}
           addItem={item =>
-            setJob({
-              ...job,
-              inventory: [...(job.inventory || []), item]
-            })
-          }
+  setJob(prev => ({
+    ...prev,
+    inventory: [...(prev.inventory || []), item]
+  }))
+}
         />
       </>
     )}
