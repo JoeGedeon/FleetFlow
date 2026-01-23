@@ -140,9 +140,10 @@ export default function App() {
 
         <InventoryPanel
   role="driver"
-  inventory={Array.isArray(job.inventory) ? job.inventory : []}
+  inventory={job.inventory}
   canEdit={job.status === JobStatus.SURVEY}
-addItem={item =>
+  addItem={...}
+/>
   MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
 }
      
