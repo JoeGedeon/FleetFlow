@@ -4,6 +4,15 @@ let JOB_DB = {
   'FLEETFLOW-001': createJob('FLEETFLOW-001')
 };
 
+/* ================= NORMALIZATION ================= */
+
+const normalizeJob = job => {
+  if (!Array.isArray(job.inventory)) {
+    job.inventory = [];
+  }
+  return job;
+};
+
 /* ================= LABOR CALCULATION ================= */
 
 const calculateLabor = job => {
@@ -34,7 +43,7 @@ export const MoveMastersAPI = {
   /* ---------- CORE ---------- */
 
   getJob(jobId) {
-    return Promise.resolve(JOB_DB[jobId]);
+    return Promise.resolve(normalizeJob(JOB_DB[jobId]));
   },
 
   /* ---------- SURVEY & PRICING ---------- */
@@ -44,32 +53,32 @@ export const MoveMastersAPI = {
     job.proposedChanges = payload;
     job.status = JobStatus.PENDING_APPROVAL;
     job.permissions.driverCanEdit = false;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- INVENTORY ---------- */
 
-addInventoryItem(jobId, item) {
-  const job = JOB_DB[jobId];
+  addInventoryItem(jobId, item) {
+    const job = JOB_DB[jobId];
 
-  if (!Array.isArray(job.inventory)) {
-    job.inventory = [];
-  }
+    if (!Array.isArray(job.inventory)) {
+      job.inventory = [];
+    }
 
-  job.inventory.push({
-    ...item,
-    cubicFeet: item.cubicFeet || 0
-  });
+    job.inventory.push({
+      ...item,
+      cubicFeet: item.cubicFeet || 0
+    });
 
-  return Promise.resolve(job);
-},
+    return Promise.resolve(normalizeJob(job));
+  },
 
   approvePricing(jobId, total) {
     const job = JOB_DB[jobId];
     job.billing.approvedTotal = total;
     job.status = JobStatus.AWAITING_SIGNATURE;
     job.permissions.clientCanSign = true;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   signByClient(jobId) {
@@ -77,14 +86,14 @@ addInventoryItem(jobId, item) {
     job.clientSigned = true;
     job.clientSignedAt = new Date().toISOString();
     job.permissions.clientCanSign = false;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   authorizeLoading(jobId) {
     const job = JOB_DB[jobId];
     job.status = JobStatus.LOADING;
     job.permissions.driverCanEdit = true;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- LOADING ---------- */
@@ -93,33 +102,33 @@ addInventoryItem(jobId, item) {
     const job = JOB_DB[jobId];
     job.loadingEvidence = evidence;
     job.status = JobStatus.AWAITING_DISPATCH;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
- /* ---------- ROUTING ---------- */
+  /* ---------- ROUTING ---------- */
 
-routeToWarehouse(jobId) {
-  const job = JOB_DB[jobId];
-  job.status = JobStatus.EN_ROUTE_TO_WAREHOUSE;
-  return Promise.resolve(job);
-},
+  routeToWarehouse(jobId) {
+    const job = JOB_DB[jobId];
+    job.status = JobStatus.EN_ROUTE_TO_WAREHOUSE;
+    return Promise.resolve(normalizeJob(job));
+  },
 
-arriveAtWarehouse(jobId) {
-  const job = JOB_DB[jobId];
-  job.warehouse = {
-    ...job.warehouse,
-    inboundAt: new Date().toISOString(),
-    inboundBy: 'driver'
-  };
-  job.status = JobStatus.IN_WAREHOUSE;
-  return Promise.resolve(job);
-},
+  arriveAtWarehouse(jobId) {
+    const job = JOB_DB[jobId];
+    job.warehouse = {
+      ...job.warehouse,
+      inboundAt: new Date().toISOString(),
+      inboundBy: 'driver'
+    };
+    job.status = JobStatus.IN_WAREHOUSE;
+    return Promise.resolve(normalizeJob(job));
+  },
 
-routeToDelivery(jobId) {
-  const job = JOB_DB[jobId];
-  job.status = JobStatus.OUT_FOR_DELIVERY;
-  return Promise.resolve(job);
-},
+  routeToDelivery(jobId) {
+    const job = JOB_DB[jobId];
+    job.status = JobStatus.OUT_FOR_DELIVERY;
+    return Promise.resolve(normalizeJob(job));
+  },
 
   /* ---------- DRIVER → WAREHOUSE HANDSHAKE ---------- */
 
@@ -131,7 +140,7 @@ routeToDelivery(jobId) {
       inboundBy: 'driver'
     };
     job.status = JobStatus.IN_WAREHOUSE;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- 🏬 WAREHOUSE INBOUND ---------- */
@@ -145,7 +154,7 @@ routeToDelivery(jobId) {
       inboundBy: payload.by || 'warehouse'
     };
     job.status = JobStatus.AWAITING_WAREHOUSE_DISPATCH;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- 🧠 OFFICE DISPATCH FROM WAREHOUSE ---------- */
@@ -153,7 +162,7 @@ routeToDelivery(jobId) {
   dispatchFromWarehouse(jobId) {
     const job = JOB_DB[jobId];
     job.status = JobStatus.AWAITING_OUTTAKE;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- 🏬 WAREHOUSE OUTBOUND ---------- */
@@ -167,7 +176,7 @@ routeToDelivery(jobId) {
       outboundBy: payload.by || 'warehouse'
     };
     job.status = JobStatus.OUT_FOR_DELIVERY;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- DELIVERY ARRIVAL & PAYMENT ---------- */
@@ -176,14 +185,14 @@ routeToDelivery(jobId) {
     const job = JOB_DB[jobId];
     job.arrivedAt = new Date().toISOString();
     job.status = JobStatus.PAYMENT_PENDING;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   confirmPayment(jobId) {
     const job = JOB_DB[jobId];
     job.billing.paymentReceived = true;
     job.status = JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- CLIENT UNLOAD AUTH ---------- */
@@ -193,7 +202,7 @@ routeToDelivery(jobId) {
     job.deliveryConfirmedByClient = true;
     job.deliveryConfirmedAt = new Date().toISOString();
     job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- DRIVER CLOSEOUT ---------- */
@@ -201,7 +210,7 @@ routeToDelivery(jobId) {
   submitDeliveryEvidence(jobId, evidence) {
     const job = JOB_DB[jobId];
     job.deliveryEvidence = evidence;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   signOffByDriver(jobId) {
@@ -209,7 +218,7 @@ routeToDelivery(jobId) {
     job.driverSigned = true;
     job.driverSignedAt = new Date().toISOString();
     job.status = JobStatus.COMPLETED;
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- LABOR ---------- */
@@ -217,7 +226,7 @@ routeToDelivery(jobId) {
   addHelper(jobId, helper) {
     const job = JOB_DB[jobId];
     job.labor.push(helper);
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   },
 
   /* ---------- JOB COMMUNICATIONS ---------- */
@@ -231,6 +240,6 @@ routeToDelivery(jobId) {
       text: message.text,
       timestamp: new Date().toISOString()
     });
-    return Promise.resolve(job);
+    return Promise.resolve(normalizeJob(job));
   }
 };
