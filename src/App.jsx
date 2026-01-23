@@ -250,17 +250,13 @@ export default function App() {
             </button>
           )}
 
-            <InventoryPanel
+    <InventoryPanel
   role="office"
   inventory={job.inventory}
-  addItem={() => {}}
   updateItem={(itemId, updates) =>
-    setJob(prev => ({
-      ...prev,
-      inventory: prev.inventory.map(item =>
-        item.id === itemId ? { ...item, ...updates } : item
-      )
-    }))
+    MoveMastersAPI
+      .updateInventoryItem(job.id, itemId, updates)
+      .then(setJob)
   }
 />
           
