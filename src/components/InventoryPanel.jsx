@@ -7,6 +7,9 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
   const [qty, setQty] = useState(1);
   const [estimatedCF, setEstimatedCF] = useState(0);
 
+  // 🔑 LOCAL STATE FOR OFFICE EDITING
+  const [officeEdits, setOfficeEdits] = useState({});
+
   const totalEstimated = safeInventory.reduce(
     (sum, i) => sum + (i.estimatedCubicFeet || 0),
     0
@@ -87,16 +90,25 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                   <>
                     {' '}| Rev CF:
                     <input
-  type="number"
-  min="0"
-  value={item.revisedCubicFeet ?? ''}
-  style={{ width: 60, marginLeft: 6 }}
-  onChange={e =>
-    updateItem(item.id, {
-      revisedCubicFeet: e.target.value === '' ? 0 : Number(e.target.value)
-    })
-  }
-/>
+                      type="number"
+                      min="0"
+                      value={
+                        officeEdits[item.id] ??
+                        item.revisedCubicFeet ??
+                        ''
+                      }
+                      style={{ width: 60, marginLeft: 6 }}
+                      onChange={e =>
+                        setOfficeEdits(prev => ({
+                          ...prev,
+                          [item.id]: e.target.value
+                        }))
+                      }
+                      onBlur={() => {
+                        const value = Number(officeEdits[item.id] || 0);
+                        updateItem(item.id, { revisedCubicFeet: value });
+                      }}
+                    />
                   </>
                 )}
 
