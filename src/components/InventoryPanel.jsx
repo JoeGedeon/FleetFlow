@@ -27,13 +27,17 @@ export default function InventoryPanel({ inventory, addItem }) {
         />
 
         <button
+          type="button" // 🔑 prevents page reload
           disabled={!itemName}
           onClick={() => {
+            if (typeof addItem !== 'function') return;
+
             addItem({
               id: Date.now(),
               name: itemName,
               qty
             });
+
             setItemName('');
             setQty(1);
           }}
