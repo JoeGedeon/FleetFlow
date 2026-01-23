@@ -126,7 +126,8 @@ export default function App() {
       <ProgressTracker currentStatus={job.status} />
 
       {/* ================= DRIVER ================= */}
-   {role === 'driver' && (
+  {/* ================= DRIVER ================= */}
+{role === 'driver' && (
   <>
     {job.status === JobStatus.SURVEY && (
       <>
@@ -137,17 +138,22 @@ export default function App() {
         >
           Submit Survey to Office
         </button>
-
-        <InventoryPanel
-  role="driver"
-  inventory={job.inventory}
-  canEdit={job.status === JobStatus.SURVEY}
-  addItem={item =>
-    MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
-  }
-/>
-              </>
+      </>
     )}
+
+    <InventoryPanel
+      role="driver"
+      inventory={job.inventory}
+      canEdit={job.status === JobStatus.SURVEY}
+      addItem={
+        job.status === JobStatus.SURVEY
+          ? item =>
+              MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
+          : null
+      }
+    />
+  </>
+)}
 
     {job.status === JobStatus.LOADING && (
       <>
