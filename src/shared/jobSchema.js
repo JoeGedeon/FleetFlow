@@ -5,9 +5,7 @@ export const JobStatus = {
   LOADING: 'loading',
   AWAITING_DISPATCH: 'awaiting_dispatch_decision',
 
-
   EN_ROUTE_TO_WAREHOUSE: 'en_route_to_warehouse',
-
 
   IN_WAREHOUSE: 'in_warehouse',
   AWAITING_WAREHOUSE_DISPATCH: 'awaiting_warehouse_dispatch',
@@ -28,22 +26,36 @@ export function createJob(jobId) {
     id: jobId,
     status: JobStatus.SURVEY,
 
+    /* ================= SURVEY & PRICING ================= */
+
     proposedChanges: {},
+
+    inventory: [], // 🔑 DRIVER-CAPTURED INVENTORY (THIS WAS MISSING)
+
+    /* ================= BILLING ================= */
 
     billing: {
       approvedTotal: null,
       paymentReceived: false
     },
 
+    /* ================= PERMISSIONS ================= */
+
     permissions: {
       driverCanEdit: true,
       clientCanSign: false
     },
 
+    /* ================= CLIENT SIGNATURE ================= */
+
     clientSigned: false,
     clientSignedAt: null,
 
+    /* ================= LOADING ================= */
+
     loadingEvidence: null,
+
+    /* ================= DELIVERY ================= */
 
     arrivedAt: null,
 
@@ -54,6 +66,8 @@ export function createJob(jobId) {
 
     driverSigned: false,
     driverSignedAt: null,
+
+    /* ================= WAREHOUSE ================= */
 
     warehouse: {
       facilityId: null,
@@ -71,7 +85,11 @@ export function createJob(jobId) {
       inventoryNotes: ''
     },
 
+    /* ================= COMMUNICATIONS ================= */
+
     communications: [],
+
+    /* ================= LABOR ================= */
 
     labor: [
       {
