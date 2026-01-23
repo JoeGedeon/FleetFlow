@@ -47,6 +47,23 @@ export const MoveMastersAPI = {
     return Promise.resolve(job);
   },
 
+  /* ---------- INVENTORY ---------- */
+
+addInventoryItem(jobId, item) {
+  const job = JOB_DB[jobId];
+
+  if (!Array.isArray(job.inventory)) {
+    job.inventory = [];
+  }
+
+  job.inventory.push({
+    ...item,
+    cubicFeet: item.cubicFeet || 0
+  });
+
+  return Promise.resolve(job);
+},
+
   approvePricing(jobId, total) {
     const job = JOB_DB[jobId];
     job.billing.approvedTotal = total;
