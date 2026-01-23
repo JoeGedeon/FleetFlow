@@ -5,6 +5,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
 
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
+  const [cubicFeet, setCubicFeet] = useState(0); // 🔑 THIS WAS MISSING
 
   const totalCubicFeet = safeInventory.reduce(
     (sum, item) => sum + (item.cubicFeet || 0),
@@ -33,6 +34,16 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
             style={{ width: 70 }}
           />
 
+          {/* 🔑 CUBIC FEET INPUT */}
+          <input
+            type="number"
+            min="0"
+            placeholder="CF"
+            value={cubicFeet}
+            onChange={e => setCubicFeet(Number(e.target.value))}
+            style={{ width: 70 }}
+          />
+
           <button
             type="button"
             disabled={!itemName}
@@ -41,11 +52,12 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                 id: Date.now(),
                 name: itemName,
                 qty,
-                cubicFeet: 0
+                cubicFeet // 🔑 USE THE VALUE, NOT ZERO
               });
 
               setItemName('');
               setQty(1);
+              setCubicFeet(0);
             }}
           >
             Add Item
@@ -62,14 +74,14 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
               <li key={item.id} style={{ marginBottom: 6 }}>
                 <strong>{item.name}</strong> — qty: {item.qty}
 
-                {/* OFFICE CUBIC FOOT ADJUSTMENT */}
+                {/* OFFICE CAN EDIT CUBIC FEET */}
                 {role === 'office' && (
                   <>
                     {' '}| CF:
                     <input
                       type="number"
-                      value={item.cubicFeet || 0}
                       min="0"
+                      value={item.cubicFeet || 0}
                       style={{ width: 60, marginLeft: 6 }}
                       onChange={e =>
                         updateItem(item.id, {
