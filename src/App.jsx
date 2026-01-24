@@ -292,61 +292,70 @@ export default function App() {
           .then(setJob)
       }
     />
+
+    {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
+      <button
+        onClick={() =>
+          MoveMastersAPI.authorizeLoading(job.id).then(setJob)
+        }
+      >
+        Authorize Loading
+      </button>
+    )}
+
+    {job.status === JobStatus.AWAITING_DISPATCH && (
+      <>
+        <button
+          onClick={() =>
+            MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
+          }
+        >
+          Route to Warehouse
+        </button>
+
+        <button
+          onClick={() =>
+            MoveMastersAPI.routeToDelivery(job.id).then(setJob)
+          }
+        >
+          Route to Direct Delivery
+        </button>
+      </>
+    )}
+
+    {job.status === JobStatus.AWAITING_WAREHOUSE_DISPATCH && (
+      <button
+        onClick={() =>
+          MoveMastersAPI.dispatchFromWarehouse(job.id).then(setJob)
+        }
+      >
+        Dispatch Load From Warehouse
+      </button>
+    )}
+
+    {job.status === JobStatus.PAYMENT_PENDING && (
+      <button
+        onClick={() =>
+          MoveMastersAPI.confirmPayment(job.id).then(setJob)
+        }
+      >
+        Confirm Payment
+      </button>
+    )}
+
+    <JobCommunications
+      job={job}
+      role="office"
+      onSend={text =>
+        MoveMastersAPI.addJobMessage(job.id, {
+          fromRole: 'office',
+          toRole: 'driver',
+          text
+        }).then(setJob)
+      }
+    />
   </>
 )}
-          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
-            <button onClick={() =>
-              MoveMastersAPI.authorizeLoading(job.id).then(setJob)
-            }>
-              Authorize Loading
-            </button>
-          )}
-
-          {job.status === JobStatus.AWAITING_DISPATCH && (
-            <>
-              <button onClick={() =>
-                MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
-              }>
-                Route to Warehouse
-              </button>
-
-              <button onClick={() =>
-                MoveMastersAPI.routeToDelivery(job.id).then(setJob)
-              }>
-                Route to Direct Delivery
-              </button>
-            </>
-          )}
-             {/* OFFICE DISPATCH FROM WAREHOUSE */}
-{job.status === JobStatus.AWAITING_WAREHOUSE_DISPATCH && (
-  <button onClick={() =>
-    MoveMastersAPI.dispatchFromWarehouse(job.id).then(setJob)
-  }>
-    Dispatch Load From Warehouse
-  </button>
-)}
-          {job.status === JobStatus.PAYMENT_PENDING && (
-            <button onClick={() =>
-              MoveMastersAPI.confirmPayment(job.id).then(setJob)
-            }>
-              Confirm Payment
-            </button>
-          )}
-
-          <JobCommunications
-            job={job}
-            role="office"
-            onSend={text =>
-              MoveMastersAPI.addJobMessage(job.id, {
-                fromRole: 'office',
-                toRole: 'driver',
-                text
-              }).then(setJob)
-            }
-          />
-        </>
-      )}
-
       {/* ================= WAREHOUSE ================= */}
 
       {role === 'warehouse' && (
