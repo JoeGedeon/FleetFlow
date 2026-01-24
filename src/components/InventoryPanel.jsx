@@ -20,15 +20,16 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
     (item.revisedCubicFeet || 0) * (item.qty || 1);
 
   // Totals (authoritative math lives here)
-  const totalEstimated = safeInventory.reduce(
-    (sum, item) => sum + itemEstimatedTotal(item),
-    0
-  );
-
-  const totalRevised = safeInventory.reduce(
-    (sum, item) => sum + itemRevisedTotal(item),
-    0
-  );
+  <div style={{ marginTop: 10 }}>
+  <strong>Total Estimated CF:</strong>{' '}
+  {inventoryTotals?.estimatedCubicFeet ?? 0}
+  <br />
+  <strong>Total Revised CF:</strong>{' '}
+  {inventoryTotals?.revisedCubicFeet ?? 0}
+  <br />
+  <strong>Final CF:</strong>{' '}
+  {inventoryTotals?.finalCubicFeet ?? 0}
+</div>
 
   return (
     <div style={{ marginTop: 20 }}>
