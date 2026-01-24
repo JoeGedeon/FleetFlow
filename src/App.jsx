@@ -47,6 +47,24 @@ function ProgressTracker({ currentStatus }) {
   );
 }
 
+{job.billing.approvedTotal !== null && (
+  <div className="pricing-summary">
+    <h3>Job Pricing</h3>
+
+    <p>
+      <strong>Total Price:</strong>{' '}
+      ${job.billing.approvedTotal.toLocaleString()}
+    </p>
+
+    {job.inventoryTotals?.estimatedCubicFeet !==
+      job.inventoryTotals?.finalCubicFeet && (
+      <p>
+        <strong>Price reflects inventory revisions</strong>
+      </p>
+    )}
+  </div>
+)}
+
 function JobCommunications({ job, role, onSend }) {
   const [text, setText] = useState('');
 
