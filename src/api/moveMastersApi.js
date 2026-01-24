@@ -133,13 +133,16 @@ updateInventoryTotals(jobId) {
 },
 
   
-  approvePricing(jobId, total) {
-    const job = JOB_DB[jobId];
-    job.billing.approvedTotal = total;
-    job.status = JobStatus.AWAITING_SIGNATURE;
-    job.permissions.clientCanSign = true;
-    return Promise.resolve(normalizeJob(job));
-  },
+  approvePricing(jobId) {
+  let job = JOB_DB[jobId];
+
+  job = calculateBasePricing(job);
+
+  job.status = JobStatus.AWAITING_SIGNATURE;
+  job.permissions.clientCanSign = true;
+
+  return Promise.resolve(normalizeJob(job));
+},
 
   signByClient(jobId) {
     const job = JOB_DB[jobId];
