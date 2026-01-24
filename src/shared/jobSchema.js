@@ -32,19 +32,13 @@ export function createJob(jobId) {
 
     proposedChanges: {},
 
-    inventoryTotals: {
+inventory: [],
+
+inventoryTotals: {
   estimatedCubicFeet: 0,
   revisedCubicFeet: 0,
   finalCubicFeet: 0
 },
-
-    inventory: {
-      items: [],
-      driverEstimatedCubicFeet: 0,
-      officeAdjustedCubicFeet: 0,
-      finalCubicFeet: 0
-    },
-
     /* ================= BILLING ================= */
 
     billing: {
