@@ -53,7 +53,7 @@ inventoryTotals: {
   bulkyItems: [],
   shuttleRequired: false,
   notes: ''
-}
+},
 
     /* ================= PERMISSIONS ================= */
 
