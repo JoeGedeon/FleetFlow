@@ -93,6 +93,28 @@ export const MoveMastersAPI = {
     return Promise.resolve(normalizeJob(job));
   },
 
+  updateInventoryTotals(jobId) {
+  const job = JOB_DB[jobId];
+
+  const items = job.inventory.items || job.inventory || [];
+
+  const totalEstimated = items.reduce(
+    (sum, i) => sum + (i.estimatedCubicFeet || 0) * (i.qty || 1),
+    0
+  );
+
+  const totalRevised = items.reduce(
+    (sum, i) => sum + (i.revisedCubicFeet || 0) * (i.qty || 1),
+    0
+  );
+
+  job.inventory.driverEstimatedCubicFeet = totalEstimated;
+  job.inventory.officeAdjustedCubicFeet = totalRevised;
+  job.inventory.finalCubicFeet = totalRevised || totalEstimated;
+
+  return Promise.resolve(normalizeJob(job));
+}
+
   approvePricing(jobId, total) {
     const job = JOB_DB[jobId];
     job.billing.approvedTotal = total;
