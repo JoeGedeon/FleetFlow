@@ -160,7 +160,11 @@ updateInventoryTotals(jobId) {
   return Promise.resolve(normalizeJob(job));
 },
 
-  
+  // 🔒 Pricing is locked once client has signed
+if (job.clientSigned) {
+  return Promise.resolve(normalizeJob(job));
+}
+
   approvePricing(jobId) {
   let job = JOB_DB[jobId];
 
