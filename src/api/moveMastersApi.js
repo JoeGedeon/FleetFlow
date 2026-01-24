@@ -125,6 +125,64 @@ const calculateBasePricing = job => {
   return job;
 };
 
+const calculatePricingBreakdown = job => {
+  const breakdown = {
+    base: {
+      cubicFeet: job.inventoryTotals.finalCubicFeet,
+      ratePerCubicFoot: 8.5,
+      amount: 0
+    },
+    accessorials: [],
+    subtotal: 0,
+    finalTotal: 0,
+    calculatedAt: new Date().toISOString()
+  };
+
+  // Base cubic feet price
+  breakdown.base.amount =
+    breakdown.base.cubicFeet * breakdown.base.ratePerCubicFoot;
+
+  breakdown.subtotal += breakdown.base.amount;
+
+  // Accessorial pricing
+  if (job.accessorials.longCarryFeet > 0) {
+    const amount = job.accessorials.longCarryFeet * 1.25;
+    breakdown.accessorials.push({
+      type: 'long_carry',
+      units: job.accessorials.longCarryFeet,
+      rate: 1.25,
+      amount
+    });
+    breakdown.subtotal += amount;
+  }
+
+  if (job.accessorials.stairs > 0) {
+    const amount = job.accessorials.stairs * 75;
+    breakdown.accessorials.push({
+      type: 'stairs',
+      units: job.accessorials.stairs,
+      rate: 75,
+      amount
+    });
+    breakdown.subtotal += amount;
+  }
+
+  if (job.accessorials.elevator) {
+    const amount = 150;
+    breakdown.accessorials.push({
+      type: 'elevator',
+      amount
+    });
+    breakdown.subtotal += amount;
+  }
+
+  breakdown.finalTotal = Math.round(breakdown.subtotal * 100) / 100;
+
+  job.billing.pricingBreakdown = breakdown;
+  job.billing.approvedTotal = breakdown.finalTotal;
+
+  return job;
+};
 /* ================= API ================= */
 
 export const MoveMastersAPI = {
