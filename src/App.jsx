@@ -270,15 +270,18 @@ export default function App() {
       </button>
     )}
 
-    {job.billing.approvedTotal !== null && (
-      <div className="pricing-box">
-        <h3>Approved Pricing</h3>
-        <p>
-          <strong>Total Price:</strong>{' '}
-          ${job.billing.approvedTotal.toLocaleString()}
-        </p>
-      </div>
-    )}
+    <div className="pricing-box">
+  <h3>Pricing</h3>
+
+  {job.billing.approvedTotal === null ? (
+    <p><em>Awaiting pricing approval</em></p>
+  ) : (
+    <p>
+      <strong>Total Price:</strong>{' '}
+      ${job.billing.approvedTotal.toLocaleString()}
+    </p>
+  )}
+
   
 
     <InventoryPanel
