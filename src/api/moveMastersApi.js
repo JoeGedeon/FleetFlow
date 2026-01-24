@@ -47,6 +47,24 @@ const calculateLabor = job => {
 };
 
 /* ================= PRICING CALCULATION ================= */
+const getBaseRatePerCubicFoot = ({ region, season }) => {
+  const RATE_TABLE = {
+    FL: {
+      standard: 4.25,
+      peak: 5.25
+    },
+    TX: {
+      standard: 4.75,
+      peak: 5.75
+    },
+    CA: {
+      standard: 7.5,
+      peak: 9.0
+    }
+  };
+
+  return RATE_TABLE[region]?.[season] || 5.0;
+};
 
 const calculateBasePricing = job => {
   const ratePerCubicFoot = 8.5;
