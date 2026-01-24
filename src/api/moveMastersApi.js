@@ -46,6 +46,46 @@ const calculateLabor = job => {
   return job;
 };
 
+/* ================= ACCESSORIAL PRICING ================= */
+
+const calculateAccessorialPricing = job => {
+  const a = job.accessorials || {};
+  let total = 0;
+
+  // Long carry: over 75 ft
+  if (a.longCarryFeet && a.longCarryFeet > 75) {
+    total += (a.longCarryFeet - 75) * 1.25;
+  }
+
+  // Stairs: per flight
+  if (a.stairs && a.stairs > 0) {
+    total += a.stairs * 75;
+  }
+
+  // Elevator
+  if (a.elevator) {
+    total += 50;
+  }
+
+  // Bulky items
+  if (Array.isArray(a.bulkyItems)) {
+    total += a.bulkyItems.length * 100;
+  }
+
+  // Shuttle
+  if (a.shuttleRequired) {
+    total += 300;
+  }
+
+  // Storage handling
+  if (a.storageHandling) {
+    total += 200;
+  }
+
+  return Math.round(total * 100) / 100;
+};
+
+
 /* ================= PRICING CALCULATION ================= */
 const getBaseRatePerCubicFoot = ({ region, season }) => {
   const RATE_TABLE = {
