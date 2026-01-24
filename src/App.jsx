@@ -38,7 +38,7 @@ function ProgressTracker({ currentStatus }) {
           className={`progress-step
             ${index <= currentIndex ? 'complete' : ''}
             ${index === currentIndex ? 'active' : ''}`}
-        >
+        
           <span className="dot" />
           <span className="label">{status.replace(/_/g, ' ')}</span>
         </div>
