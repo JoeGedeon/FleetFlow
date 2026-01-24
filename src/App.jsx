@@ -49,7 +49,7 @@ function ProgressTracker({ currentStatus }) {
 
 
 
-    <
+    
 function JobCommunications({ job, role, onSend }) {
   const [text, setText] = useState('');
 
