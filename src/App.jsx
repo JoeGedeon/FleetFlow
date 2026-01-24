@@ -153,8 +153,7 @@ export default function App() {
           : null
       }
     />
-  </>
-)}
+  
     {job.status === JobStatus.LOADING && (
       <>
         <div className="auth-box">✔ LOAD AUTHORIZED</div>
