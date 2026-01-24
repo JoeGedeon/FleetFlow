@@ -343,6 +343,43 @@ export default function App() {
       </button>
     )}
 
+    {job.billing.pricingBreakdown && (
+  <div className="pricing-breakdown">
+    <h4>Pricing Breakdown</h4>
+
+    <p>
+      <strong>Base:</strong>{' '}
+      {job.billing.pricingBreakdown.base.cubicFeet} CF × $
+      {job.billing.pricingBreakdown.base.ratePerCubicFoot}
+      {' = $'}
+      {job.billing.pricingBreakdown.base.amount.toLocaleString()}
+    </p>
+
+    {job.billing.pricingBreakdown.accessorials.length > 0 && (
+      <>
+        <h5>Accessorials</h5>
+        <ul>
+          {job.billing.pricingBreakdown.accessorials.map((a, idx) => (
+            <li key={idx}>
+              {a.type.replace('_', ' ')} — ${a.amount.toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+
+    <p>
+      <strong>Subtotal:</strong>{' '}
+      ${job.billing.pricingBreakdown.subtotal.toLocaleString()}
+    </p>
+
+    <p>
+      <strong>Final Total:</strong>{' '}
+      ${job.billing.pricingBreakdown.finalTotal.toLocaleString()}
+    </p>
+  </div>
+)}
+
     <JobCommunications
       job={job}
       role="office"
