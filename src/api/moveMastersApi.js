@@ -121,6 +121,11 @@ addInventoryItem(jobId, item) {
   return Promise.resolve(normalizeJob(job));
 },
 
+// 🔒 Inventory cannot be edited after loading
+if (job.loadingEvidence) {
+  return Promise.resolve(normalizeJob(job));
+}
+
 updateInventoryItem(jobId, itemId, updates) {
   const job = JOB_DB[jobId];
 
