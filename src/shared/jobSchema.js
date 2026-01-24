@@ -28,6 +28,23 @@ export function createJob(jobId) {
     id: jobId,
     status: JobStatus.SURVEY,
 
+    pricingInputs: {
+  region: 'FL',        // FL, CA, TX, etc.
+  season: 'standard', // peak | off_peak | standard
+
+  baselineCubicFeet: 0,   // contract estimate
+  finalCubicFeet: 0,      // post-survey
+
+  accessorials: {
+    longCarry: false,
+    stairs: false,
+    elevator: false,
+    bulkyItems: false,
+    shuttle: false,
+    storageHandling: false
+  }
+},
+
     /* ================= SURVEY & PRICING ================= */
 
     proposedChanges: {},
