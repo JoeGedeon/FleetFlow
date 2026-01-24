@@ -7,16 +7,26 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
   const [qty, setQty] = useState(1);
   const [estimatedCF, setEstimatedCF] = useState(0);
 
-  // 🔑 LOCAL STATE FOR OFFICE EDITING
+  // 🔑 LOCAL STATE FOR OFFICE EDITING (SAFEGUARD AGAINST INPUT LOCKING)
   const [officeEdits, setOfficeEdits] = useState({});
 
+  /* ================= INVENTORY MATH ================= */
+
+  // Per-item math (qty-aware, audit-safe)
+  const itemEstimatedTotal = item =>
+    (item.estimatedCubicFeet || 0) * (item.qty || 1);
+
+  const itemRevisedTotal = item =>
+    (item.revisedCubicFeet || 0) * (item.qty || 1);
+
+  // Totals (authoritative math lives here)
   const totalEstimated = safeInventory.reduce(
-    (sum, i) => sum + (i.estimatedCubicFeet || 0),
+    (sum, item) => sum + itemEstimatedTotal(item),
     0
   );
 
   const totalRevised = safeInventory.reduce(
-    (sum, i) => sum + (i.revisedCubicFeet || 0),
+    (sum, item) => sum + itemRevisedTotal(item),
     0
   );
 
@@ -24,7 +34,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
     <div style={{ marginTop: 20 }}>
       <h3>Inventory</h3>
 
-      {/* DRIVER INPUT */}
+      {/* ================= DRIVER INPUT ================= */}
       {role === 'driver' && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
           <input
@@ -85,7 +95,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
 
                 Est CF: {item.estimatedCubicFeet || 0}
 
-                {/* OFFICE REVISION */}
+                {/* ================= OFFICE REVISION ================= */}
                 {role === 'office' && (
                   <>
                     {' '}| Rev CF:
@@ -112,7 +122,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                   </>
                 )}
 
-                {/* READ-ONLY FOR OTHERS */}
+                {/* ================= READ-ONLY FOR OTHERS ================= */}
                 {role !== 'office' && item.revisedCubicFeet > 0 && (
                   <> | Rev CF: {item.revisedCubicFeet}</>
                 )}
@@ -120,6 +130,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
             ))}
           </ul>
 
+          {/* ================= TOTALS ================= */}
           <div style={{ marginTop: 10 }}>
             <strong>Total Estimated CF:</strong> {totalEstimated}
             <br />
