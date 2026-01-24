@@ -279,8 +279,7 @@ export default function App() {
         </p>
       </div>
     )}
-  </>
-)}
+  
 
     <InventoryPanel
   role="office"
