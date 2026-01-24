@@ -46,6 +46,15 @@ inventoryTotals: {
       paymentReceived: false
     },
 
+    accessorials: {
+  longCarryFeet: 0,
+  stairs: 0,
+  elevator: false,
+  bulkyItems: [],
+  shuttleRequired: false,
+  notes: ''
+}
+
     /* ================= PERMISSIONS ================= */
 
     permissions: {
