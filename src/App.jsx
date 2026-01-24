@@ -4,6 +4,7 @@ import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
 import DriverEarningsPanel from './components/DriverEarningsPanel';
 import InventoryPanel from './components/InventoryPanel';
+import PricingSummary from './components/PricingSummary';
 
 /* ================= STATUS FLOW ================= */
 const STATUS_FLOW = [
