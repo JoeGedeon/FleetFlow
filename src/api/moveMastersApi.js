@@ -56,23 +56,26 @@ export const MoveMastersAPI = {
     return Promise.resolve(normalizeJob(job));
   },
 
-  /* ---------- INVENTORY ---------- */
+ /* ---------- INVENTORY ---------- */
 
-  addInventoryItem(jobId, item) {
-    const job = JOB_DB[jobId];
+addInventoryItem(jobId, item) {
+  const job = JOB_DB[jobId];
 
-    if (!Array.isArray(job.inventory)) {
-      job.inventory = [];
-    }
+  if (!Array.isArray(job.inventory)) {
+    job.inventory = [];
+  }
 
-    job.inventory.push({
-      ...item,
-      cubicFeet: item.cubicFeet || 0
-    });
+  job.inventory.push({
+    ...item,
+    estimatedCubicFeet: item.estimatedCubicFeet || 0,
+    revisedCubicFeet: item.revisedCubicFeet || 0,
+    qty: item.qty || 1
+  });
 
-    return Promise.resolve(normalizeJob(job));
-  },
-  updateInventoryItem(jobId, itemId, updates) {
+  return Promise.resolve(normalizeJob(job));
+},
+
+updateInventoryItem(jobId, itemId, updates) {
   const job = JOB_DB[jobId];
 
   job.inventory = job.inventory.map(item =>
@@ -80,23 +83,12 @@ export const MoveMastersAPI = {
   );
 
   return Promise.resolve(normalizeJob(job));
-  },
+},
 
-  // 🔑 THIS IS THE MISSING PIECE
-  updateInventoryItem(jobId, itemId, updates) {
-    const job = JOB_DB[jobId];
-
-    job.inventory = job.inventory.map(item =>
-      item.id === itemId ? { ...item, ...updates } : item
-    );
-
-    return Promise.resolve(normalizeJob(job));
-  },
-
-  updateInventoryTotals(jobId) {
+updateInventoryTotals(jobId) {
   const job = JOB_DB[jobId];
 
-  const items = job.inventory.items || job.inventory || [];
+  const items = Array.isArray(job.inventory) ? job.inventory : [];
 
   const totalEstimated = items.reduce(
     (sum, i) => sum + (i.estimatedCubicFeet || 0) * (i.qty || 1),
@@ -108,13 +100,16 @@ export const MoveMastersAPI = {
     0
   );
 
-  job.inventory.driverEstimatedCubicFeet = totalEstimated;
-  job.inventory.officeAdjustedCubicFeet = totalRevised;
-  job.inventory.finalCubicFeet = totalRevised || totalEstimated;
+  job.inventoryTotals = {
+    estimatedCubicFeet: totalEstimated,
+    revisedCubicFeet: totalRevised,
+    finalCubicFeet: totalRevised > 0 ? totalRevised : totalEstimated
+  };
 
   return Promise.resolve(normalizeJob(job));
-}
+},
 
+  
   approvePricing(jobId, total) {
     const job = JOB_DB[jobId];
     job.billing.approvedTotal = total;
