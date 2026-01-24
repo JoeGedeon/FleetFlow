@@ -13,6 +13,8 @@ export const JobStatus = {
 
   OUT_FOR_DELIVERY: 'out_for_delivery',
   PAYMENT_PENDING: 'payment_pending',
+
+  // 🔑 EXPLICIT UNLOAD GATE (THIS WAS YOUR MISSING STEP)
   UNLOAD_AUTHORIZED: 'unload_authorized',
 
   DELIVERY_AWAITING_CLIENT_CONFIRMATION: 'delivery_awaiting_client_confirmation',
@@ -48,7 +50,11 @@ export function createJob(jobId) {
 
     permissions: {
       driverCanEdit: true,
-      clientCanSign: false
+      clientCanSign: false,
+
+      // 🔑 SAFEGUARD FLAGS (ADDITIVE, NOT REPLACING STATUS)
+      officeCanAuthorizeUnload: false,
+      driverCanUnload: false
     },
 
     /* ================= CLIENT SIGNATURE ================= */
@@ -71,6 +77,12 @@ export function createJob(jobId) {
 
     driverSigned: false,
     driverSignedAt: null,
+
+    /* ================= UNLOAD AUTHORIZATION ================= */
+    // 🔑 THIS IS THE GATE THAT WAS LOST
+    unloadAuthorizedByOffice: false,
+    unloadAuthorizedAt: null,
+    unloadAuthorizedBy: null,
 
     /* ================= WAREHOUSE ================= */
 
