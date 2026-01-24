@@ -1,35 +1,28 @@
 import { useState } from 'react';
 
-export default function InventoryPanel({ role, inventory, addItem, updateItem }) {
+export default function InventoryPanel({
+  role,
+  inventory,
+  inventoryTotals,
+  addItem,
+  updateItem
+}) {
   const safeInventory = Array.isArray(inventory) ? inventory : [];
 
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
   const [estimatedCF, setEstimatedCF] = useState(0);
 
-  // 🔑 LOCAL STATE FOR OFFICE EDITING (SAFEGUARD AGAINST INPUT LOCKING)
+  // 🔑 LOCAL STATE FOR OFFICE EDITING (PREVENTS INPUT LOCKING)
   const [officeEdits, setOfficeEdits] = useState({});
 
-  /* ================= INVENTORY MATH ================= */
+  /* ================= PER-ITEM MATH (AUDIT SAFE) ================= */
 
-  // Per-item math (qty-aware, audit-safe)
   const itemEstimatedTotal = item =>
     (item.estimatedCubicFeet || 0) * (item.qty || 1);
 
   const itemRevisedTotal = item =>
     (item.revisedCubicFeet || 0) * (item.qty || 1);
-
-  // Totals (authoritative math lives here)
-  <div style={{ marginTop: 10 }}>
-  <strong>Total Estimated CF:</strong>{' '}
-  {inventoryTotals?.estimatedCubicFeet ?? 0}
-  <br />
-  <strong>Total Revised CF:</strong>{' '}
-  {inventoryTotals?.revisedCubicFeet ?? 0}
-  <br />
-  <strong>Final CF:</strong>{' '}
-  {inventoryTotals?.finalCubicFeet ?? 0}
-</div>
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -95,6 +88,7 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                 <br />
 
                 Est CF: {item.estimatedCubicFeet || 0}
+                {' '}| Est Total: {itemEstimatedTotal(item)}
 
                 {/* ================= OFFICE REVISION ================= */}
                 {role === 'office' && (
@@ -123,19 +117,23 @@ export default function InventoryPanel({ role, inventory, addItem, updateItem })
                   </>
                 )}
 
-                {/* ================= READ-ONLY FOR OTHERS ================= */}
-                {role !== 'office' && item.revisedCubicFeet > 0 && (
-                  <> | Rev CF: {item.revisedCubicFeet}</>
+                {item.revisedCubicFeet > 0 && (
+                  <> | Rev Total: {itemRevisedTotal(item)}</>
                 )}
               </li>
             ))}
           </ul>
 
-          {/* ================= TOTALS ================= */}
+          {/* ================= AUTHORITATIVE TOTALS ================= */}
           <div style={{ marginTop: 10 }}>
-            <strong>Total Estimated CF:</strong> {totalEstimated}
+            <strong>Total Estimated CF:</strong>{' '}
+            {inventoryTotals?.estimatedCubicFeet ?? 0}
             <br />
-            <strong>Total Revised CF:</strong> {totalRevised}
+            <strong>Total Revised CF:</strong>{' '}
+            {inventoryTotals?.revisedCubicFeet ?? 0}
+            <br />
+            <strong>Final CF:</strong>{' '}
+            {inventoryTotals?.finalCubicFeet ?? 0}
           </div>
         </>
       )}
