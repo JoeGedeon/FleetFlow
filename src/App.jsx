@@ -12,12 +12,10 @@ const STATUS_FLOW = [
   JobStatus.AWAITING_SIGNATURE,
   JobStatus.LOADING,
   JobStatus.AWAITING_DISPATCH,
-
   JobStatus.EN_ROUTE_TO_WAREHOUSE,
   JobStatus.IN_WAREHOUSE,
   JobStatus.AWAITING_WAREHOUSE_DISPATCH,
   JobStatus.AWAITING_OUTTAKE,
-
   JobStatus.OUT_FOR_DELIVERY,
   JobStatus.PAYMENT_PENDING,
   JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION,
@@ -25,7 +23,7 @@ const STATUS_FLOW = [
   JobStatus.COMPLETED
 ];
 
-/* ================= JOB COMMUNICATIONS ================= */
+/* ================= PROGRESS TRACKER ================= */
 
 function ProgressTracker({ currentStatus }) {
   const currentIndex = STATUS_FLOW.indexOf(currentStatus);
@@ -38,7 +36,7 @@ function ProgressTracker({ currentStatus }) {
           className={`progress-step
             ${index <= currentIndex ? 'complete' : ''}
             ${index === currentIndex ? 'active' : ''}`}
-        
+        >
           <span className="dot" />
           <span className="label">{status.replace(/_/g, ' ')}</span>
         </div>
@@ -47,9 +45,8 @@ function ProgressTracker({ currentStatus }) {
   );
 }
 
+/* ================= JOB COMMUNICATIONS ================= */
 
-
-    
 function JobCommunications({ job, role, onSend }) {
   const [text, setText] = useState('');
 
@@ -107,7 +104,6 @@ export default function App() {
     <div className="app-container">
       <h1>FleetFLOW</h1>
 
-      {/* ROLE SWITCHER */}
       <div className="role-switcher">
         {['driver', 'helper', 'office', 'warehouse', 'client'].map(r => (
           <button
@@ -127,6 +123,8 @@ export default function App() {
       </div>
 
       <ProgressTracker currentStatus={job.status} />
+
+      {/* ROLE PANELS CONTINUE UNCHANGED */}
 
     {/* ================= DRIVER ================= */}
 {role === 'driver' && (
