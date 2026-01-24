@@ -10,6 +10,15 @@ const normalizeJob = job => {
   if (!Array.isArray(job.inventory)) {
     job.inventory = [];
   }
+
+  if (!job.inventoryTotals) {
+    job.inventoryTotals = {
+      estimatedCubicFeet: 0,
+      revisedCubicFeet: 0,
+      finalCubicFeet: 0
+    };
+  }
+
   return job;
 };
 
