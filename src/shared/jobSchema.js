@@ -63,6 +63,8 @@ inventoryTotals: {
       paymentReceived: false
     },
 
+    paymentLedger: [],
+
     accessorials: {
   longCarryFeet: 0,
   stairs: 0,
