@@ -98,14 +98,13 @@ export const MoveMastersAPI = {
   },
 
  /* ---------- INVENTORY ---------- */
+addInventoryItem(jobId, item) {
+  const job = JOB_DB[jobId];
 
-  // 🔒 Inventory is locked once loading evidence exists
+    // 🔒 Inventory is locked once loading evidence exists
 if (job.loadingEvidence) {
   return Promise.resolve(normalizeJob(job));
 }
-
-addInventoryItem(jobId, item) {
-  const job = JOB_DB[jobId];
 
   if (!Array.isArray(job.inventory)) {
     job.inventory = [];
@@ -121,14 +120,13 @@ addInventoryItem(jobId, item) {
   return Promise.resolve(normalizeJob(job));
 },
 
+updateInventoryItem(jobId, itemId, updates) {
+  const job = JOB_DB[jobId];
 // 🔒 Inventory cannot be edited after loading
 if (job.loadingEvidence) {
   return Promise.resolve(normalizeJob(job));
 }
-
-updateInventoryItem(jobId, itemId, updates) {
-  const job = JOB_DB[jobId];
-
+  
   job.inventory = job.inventory.map(item =>
     item.id === itemId ? { ...item, ...updates } : item
   );
@@ -160,13 +158,13 @@ updateInventoryTotals(jobId) {
   return Promise.resolve(normalizeJob(job));
 },
 
-  // 🔒 Pricing is locked once client has signed
+  approvePricing(jobId) {
+  let job = JOB_DB[jobId];
+
+      // 🔒 Pricing is locked once client has signed
 if (job.clientSigned) {
   return Promise.resolve(normalizeJob(job));
 }
-
-  approvePricing(jobId) {
-  let job = JOB_DB[jobId];
 
   job = calculateBasePricing(job);
 
