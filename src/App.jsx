@@ -167,7 +167,15 @@ export default function App() {
         </button>
       </>
     )}
-
+{job.status === JobStatus.EN_ROUTE_TO_WAREHOUSE && (
+  <button
+    onClick={() =>
+      MoveMastersAPI.driverArrivesAtWarehouse(job.id).then(setJob)
+    }
+  >
+    Arrived at Warehouse
+  </button>
+)}
     {job.status === JobStatus.OUT_FOR_DELIVERY && (
       <button
         onClick={() =>
