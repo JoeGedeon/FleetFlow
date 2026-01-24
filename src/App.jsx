@@ -270,7 +270,7 @@ export default function App() {
       </button>
     )}
 
-    <div className="pricing-box">
+    className="pricing-box">
   <h3>Pricing</h3>
 
   {job.billing.approvedTotal === null ? (
