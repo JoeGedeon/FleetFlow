@@ -46,6 +46,20 @@ const calculateLabor = job => {
   return job;
 };
 
+/* ================= PRICING CALCULATION ================= */
+
+const calculateBasePricing = job => {
+  const ratePerCubicFoot = 8.5;
+
+  const cf = job.inventoryTotals?.finalCubicFeet || 0;
+
+  const basePrice = cf * ratePerCubicFoot;
+
+  job.billing.approvedTotal = Math.round(basePrice * 100) / 100;
+
+  return job;
+};
+
 /* ================= API ================= */
 
 export const MoveMastersAPI = {
