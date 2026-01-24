@@ -255,7 +255,7 @@ export default function App() {
 
       {/* ================= OFFICE ================= */}
 
-  {role === 'office' && (
+{role === 'office' && (
   <>
     {job.status === JobStatus.PENDING_APPROVAL && (
       <button
@@ -270,30 +270,30 @@ export default function App() {
       </button>
     )}
 
-    className="pricing-box">
-  <h3>Pricing</h3>
+    <div className="pricing-box">
+      <h3>Pricing</h3>
 
-  {job.billing.approvedTotal === null ? (
-    <p><em>Awaiting pricing approval</em></p>
-  ) : (
-    <p>
-      <strong>Total Price:</strong>{' '}
-      ${job.billing.approvedTotal.toLocaleString()}
-    </p>
-  )}
-
-  
+      {job.billing.approvedTotal === null ? (
+        <p><em>Awaiting pricing approval</em></p>
+      ) : (
+        <p>
+          <strong>Total Price:</strong>{' '}
+          ${job.billing.approvedTotal.toLocaleString()}
+        </p>
+      )}
+    </div>
 
     <InventoryPanel
-  role="office"
-  inventory={job.inventory}
-  updateItem={(itemId, updates) =>
-    MoveMastersAPI
-      .updateInventoryItem(job.id, itemId, updates)
-      .then(setJob)
-  }
-/>
-          
+      role="office"
+      inventory={job.inventory}
+      updateItem={(itemId, updates) =>
+        MoveMastersAPI
+          .updateInventoryItem(job.id, itemId, updates)
+          .then(setJob)
+      }
+    />
+  </>
+)}
           {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
             <button onClick={() =>
               MoveMastersAPI.authorizeLoading(job.id).then(setJob)
