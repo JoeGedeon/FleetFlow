@@ -47,9 +47,7 @@ function ProgressTracker({ currentStatus }) {
   );
 }
 
-{job.billing.approvedTotal !== null && (
-  <div className="pricing-summary">
-    <h3>Job Pricing</h3>
+
 
     <p>
       <strong>Total Price:</strong>{' '}
