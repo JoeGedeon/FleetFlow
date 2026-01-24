@@ -255,23 +255,31 @@ export default function App() {
 
       {/* ================= OFFICE ================= */}
 
-      {role === 'office' && (
-        <>
-          {job.status === JobStatus.PENDING_APPROVAL && (
-            <button onClick={() =>
-              MoveMastersAPI.approvePricing(job.id, 3850).then(setJob)
-            }>
-              Approve Pricing & Send to Client
-            </button>
-          )}
+  {role === 'office' && (
+  <>
+    {job.status === JobStatus.PENDING_APPROVAL && (
+      <button
+        onClick={() =>
+          MoveMastersAPI
+            .updateInventoryTotals(job.id)
+            .then(() => MoveMastersAPI.approvePricing(job.id))
+            .then(setJob)
+        }
+      >
+        Approve Pricing & Send to Client
+      </button>
+    )}
 
-          {job.billing.approvedTotal !== null && (
-  <div className="pricing-box">
-    <h3>Approved Pricing</h3>
-    <p>
-      <strong>Total Price:</strong> ${job.billing.approvedTotal.toLocaleString()}
-    </p>
-  </div>
+    {job.billing.approvedTotal !== null && (
+      <div className="pricing-box">
+        <h3>Approved Pricing</h3>
+        <p>
+          <strong>Total Price:</strong>{' '}
+          ${job.billing.approvedTotal.toLocaleString()}
+        </p>
+      </div>
+    )}
+  </>
 )}
 
     <InventoryPanel
