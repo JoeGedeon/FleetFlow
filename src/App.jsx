@@ -271,7 +271,7 @@ export default function App() {
         </>
       )}
 
-      {/* ================= OFFICE ================= */}
+{/* ================= OFFICE ================= */}
 
 {role === 'office' && (
   <>
@@ -288,7 +288,7 @@ export default function App() {
       </button>
     )}
 
-     className="pricing-box">
+    <div className="pricing-box">
       <h3>Pricing</h3>
 
       {job.billing.approvedTotal === null ? (
@@ -299,7 +299,7 @@ export default function App() {
           ${job.billing.approvedTotal.toLocaleString()}
         </p>
       )}
-  
+    </div>
 
     <InventoryPanel
       role="office"
@@ -362,41 +362,41 @@ export default function App() {
     )}
 
     {job.billing.pricingBreakdown && (
-  <div className="pricing-breakdown">
-    <h4>Pricing Breakdown</h4>
+      <div className="pricing-breakdown">
+        <h4>Pricing Breakdown</h4>
 
-    <p>
-      <strong>Base:</strong>{' '}
-      {job.billing.pricingBreakdown.base.cubicFeet} CF × $
-      {job.billing.pricingBreakdown.base.ratePerCubicFoot}
-      {' = $'}
-      {job.billing.pricingBreakdown.base.amount.toLocaleString()}
-    </p>
+        <p>
+          <strong>Base:</strong>{' '}
+          {job.billing.pricingBreakdown.base.cubicFeet} CF × $
+          {job.billing.pricingBreakdown.base.ratePerCubicFoot}
+          {' = $'}
+          {job.billing.pricingBreakdown.base.amount.toLocaleString()}
+        </p>
 
-    {job.billing.pricingBreakdown.accessorials.length > 0 && (
-      <>
-        <h5>Accessorials</h5>
-        <ul>
-          {job.billing.pricingBreakdown.accessorials.map((a, idx) => (
-            <li key={idx}>
-              {a.type.replace('_', ' ')} — ${a.amount.toLocaleString()}
-            </li>
-          ))}
-        </ul>
-      </>
+        {job.billing.pricingBreakdown.accessorials.length > 0 && (
+          <>
+            <h5>Accessorials</h5>
+            <ul>
+              {job.billing.pricingBreakdown.accessorials.map((a, idx) => (
+                <li key={idx}>
+                  {a.type.replace('_', ' ')} — ${a.amount.toLocaleString()}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        <p>
+          <strong>Subtotal:</strong>{' '}
+          ${job.billing.pricingBreakdown.subtotal.toLocaleString()}
+        </p>
+
+        <p>
+          <strong>Final Total:</strong>{' '}
+          ${job.billing.pricingBreakdown.finalTotal.toLocaleString()}
+        </p>
+      </div>
     )}
-
-    <p>
-      <strong>Subtotal:</strong>{' '}
-      ${job.billing.pricingBreakdown.subtotal.toLocaleString()}
-    </p>
-
-    <p>
-      <strong>Final Total:</strong>{' '}
-      ${job.billing.pricingBreakdown.finalTotal.toLocaleString()}
-    </p>
-  </div>
-)}
 
     <JobCommunications
       job={job}
