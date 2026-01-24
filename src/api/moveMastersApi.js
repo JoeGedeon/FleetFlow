@@ -271,7 +271,7 @@ if (job.clientSigned) {
   return Promise.resolve(normalizeJob(job));
 }
 
-  job = calculateBasePricing(job);
+ job = calculatePricingBreakdown(job);
 
   job.status = JobStatus.AWAITING_SIGNATURE;
   job.permissions.clientCanSign = true;
