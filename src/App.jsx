@@ -129,15 +129,13 @@ export default function App() {
 {role === 'driver' && (
   <>
     {job.status === JobStatus.SURVEY && (
-      <>
-        <button
-          onClick={() =>
-            MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
-          }
-        >
-          Submit Survey to Office
-        </button>
-      </>
+      <button
+        onClick={() =>
+          MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
+        }
+      >
+        Submit Survey to Office
+      </button>
     )}
 
     {/* INVENTORY ALWAYS VISIBLE TO DRIVER */}
@@ -148,10 +146,15 @@ export default function App() {
       addItem={
         job.status === JobStatus.SURVEY
           ? item =>
-              MoveMastersAPI.addInventoryItem(job.id, item).then(setJob)
+              MoveMastersAPI
+                .addInventoryItem(job.id, item)
+                .then(() => MoveMastersAPI.updateInventoryTotals(job.id))
+                .then(setJob)
           : null
       }
     />
+  </>
+)}
     {job.status === JobStatus.LOADING && (
       <>
         <div className="auth-box">✔ LOAD AUTHORIZED</div>
