@@ -99,6 +99,11 @@ export const MoveMastersAPI = {
 
  /* ---------- INVENTORY ---------- */
 
+  // 🔒 Inventory is locked once loading evidence exists
+if (job.loadingEvidence) {
+  return Promise.resolve(normalizeJob(job));
+}
+
 addInventoryItem(jobId, item) {
   const job = JOB_DB[jobId];
 
