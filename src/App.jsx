@@ -288,18 +288,7 @@ export default function App() {
       </button>
     )}
 
-    <div className="pricing-box">
-      <h3>Pricing</h3>
-
-      {job.billing.approvedTotal === null ? (
-        <p><em>Awaiting pricing approval</em></p>
-      ) : (
-        <p>
-          <strong>Total Price:</strong>{' '}
-          ${job.billing.approvedTotal.toLocaleString()}
-        </p>
-      )}
-    </div>
+    
 
     <InventoryPanel
       role="office"
