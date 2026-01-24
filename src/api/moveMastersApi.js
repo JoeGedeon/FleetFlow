@@ -107,13 +107,20 @@ const getBaseRatePerCubicFoot = ({ region, season }) => {
 };
 
 const calculateBasePricing = job => {
-  const ratePerCubicFoot = 8.5;
+  const ratePerCubicFoot = getBaseRatePerCubicFoot({
+    region: job.pricingInputs?.region || 'FL',
+    season: job.pricingInputs?.season || 'standard'
+  });
 
   const cf = job.inventoryTotals?.finalCubicFeet || 0;
-
   const basePrice = cf * ratePerCubicFoot;
 
-  job.billing.approvedTotal = Math.round(basePrice * 100) / 100;
+  const accessorialTotal = calculateAccessorialPricing(job);
+
+  job.billing.basePrice = Math.round(basePrice * 100) / 100;
+  job.billing.accessorialTotal = accessorialTotal;
+  job.billing.approvedTotal =
+    Math.round((basePrice + accessorialTotal) * 100) / 100;
 
   return job;
 };
