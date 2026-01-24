@@ -288,22 +288,23 @@ export default function App() {
       </button>
     )}
 
-    className="pricing-box">
-  <h3>Current Pricing</h3>
+    <div className="pricing-box">
+      <h3>Current Pricing</h3>
 
-  <p>
-    <strong>Estimated Total:</strong>{' '}
-    {job.billing.approvedTotal !== null
-      ? `$${job.billing.approvedTotal.toLocaleString()}`
-      : 'Calculating…'}
-  </p>
+      <p>
+        <strong>Estimated Total:</strong>{' '}
+        {job.billing.approvedTotal !== null
+          ? `$${job.billing.approvedTotal.toLocaleString()}`
+          : 'Calculating…'}
+      </p>
 
-  {job.inventoryTotals?.estimatedCubicFeet !==
-    job.inventoryTotals?.finalCubicFeet && (
-    <p>
-      <em>Price reflects revised inventory</em>
-    </p>
-  )}
+      {job.inventoryTotals?.estimatedCubicFeet !==
+        job.inventoryTotals?.finalCubicFeet && (
+        <p>
+          <em>Price reflects revised inventory</em>
+        </p>
+      )}
+    </div>
 
     <InventoryPanel
       role="office"
