@@ -482,7 +482,7 @@ updateDeliveryAccessorials(jobId, updates) {
 },
 
 approveDeliveryAdjustments(jobId) {
-  const job = JOB_DB[jobId];
+  let job = JOB_DB[jobId];
 
   // Only office can approve delivery-side changes
   if (
@@ -491,6 +491,21 @@ approveDeliveryAdjustments(jobId) {
   ) {
     return Promise.resolve(normalizeJob(job));
   }
+
+  // Merge delivery accessorials into permanent accessorials
+  job.accessorials = {
+    ...job.accessorials,
+    ...job.deliveryAccessorials
+  };
+
+  // Recalculate pricing using final accessorial state
+  job = calculatePricingBreakdown(job);
+
+  // Unlock unload gate
+  job.status = JobStatus.UNLOAD_AUTHORIZED;
+
+  return Promise.resolve(normalizeJob(job));
+},
 
   const deliveryAdjustmentTotal = calculateAccessorialPricing({
     accessorials: job.deliveryAccessorials
