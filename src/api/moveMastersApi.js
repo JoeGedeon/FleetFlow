@@ -39,6 +39,16 @@ const normalizeJob = job => {
     job.billing.balanceRemaining === 0 &&
     job.billing.approvedTotal !== null;
 
+  job.permissions = {
+  driverCanEdit: job.status === JobStatus.SURVEY,
+  clientCanSign: job.status === JobStatus.AWAITING_SIGNATURE,
+  officeCanAuthorizeUnload:
+    job.status === JobStatus.PAYMENT_PENDING &&
+    job.billing.isPaidInFull === true,
+  driverCanUnload:
+    job.status === JobStatus.UNLOAD_AUTHORIZED
+};
+
   return job;
 };
 
