@@ -19,6 +19,26 @@ const normalizeJob = job => {
     };
   }
 
+    if (!Array.isArray(job.paymentLedger)) {
+    job.paymentLedger = [];
+  }
+
+  const totalPaid = job.paymentLedger.reduce(
+    (sum, p) => sum + (p.amount || 0),
+    0
+  );
+
+  job.billing.totalPaid = totalPaid;
+
+  job.billing.balanceRemaining =
+    job.billing.approvedTotal !== null
+      ? Math.max(job.billing.approvedTotal - totalPaid, 0)
+      : null;
+
+  job.billing.paymentReceived =
+    job.billing.balanceRemaining === 0 &&
+    job.billing.approvedTotal !== null;
+
   return job;
 };
 
