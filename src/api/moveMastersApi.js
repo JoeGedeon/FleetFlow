@@ -19,7 +19,7 @@ const normalizeJob = job => {
     };
   }
 
-    if (!Array.isArray(job.paymentLedger)) {
+  if (!Array.isArray(job.paymentLedger)) {
     job.paymentLedger = [];
   }
 
@@ -35,7 +35,7 @@ const normalizeJob = job => {
       ? Math.max(job.billing.approvedTotal - totalPaid, 0)
       : null;
 
-  job.billing.paymentReceived =
+  job.billing.isPaidInFull =
     job.billing.balanceRemaining === 0 &&
     job.billing.approvedTotal !== null;
 
