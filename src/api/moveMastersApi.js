@@ -39,6 +39,13 @@ const normalizeJob = job => {
     job.billing.balanceRemaining === 0 &&
     job.billing.approvedTotal !== null;
 
+  job.billing.pricingPhase =
+  job.clientSigned
+    ? 'finalized'
+    : job.status === JobStatus.PENDING_APPROVAL
+      ? 'field_review'
+      : 'estimated';
+
   job.permissions = {
   driverCanEdit: job.status === JobStatus.SURVEY,
   clientCanSign: job.status === JobStatus.AWAITING_SIGNATURE,
