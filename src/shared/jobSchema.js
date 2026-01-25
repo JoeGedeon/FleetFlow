@@ -14,7 +14,6 @@ export const JobStatus = {
   OUT_FOR_DELIVERY: 'out_for_delivery',
   PAYMENT_PENDING: 'payment_pending',
 
-  // 🔑 EXPLICIT UNLOAD GATE (THIS WAS YOUR MISSING STEP)
   UNLOAD_AUTHORIZED: 'unload_authorized',
 
   DELIVERY_AWAITING_CLIENT_CONFIRMATION: 'delivery_awaiting_client_confirmation',
@@ -28,34 +27,37 @@ export function createJob(jobId) {
     id: jobId,
     status: JobStatus.SURVEY,
 
+    /* ================= PRICING INPUTS ================= */
+
     pricingInputs: {
-  region: 'FL',        // FL, CA, TX, etc.
-  season: 'standard', // peak | off_peak | standard
+      region: 'FL',
+      season: 'standard',
 
-  baselineCubicFeet: 0,   // contract estimate
-  finalCubicFeet: 0,      // post-survey
+      baselineCubicFeet: 0,
+      finalCubicFeet: 0,
 
-  accessorials: {
-    longCarry: false,
-    stairs: false,
-    elevator: false,
-    bulkyItems: false,
-    shuttle: false,
-    storageHandling: false
-  }
-},
+      accessorials: {
+        longCarry: false,
+        stairs: false,
+        elevator: false,
+        bulkyItems: false,
+        shuttle: false,
+        storageHandling: false
+      }
+    },
 
-    /* ================= SURVEY & PRICING ================= */
+    /* ================= SURVEY & INVENTORY ================= */
 
     proposedChanges: {},
 
-inventory: [],
+    inventory: [],
 
-inventoryTotals: {
-  estimatedCubicFeet: 0,
-  revisedCubicFeet: 0,
-  finalCubicFeet: 0
-},
+    inventoryTotals: {
+      estimatedCubicFeet: 0,
+      revisedCubicFeet: 0,
+      finalCubicFeet: 0
+    },
+
     /* ================= BILLING ================= */
 
     billing: {
@@ -63,16 +65,38 @@ inventoryTotals: {
       paymentReceived: false
     },
 
-    paymentLedger: [],
+    /* ================= PAYMENTS & LEDGER ================= */
+
+    payments: {
+      totalDue: 0,
+      paidToDate: 0,
+      balanceRemaining: 0,
+
+      ledger: [
+        /*
+        {
+          id: 'txn-001',
+          amount: 500,
+          type: 'deposit',        // deposit | pickup | storage | final | adjustment
+          method: 'credit_card',  // credit_card | cash | ach | zelle | check
+          recordedBy: 'office',   // office | driver | system
+          note: 'Booking deposit',
+          recordedAt: '2024-01-15T14:22:00Z'
+        }
+        */
+      ]
+    },
+
+    /* ================= ACCESSORIAL DETAILS ================= */
 
     accessorials: {
-  longCarryFeet: 0,
-  stairs: 0,
-  elevator: false,
-  bulkyItems: [],
-  shuttleRequired: false,
-  notes: ''
-},
+      longCarryFeet: 0,
+      stairs: 0,
+      elevator: false,
+      bulkyItems: [],
+      shuttleRequired: false,
+      notes: ''
+    },
 
     /* ================= PERMISSIONS ================= */
 
@@ -80,7 +104,6 @@ inventoryTotals: {
       driverCanEdit: true,
       clientCanSign: false,
 
-      // 🔑 SAFEGUARD FLAGS (ADDITIVE, NOT REPLACING STATUS)
       officeCanAuthorizeUnload: false,
       driverCanUnload: false
     },
@@ -107,7 +130,7 @@ inventoryTotals: {
     driverSignedAt: null,
 
     /* ================= UNLOAD AUTHORIZATION ================= */
-    // 🔑 THIS IS THE GATE THAT WAS LOST
+
     unloadAuthorizedByOffice: false,
     unloadAuthorizedAt: null,
     unloadAuthorizedBy: null,
