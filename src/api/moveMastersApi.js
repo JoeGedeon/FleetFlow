@@ -449,6 +449,63 @@ if (job.clientSigned) {
   return Promise.resolve(normalizeJob(job));
 },
 
+  /* ---------- OFFICE DELIVERY ADJUSTMENTS ---------- */
+
+updateDeliveryAccessorials(jobId, updates) {
+  const job = JOB_DB[jobId];
+
+  // Delivery adjustments only allowed after arrival and before client confirmation
+  if (
+    job.status !== JobStatus.PAYMENT_PENDING &&
+    job.status !== JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION
+  ) {
+    return Promise.resolve(normalizeJob(job));
+  }
+
+  if (!job.deliveryAccessorials) {
+    job.deliveryAccessorials = {
+      longCarryFeet: 0,
+      stairs: 0,
+      elevator: false,
+      bulkyItems: [],
+      shuttleRequired: false,
+      notes: ''
+    };
+  }
+
+  job.deliveryAccessorials = {
+    ...job.deliveryAccessorials,
+    ...updates
+  };
+
+  return Promise.resolve(normalizeJob(job));
+},
+
+approveDeliveryAdjustments(jobId) {
+  const job = JOB_DB[jobId];
+
+  // Only office can approve delivery-side changes
+  if (
+    job.status !== JobStatus.PAYMENT_PENDING ||
+    !job.billing.isPaidInFull
+  ) {
+    return Promise.resolve(normalizeJob(job));
+  }
+
+  const deliveryAdjustmentTotal = calculateAccessorialPricing({
+    accessorials: job.deliveryAccessorials
+  });
+
+  job.billing.deliveryAdjustmentTotal = deliveryAdjustmentTotal;
+
+  job.billing.approvedTotal =
+    Math.round(
+      (job.billing.approvedTotal + deliveryAdjustmentTotal) * 100
+    ) / 100;
+
+  return Promise.resolve(normalizeJob(job));
+},
+
   /* ---------- CLIENT UNLOAD AUTH ---------- */
 
   confirmDeliveryByClient(jobId) {
