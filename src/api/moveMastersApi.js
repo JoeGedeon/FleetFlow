@@ -413,6 +413,25 @@ if (job.clientSigned) {
     return Promise.resolve(normalizeJob(job));
   },
 
+  recordPayment(jobId, payment) {
+  const job = JOB_DB[jobId];
+
+  if (!job.paymentLedger) {
+    job.paymentLedger = [];
+  }
+
+  job.paymentLedger.push({
+    id: Date.now(),
+    amount: payment.amount,
+    method: payment.method || 'unknown',
+    note: payment.note || '',
+    receivedAt: new Date().toISOString(),
+    receivedBy: payment.receivedBy || 'office'
+  });
+
+  return Promise.resolve(normalizeJob(job));
+},
+
   /* ---------- CLIENT UNLOAD AUTH ---------- */
 
   confirmDeliveryByClient(jobId) {
