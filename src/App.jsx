@@ -124,23 +124,7 @@ export default function App() {
       </div>
 
       <ProgressTracker currentStatus={job.status} />
-      <div className="pricing-summary">
-  <h3>Job Pricing</h3>
-
-  <p>
-    <strong>Current Total:</strong>{' '}
-    {job.billing.approvedTotal !== null
-      ? `$${job.billing.approvedTotal.toLocaleString()}`
-      : 'Calculating…'}
-  </p>
-
-  {job.inventoryTotals?.estimatedCubicFeet !==
-    job.inventoryTotals?.finalCubicFeet && (
-    <p>
-      <em>Price reflects revised inventory</em>
-    </p>
-  )}
-</div>
+<PricingSummary job={job} role={role} />
 
       {/* ROLE PANELS CONTINUE UNCHANGED */}
 
