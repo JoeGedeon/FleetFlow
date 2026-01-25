@@ -507,19 +507,7 @@ approveDeliveryAdjustments(jobId) {
   return Promise.resolve(normalizeJob(job));
 },
 
-  const deliveryAdjustmentTotal = calculateAccessorialPricing({
-    accessorials: job.deliveryAccessorials
-  });
-
-  job.billing.deliveryAdjustmentTotal = deliveryAdjustmentTotal;
-
-  job.billing.approvedTotal =
-    Math.round(
-      (job.billing.approvedTotal + deliveryAdjustmentTotal) * 100
-    ) / 100;
-
-  return Promise.resolve(normalizeJob(job));
-},
+  
 
   /* ---------- CLIENT UNLOAD AUTH ---------- */
 
