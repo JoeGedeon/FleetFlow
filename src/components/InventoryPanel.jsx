@@ -1,28 +1,23 @@
 import { useState } from 'react';
 
-export default function InventoryPanel({
-  role,
-  inventory,
-  inventoryTotals,
-  addItem,
-  updateItem
-}) {
-  const safeInventory = Array.isArray(inventory) ? inventory : [];
-
+export default function InventoryPanel({ role, inventory = [], addItem, updateItem }) {
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
   const [estimatedCF, setEstimatedCF] = useState(0);
 
-  // 🔑 LOCAL STATE FOR OFFICE EDITING (PREVENTS INPUT LOCKING)
   const [officeEdits, setOfficeEdits] = useState({});
 
-  /* ================= PER-ITEM MATH (AUDIT SAFE) ================= */
+  /* ================= PER-ITEM MATH ================= */
+  const itemEstimatedTotal = item => (item.estimatedCubicFeet || 0) * (item.qty || 1);
+  const itemRevisedTotal = item => (item.revisedCubicFeet || 0) * (item.qty || 1);
 
-  const itemEstimatedTotal = item =>
-    (item.estimatedCubicFeet || 0) * (item.qty || 1);
-
-  const itemRevisedTotal = item =>
-    (item.revisedCubicFeet || 0) * (item.qty || 1);
+  /* ================= DYNAMIC TOTALS ================= */
+  const totalEstimatedCF = inventory.reduce((sum, item) => sum + itemEstimatedTotal(item), 0);
+  const totalRevisedCF = inventory.reduce(
+    (sum, item) => sum + (item.revisedCubicFeet || 0) * (item.qty || 1),
+    0
+  );
+  const finalCF = totalRevisedCF > 0 ? totalRevisedCF : totalEstimatedCF;
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -66,7 +61,6 @@ export default function InventoryPanel({
                 estimatedCubicFeet: estimatedCF,
                 revisedCubicFeet: 0
               });
-
               setItemName('');
               setQty(1);
               setEstimatedCF(0);
@@ -77,63 +71,79 @@ export default function InventoryPanel({
         </div>
       )}
 
-      {safeInventory.length === 0 ? (
+      {inventory.length === 0 ? (
         <p>No items added yet.</p>
       ) : (
         <>
-          <ul>
-            {safeInventory.map(item => (
-              <li key={item.id} style={{ marginBottom: 6 }}>
-                <strong>{item.name}</strong> — qty: {item.qty}
-                <br />
+          {/* ================= HEADER ROW ================= */}
+          <div
+            style={{
+              display: 'flex',
+              fontWeight: 'bold',
+              gap: 12,
+              marginBottom: 4
+            }}
+          >
+            <span style={{ flex: 2 }}>Item</span>
+            <span style={{ width: 40 }}>Qty</span>
+            <span style={{ width: 80 }}>Est CF</span>
+            {role === 'office' && <span style={{ width: 80 }}>Rev CF</span>}
+            <span style={{ width: 80 }}>Est Total</span>
+            {role === 'office' && <span style={{ width: 80 }}>Rev Total</span>}
+          </div>
 
-                Est CF: {item.estimatedCubicFeet || 0}
-                {' '}| Est Total: {itemEstimatedTotal(item)}
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {inventory.map(item => (
+              <li
+                key={item.id}
+                style={{
+                  display: 'flex',
+                  gap: 12,
+                  marginBottom: 6,
+                  alignItems: 'center'
+                }}
+              >
+                <span style={{ flex: 2 }}>{item.name}</span>
+                <span style={{ width: 40 }}>{item.qty}</span>
+                <span style={{ width: 80 }}>{item.estimatedCubicFeet || 0}</span>
 
-                {/* ================= OFFICE REVISION ================= */}
                 {role === 'office' && (
-                  <>
-                    {' '}| Rev CF:
-                    <input
-                      type="number"
-                      min="0"
-                      value={
-                        officeEdits[item.id] ??
-                        item.revisedCubicFeet ??
-                        ''
-                      }
-                      style={{ width: 60, marginLeft: 6 }}
-                      onChange={e =>
-                        setOfficeEdits(prev => ({
-                          ...prev,
-                          [item.id]: e.target.value
-                        }))
-                      }
-                      onBlur={() => {
-                        const value = Number(officeEdits[item.id] || 0);
-                        updateItem(item.id, { revisedCubicFeet: value });
-                      }}
-                    />
-                  </>
+                  <input
+                    type="number"
+                    min="0"
+                    value={officeEdits[item.id] ?? item.revisedCubicFeet ?? ''}
+                    style={{ width: 80 }}
+                    onChange={e =>
+                      setOfficeEdits(prev => ({
+                        ...prev,
+                        [item.id]: e.target.value
+                      }))
+                    }
+                    onBlur={() => {
+                      const value = Number(officeEdits[item.id] || 0);
+                      updateItem(item.id, { revisedCubicFeet: value });
+                    }}
+                  />
                 )}
 
-                {item.revisedCubicFeet > 0 && (
-                  <> | Rev Total: {itemRevisedTotal(item)}</>
+                <span style={{ width: 80 }}>{itemEstimatedTotal(item)}</span>
+
+                {role === 'office' && (
+                  <span style={{ width: 80 }}>
+                    {item.revisedCubicFeet > 0 ? itemRevisedTotal(item) : ''}
+                  </span>
                 )}
               </li>
             ))}
           </ul>
 
-          {/* ================= AUTHORITATIVE TOTALS ================= */}
+          {/* ================= TOTALS ================= */}
           <div style={{ marginTop: 10 }}>
-            <strong>Total Estimated CF:</strong>{' '}
-            {inventoryTotals?.estimatedCubicFeet ?? 0}
+            <strong>Total Estimated CF:</strong> {totalEstimatedCF}
             <br />
-            <strong>Total Revised CF:</strong>{' '}
-            {inventoryTotals?.revisedCubicFeet ?? 0}
+            <strong>Total Revised CF:</strong> {totalRevisedCF}
             <br />
-            <strong>Final CF:</strong>{' '}
-            {inventoryTotals?.finalCubicFeet ?? 0}
+            <strong>Final CF:</strong> {finalCF}
           </div>
         </>
       )}
