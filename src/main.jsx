@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './src./app_001.js'  // ✅ Changed this line
+import App from './app_001.js'  // ✅ Correct - just "./" since we're already in srca
+
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
