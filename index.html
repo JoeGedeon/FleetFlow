@@ -1,199 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FleetFlow OS // JPG Systems</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-body { font-family: 'Inter', sans-serif; background:#f8fafc; color:#0f172a; }
-.brutalist-card { background:white; border:2px solid #e2e8f0; border-radius:12px; }
-.active-turn { border-color:#22c55e; background:#f0fdf4; }
-.status-pill { height:6px; flex:1; border-radius:999px; background:#e2e8f0; }
-.status-pill.complete { background:#3b82f6; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FleetFLOW – MoveMaster OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-stone-100 min-h-screen font-sans">
 
-<body class="p-4 md:p-8">
-<div id="root" class="max-w-xl mx-auto"></div>
+<div id="app" class="max-w-4xl mx-auto p-6"></div>
 
 <script>
-/* =========================
-   CONSTANTS
-========================= */
-
+/******************************
+ * CORE STATE
+ ******************************/
 const STATUS_FLOW = [
-  'SURVEY','PENDING_APPROVAL','AWAITING_SIGNATURE','LOADING',
-  'AWAITING_DISPATCH','EN_ROUTE_TO_WH','IN_WAREHOUSE',
-  'AWAITING_WH_DISPATCH','OUT_FOR_DELIVERY','PAYMENT_PENDING','COMPLETED'
+  'driver',
+  'helper',
+  'office',
+  'warehouse',
+  'client'
 ];
 
 const roleMap = {
-  SURVEY:'driver',
-  PENDING_APPROVAL:'helper',
-  AWAITING_SIGNATURE:'client',
-  LOADING:'driver',
-  AWAITING_DISPATCH:'office',
-  EN_ROUTE_TO_WH:'driver',
-  IN_WAREHOUSE:'warehouse',
-  AWAITING_WH_DISPATCH:'office',
-  OUT_FOR_DELIVERY:'driver',
-  PAYMENT_PENDING:'office',
-  COMPLETED:'system'
+  driver: 'driver',
+  helper: 'helper',
+  office: 'office',
+  warehouse: 'warehouse',
+  client: 'client'
 };
 
-/* =========================
-   STATE
-========================= */
-
-let state = {
-  role:'driver',
-  status:'SURVEY',
-  jobId:'FLEET-B02-2026',
-  inventory:[
-    { name:'Sectional Sofa', cf:65, condition:'Scratch' }
+const state = {
+  role: 'driver',              // active logged-in role
+  status: 'driver',            // baton position
+  inventory: [
+    { name: 'Sofa', cf: 50 },
+    { name: 'Dining Table', cf: 30 }
   ],
-  newItem:{ name:'', cf:'' },
-  earnings:450
+  driverPay: {
+    rate: 35,
+    commission: 0.1
+  },
+  helperPay: {
+    rate: 20
+  }
 };
 
-/* =========================
-   RENDER
-========================= */
-
-function render() {
-  const root = document.getElementById('root');
-  const idx = STATUS_FLOW.indexOf(state.status);
-  const activeRole = roleMap[state.status];
-  const isMyTurn = state.role === activeRole;
-  const totalCF = state.inventory.reduce((s,i)=>s+i.cf,0);
-
-  root.innerHTML = `
-<header class="flex justify-between items-center mb-6 border-b pb-4">
-  <h1 class="font-black italic text-xl">FleetFLOW</h1>
-  <span class="text-[10px] uppercase font-black">Mode: ${state.role}</span>
-</header>
-
-<!-- ROLE ORDER -->
-<div class="flex gap-2 mb-6">
-  ${['driver','helper','office','warehouse','client'].map(r=>`
-    <button onclick="setRole('${r}')"
-      class="px-3 py-2 rounded text-[10px] uppercase font-black
-      ${state.role===r?'bg-stone-900 text-white':'bg-white border'}">
-      ${r}
-    </button>
-  `).join('')}
-</div>
-
-<!-- BATON -->
-<div class="brutalist-card p-4 mb-4 ${isMyTurn?'active-turn':''}">
-  <div class="flex justify-between">
-    <div>
-      <div class="text-[10px] uppercase font-black ${isMyTurn?'text-green-600':'text-stone-400'}">
-        ${isMyTurn?'● Action Required':'○ Pending'}
-      </div>
-      <div class="font-bold italic">${state.status.replace(/_/g,' ')}</div>
-    </div>
-    <div class="uppercase font-black text-sm">${activeRole}</div>
-  </div>
-</div>
-
-<!-- PROGRESS -->
-<div class="flex gap-1 mb-8">
-  ${STATUS_FLOW.map((_,i)=>`<div class="status-pill ${i<=idx?'complete':''}"></div>`).join('')}
-</div>
-
-<!-- INVENTORY -->
-<div class="bg-white border rounded-xl overflow-hidden mb-6">
-  <div class="bg-stone-900 text-white px-4 py-2 flex justify-between">
-    <span class="text-[10px] uppercase font-black">Inventory</span>
-    <span class="text-[10px]">${totalCF} CF</span>
-  </div>
-
-  ${state.inventory.map((item,i)=>`
-    <div class="flex items-center gap-2 p-3 border-t">
-      <span class="flex-1 font-bold">${item.name}</span>
-      <input type="number" value="${item.cf}" min="0"
-        onchange="updateCF(${i},this.value)"
-        class="w-20 text-right border rounded px-2 py-1 text-xs font-bold"/>
-      <span class="text-xs font-black">CF</span>
-    </div>
-  `).join('')}
-</div>
-
-<!-- ADD INVENTORY (DRIVER + HELPER ONLY) -->
-${['driver','helper'].includes(state.role)?`
-<div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-6">
-  <div class="text-[10px] uppercase font-black mb-2">Add Inventory Item</div>
-  <div class="flex gap-2">
-    <input placeholder="Item name"
-      value="${state.newItem.name}"
-      oninput="state.newItem.name=this.value"
-      class="flex-1 border rounded px-2 py-1 text-xs"/>
-    <input type="number" placeholder="CF"
-      value="${state.newItem.cf}"
-      oninput="state.newItem.cf=this.value"
-      class="w-20 border rounded px-2 py-1 text-xs"/>
-    <button onclick="addItem()"
-      class="bg-stone-900 text-white px-3 rounded text-xs font-black">
-      Add
-    </button>
-  </div>
-</div>`:''}
-
-<!-- ACTION -->
-${isMyTurn?`
-<button onclick="advanceStatus()"
-  class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase italic">
-  Advance Step
-</button>`:''}
-
-<footer class="mt-16 pt-6 border-t text-[10px] uppercase font-black opacity-40 flex justify-between">
-  <span>JPG Systems</span>
-  <span>FleetFlow v2.1</span>
-</footer>
-`;
+/******************************
+ * DERIVED VALUES
+ ******************************/
+function totalCF() {
+  return state.inventory.reduce((s, i) => s + i.cf, 0);
 }
 
-/* =========================
-   ACTIONS
-========================= */
+function driverCommission() {
+  return (totalCF() * state.driverPay.commission * 10).toFixed(2);
+}
 
-function setRole(r){ state.role=r; render(); }
-
-function updateCF(i,val){
-  state.inventory[i].cf = Number(val)||0;
+/******************************
+ * ACTIONS
+ ******************************/
+window.setRole = role => {
+  state.role = role;
   render();
-}
+};
 
-function addItem(){
-  if(!state.newItem.name || !state.newItem.cf) return;
-  state.inventory.push({
-    name:state.newItem.name,
-    cf:Number(state.newItem.cf)
-  });
-  state.newItem={name:'',cf:''};
-  render();
-}
+window.advanceStatus = () => {
+  const requiredRole = roleMap[state.status];
 
-function advanceStatus(){
-  const activeRole = roleMap[state.status];
-  if(state.role!==activeRole){
-    alert(`Action belongs to ${activeRole.toUpperCase()}`);
+  if (state.role !== requiredRole) {
+    alert(`Only ${requiredRole.toUpperCase()} can advance at this stage.`);
     return;
   }
-  const next = STATUS_FLOW.indexOf(state.status)+1;
-  if(next<STATUS_FLOW.length){
-    state.status=STATUS_FLOW[next];
+
+  if (state.status === 'helper') {
+    alert('Helper does not advance workflow. Witness only.');
+    return;
+  }
+
+  const idx = STATUS_FLOW.indexOf(state.status);
+  if (idx < STATUS_FLOW.length - 1) {
+    state.status = STATUS_FLOW[idx + 1];
     render();
+  }
+};
+
+window.updateCF = (i, v) => {
+  state.inventory[i].cf = Number(v) || 0;
+  render();
+};
+
+window.addInventory = () => {
+  const name = document.getElementById('newItemName').value.trim();
+  const cf = Number(document.getElementById('newItemCF').value) || 0;
+
+  if (!name) return alert('Item needs a name. Reality still applies.');
+
+  state.inventory.push({ name, cf });
+  document.getElementById('newItemName').value = '';
+  document.getElementById('newItemCF').value = '';
+  render();
+};
+
+/******************************
+ * RENDER
+ ******************************/
+function render() {
+  const app = document.getElementById('app');
+
+  app.innerHTML = `
+  <header class="flex justify-between items-center mb-6 pb-4 border-b">
+    <h1 class="text-2xl font-black italic">FleetFLOW – MoveMaster OS</h1>
+    <select onchange="setRole(this.value)" class="border rounded px-2 py-1 text-sm font-bold">
+      ${STATUS_FLOW.map(r => `<option ${state.role===r?'selected':''}>${r}</option>`).join('')}
+    </select>
+  </header>
+
+  <section class="mb-6">
+    <div class="flex justify-between items-center">
+      <div class="text-sm font-black uppercase">Current Baton: ${state.status}</div>
+      <button onclick="advanceStatus()" class="bg-stone-900 text-white px-4 py-2 rounded font-black text-xs">Advance</button>
+    </div>
+  </section>
+
+  ${renderRolePanel()}
+  `;
+}
+
+/******************************
+ * ROLE PANELS
+ ******************************/
+function renderRolePanel() {
+  switch(state.role) {
+    case 'driver': return driverPanel();
+    case 'helper': return helperPanel();
+    case 'office': return officePanel();
+    case 'warehouse': return warehousePanel();
+    case 'client': return clientPanel();
   }
 }
 
-window.onload = render;
+function inventoryList(editable) {
+  return `
+    <div class="bg-white rounded-xl shadow">
+      <div class="p-4 border-b font-black text-sm">Inventory – ${totalCF()} CF</div>
+      ${state.inventory.map((i, idx) => `
+        <div class="p-3 flex justify-between items-center gap-2">
+          <span class="flex-1 font-bold text-sm">${i.name}</span>
+          ${editable ? `<input type="number" class="w-20 border rounded text-xs text-right" value="${i.cf}" onchange="updateCF(${idx},this.value)" />` : `<span class="text-xs font-black">${i.cf} CF</span>`}
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function driverPanel() {
+  return `
+  <section class="space-y-4">
+    <div class="bg-blue-50 border rounded-xl p-4">
+      <div class="font-black mb-2">Driver Earnings</div>
+      <div class="text-sm">Hourly: $${state.driverPay.rate}/hr</div>
+      <div class="text-sm">Commission: $${driverCommission()}</div>
+    </div>
+
+    ${inventoryList(true)}
+
+    <div class="bg-white p-4 rounded-xl shadow">
+      <div class="font-black text-sm mb-2">Add Inventory</div>
+      <div class="flex gap-2">
+        <input id="newItemName" placeholder="Item name" class="border rounded px-2 py-1 text-sm flex-1" />
+        <input id="newItemCF" placeholder="CF" type="number" class="border rounded px-2 py-1 text-sm w-24" />
+        <button onclick="addInventory()" class="bg-blue-600 text-white px-3 rounded font-black text-xs">Add</button>
+      </div>
+    </div>
+  </section>`;
+}
+
+function helperPanel() {
+  return `
+  <section class="space-y-4">
+    <div class="bg-green-50 border rounded-xl p-4">
+      <div class="font-black mb-2">Helper Pay</div>
+      <div class="text-sm">Hourly Rate: $${state.helperPay.rate}/hr</div>
+      <div class="text-xs text-stone-500 mt-2">Witness + labor only. No decision authority.</div>
+    </div>
+    ${inventoryList(false)}
+  </section>`;
+}
+
+function officePanel() {
+  return `
+  <section class="space-y-4">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <div class="font-black">Office Control Hub</div>
+      <p class="text-sm text-stone-600">All validation, approvals, and routing occur here.</p>
+    </div>
+    ${inventoryList(false)}
+  </section>`;
+}
+
+function warehousePanel() {
+  return `
+  <section class="space-y-4">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <div class="font-black">Warehouse Verification</div>
+      <p class="text-sm">Inventory cross-check and staging confirmation.</p>
+    </div>
+    ${inventoryList(false)}
+  </section>`;
+}
+
+function clientPanel() {
+  return `
+  <section class="space-y-4">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <div class="font-black">Client Confirmation</div>
+      <p class="text-sm">Final acknowledgment of delivered items.</p>
+    </div>
+    ${inventoryList(false)}
+  </section>`;
+}
+
+render();
 </script>
 </body>
 </html>
