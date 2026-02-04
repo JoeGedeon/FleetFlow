@@ -1,23 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function InventoryPanel({ role, inventory = [], addItem, updateItem }) {
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
-  const [estimatedCF, setEstimatedCF] = useState(0);
+  const [actualCF, setActualCF] = useState(0);
 
   const [officeEdits, setOfficeEdits] = useState({});
 
   /* ================= PER-ITEM MATH ================= */
   const itemEstimatedTotal = item => (item.estimatedCubicFeet || 0) * (item.qty || 1);
+  const itemActualTotal = item => (item.actualCubicFeet || 0) * (item.qty || 1);
   const itemRevisedTotal = item => (item.revisedCubicFeet || 0) * (item.qty || 1);
 
   /* ================= DYNAMIC TOTALS ================= */
   const totalEstimatedCF = inventory.reduce((sum, item) => sum + itemEstimatedTotal(item), 0);
-  const totalRevisedCF = inventory.reduce(
-    (sum, item) => sum + (item.revisedCubicFeet || 0) * (item.qty || 1),
-    0
-  );
-  const finalCF = totalRevisedCF > 0 ? totalRevisedCF : totalEstimatedCF;
+  const totalActualCF = inventory.reduce((sum, item) => sum + itemActualTotal(item), 0);
+  const totalRevisedCF = inventory.reduce((sum, item) => sum + itemRevisedTotal(item), 0);
+
+  /* ================= DRIVER COMMISSION ================= */
+  const commissionCF = inventory.reduce((sum, item) => {
+    const overCF = (item.actualCubicFeet || 0) - (item.estimatedCubicFeet || 0);
+    return sum + Math.max(overCF, 0) * (item.qty || 1);
+  }, 0);
+
+  const handleAddItem = () => {
+    if (!itemName) return;
+    addItem({
+      id: Date.now(),
+      name: itemName,
+      qty,
+      estimatedCubicFeet: actualCF, // auto-populate estimated CF from actual
+      actualCubicFeet: actualCF,
+      revisedCubicFeet: 0
+    });
+    setItemName('');
+    setQty(1);
+    setActualCF(0);
+  };
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -44,28 +63,13 @@ export default function InventoryPanel({ role, inventory = [], addItem, updateIt
           <input
             type="number"
             min="0"
-            placeholder="Est. CF"
-            value={estimatedCF}
-            onChange={e => setEstimatedCF(Number(e.target.value))}
+            placeholder="Actual CF"
+            value={actualCF}
+            onChange={e => setActualCF(Number(e.target.value))}
             style={{ width: 80 }}
           />
 
-          <button
-            type="button"
-            disabled={!itemName}
-            onClick={() => {
-              addItem({
-                id: Date.now(),
-                name: itemName,
-                qty,
-                estimatedCubicFeet: estimatedCF,
-                revisedCubicFeet: 0
-              });
-              setItemName('');
-              setQty(1);
-              setEstimatedCF(0);
-            }}
-          >
+          <button type="button" onClick={handleAddItem}>
             Add Item
           </button>
         </div>
@@ -87,8 +91,10 @@ export default function InventoryPanel({ role, inventory = [], addItem, updateIt
             <span style={{ flex: 2 }}>Item</span>
             <span style={{ width: 40 }}>Qty</span>
             <span style={{ width: 80 }}>Est CF</span>
+            <span style={{ width: 80 }}>Actual CF</span>
             {role === 'office' && <span style={{ width: 80 }}>Rev CF</span>}
             <span style={{ width: 80 }}>Est Total</span>
+            <span style={{ width: 80 }}>Actual Total</span>
             {role === 'office' && <span style={{ width: 80 }}>Rev Total</span>}
           </div>
 
@@ -104,14 +110,32 @@ export default function InventoryPanel({ role, inventory = [], addItem, updateIt
                 }}
               >
                 <span style={{ flex: 2 }}>{item.name}</span>
-                <span style={{ width: 40 }}>{item.qty}</span>
-                <span style={{ width: 80 }}>{item.estimatedCubicFeet || 0}</span>
 
+                <span style={{ width: 40 }}>{item.qty}</span>
+
+                <span style={{ width: 80 }}>{item.estimatedCubicFeet}</span>
+
+                {/* DRIVER ACTUAL CF */}
+                {role === 'driver' ? (
+                  <input
+                    type="number"
+                    min="0"
+                    value={item.actualCubicFeet}
+                    style={{ width: 80 }}
+                    onChange={e =>
+                      updateItem(item.id, { actualCubicFeet: Number(e.target.value) })
+                    }
+                  />
+                ) : (
+                  <span style={{ width: 80 }}>{item.actualCubicFeet}</span>
+                )}
+
+                {/* OFFICE REVISED CF */}
                 {role === 'office' && (
                   <input
                     type="number"
                     min="0"
-                    value={officeEdits[item.id] ?? item.revisedCubicFeet ?? ''}
+                    value={officeEdits[item.id] ?? item.revisedCubicFeet ?? 0}
                     style={{ width: 80 }}
                     onChange={e =>
                       setOfficeEdits(prev => ({
@@ -119,31 +143,31 @@ export default function InventoryPanel({ role, inventory = [], addItem, updateIt
                         [item.id]: e.target.value
                       }))
                     }
-                    onBlur={() => {
-                      const value = Number(officeEdits[item.id] || 0);
-                      updateItem(item.id, { revisedCubicFeet: value });
-                    }}
+                    onBlur={() =>
+                      updateItem(item.id, {
+                        revisedCubicFeet: Number(officeEdits[item.id] || 0)
+                      })
+                    }
                   />
                 )}
 
                 <span style={{ width: 80 }}>{itemEstimatedTotal(item)}</span>
-
-                {role === 'office' && (
-                  <span style={{ width: 80 }}>
-                    {item.revisedCubicFeet > 0 ? itemRevisedTotal(item) : ''}
-                  </span>
-                )}
+                <span style={{ width: 80 }}>{itemActualTotal(item)}</span>
+                {role === 'office' && <span style={{ width: 80 }}>{itemRevisedTotal(item)}</span>}
               </li>
             ))}
           </ul>
 
           {/* ================= TOTALS ================= */}
           <div style={{ marginTop: 10 }}>
-            <strong>Total Estimated CF:</strong> {totalEstimatedCF}
-            <br />
-            <strong>Total Revised CF:</strong> {totalRevisedCF}
-            <br />
-            <strong>Final CF:</strong> {finalCF}
+            <strong>Total Estimated CF:</strong> {totalEstimatedCF} <br />
+            <strong>Total Actual CF:</strong> {totalActualCF} <br />
+            <strong>Total Revised CF:</strong> {totalRevisedCF} <br />
+            {role === 'driver' && (
+              <>
+                <strong>Commission CF:</strong> {commissionCF} <br />
+              </>
+            )}
           </div>
         </>
       )}
