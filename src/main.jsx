@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './app_001.js'  // ✅ Correct - just "./" since we're already in srca
+import App from './App.jsx'  // ✅ Correct - just "./" since we're already in srca
 
 import './index.css'
 
