@@ -1,4 +1,13 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './app_001.jsx'; // your App component
+import './styles/app.css';       // optional, can be empty if not using extra CSS
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 
 /* ==========================================================================
   MOCK DATA & SCHEMAS (Consolidated from shared/jobSchema)
