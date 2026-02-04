@@ -1,48 +1,55 @@
-import { useState, useEffect } from 'react';
+import './styles/app.css';
+import { useEffect, useState } from 'react';
 
-export default function InventoryPanel({ role, inventory = [], addItem, updateItem }) {
+/* =================== MOCK API =================== */
+const MoveMastersAPI = {
+  getJob: async (id) =>
+    Promise.resolve({
+      id,
+      status: 'survey',
+      inventory: [],
+      clientSigned: false,
+      labor: [{ role: 'driver', payout: 0 }, { role: 'helper', payout: 0 }],
+      inventoryTotals: {
+        estimatedCubicFeet: 0,
+        actualCubicFeet: 0,
+        revisedCubicFeet: 0,
+        commissionCF: 0
+      }
+    })
+};
+
+/* =================== INVENTORY PANEL =================== */
+function InventoryPanel({ role, inventory, inventoryTotals, addItem, updateItem }) {
+  const safeInventory = Array.isArray(inventory) ? inventory : [];
+
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
-  const [actualCF, setActualCF] = useState(0);
+  const [estimatedCF, setEstimatedCF] = useState(0);
+  const [driverActualCF, setDriverActualCF] = useState({}); // per item
 
-  const [officeEdits, setOfficeEdits] = useState({});
+  const [officeEdits, setOfficeEdits] = useState({}); // revised CF
 
-  /* ================= PER-ITEM MATH ================= */
-  const itemEstimatedTotal = item => (item.estimatedCubicFeet || 0) * (item.qty || 1);
-  const itemActualTotal = item => (item.actualCubicFeet || 0) * (item.qty || 1);
-  const itemRevisedTotal = item => (item.revisedCubicFeet || 0) * (item.qty || 1);
-
-  /* ================= DYNAMIC TOTALS ================= */
-  const totalEstimatedCF = inventory.reduce((sum, item) => sum + itemEstimatedTotal(item), 0);
-  const totalActualCF = inventory.reduce((sum, item) => sum + itemActualTotal(item), 0);
-  const totalRevisedCF = inventory.reduce((sum, item) => sum + itemRevisedTotal(item), 0);
-
-  /* ================= DRIVER COMMISSION ================= */
-  const commissionCF = inventory.reduce((sum, item) => {
-    const overCF = (item.actualCubicFeet || 0) - (item.estimatedCubicFeet || 0);
-    return sum + Math.max(overCF, 0) * (item.qty || 1);
-  }, 0);
-
-  const handleAddItem = () => {
-    if (!itemName) return;
-    addItem({
+  const handleAdd = () => {
+    const newItem = {
       id: Date.now(),
       name: itemName,
       qty,
-      estimatedCubicFeet: actualCF, // auto-populate estimated CF from actual
-      actualCubicFeet: actualCF,
+      estimatedCubicFeet: estimatedCF,
+      actualCubicFeet: estimatedCF, // initial actual = estimate
       revisedCubicFeet: 0
-    });
+    };
+    addItem(newItem);
     setItemName('');
     setQty(1);
-    setActualCF(0);
+    setEstimatedCF(0);
   };
 
   return (
     <div style={{ marginTop: 20 }}>
       <h3>Inventory</h3>
 
-      {/* ================= DRIVER INPUT ================= */}
+      {/* DRIVER INPUT */}
       {role === 'driver' && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
           <input
@@ -51,7 +58,6 @@ export default function InventoryPanel({ role, inventory = [], addItem, updateIt
             value={itemName}
             onChange={e => setItemName(e.target.value)}
           />
-
           <input
             type="number"
             min="1"
@@ -59,118 +65,177 @@ export default function InventoryPanel({ role, inventory = [], addItem, updateIt
             onChange={e => setQty(Number(e.target.value))}
             style={{ width: 60 }}
           />
-
           <input
             type="number"
             min="0"
-            placeholder="Actual CF"
-            value={actualCF}
-            onChange={e => setActualCF(Number(e.target.value))}
+            placeholder="Est. CF"
+            value={estimatedCF}
+            onChange={e => setEstimatedCF(Number(e.target.value))}
             style={{ width: 80 }}
           />
-
-          <button type="button" onClick={handleAddItem}>
+          <button disabled={!itemName} onClick={handleAdd}>
             Add Item
           </button>
         </div>
       )}
 
-      {inventory.length === 0 ? (
+      {safeInventory.length === 0 ? (
         <p>No items added yet.</p>
       ) : (
         <>
-          {/* ================= HEADER ROW ================= */}
-          <div
-            style={{
-              display: 'flex',
-              fontWeight: 'bold',
-              gap: 12,
-              marginBottom: 4
-            }}
-          >
-            <span style={{ flex: 2 }}>Item</span>
-            <span style={{ width: 40 }}>Qty</span>
-            <span style={{ width: 80 }}>Est CF</span>
-            <span style={{ width: 80 }}>Actual CF</span>
-            {role === 'office' && <span style={{ width: 80 }}>Rev CF</span>}
-            <span style={{ width: 80 }}>Est Total</span>
-            <span style={{ width: 80 }}>Actual Total</span>
-            {role === 'office' && <span style={{ width: 80 }}>Rev Total</span>}
-          </div>
+          <ul>
+            {safeInventory.map(item => {
+              const actualCF = item.actualCubicFeet ?? item.estimatedCubicFeet;
+              const revisedCF = item.revisedCubicFeet ?? 0;
+              const estimatedTotal = (item.estimatedCubicFeet || 0) * (item.qty || 1);
+              const actualTotal = actualCF * (item.qty || 1);
+              const revisedTotal = revisedCF * (item.qty || 1);
+              const commission = Math.max(actualCF - (item.estimatedCubicFeet || 0), 0) * (item.qty || 1);
 
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {inventory.map(item => (
-              <li
-                key={item.id}
-                style={{
-                  display: 'flex',
-                  gap: 12,
-                  marginBottom: 6,
-                  alignItems: 'center'
-                }}
-              >
-                <span style={{ flex: 2 }}>{item.name}</span>
-
-                <span style={{ width: 40 }}>{item.qty}</span>
-
-                <span style={{ width: 80 }}>{item.estimatedCubicFeet}</span>
-
-                {/* DRIVER ACTUAL CF */}
-                {role === 'driver' ? (
-                  <input
-                    type="number"
-                    min="0"
-                    value={item.actualCubicFeet}
-                    style={{ width: 80 }}
-                    onChange={e =>
-                      updateItem(item.id, { actualCubicFeet: Number(e.target.value) })
-                    }
-                  />
-                ) : (
-                  <span style={{ width: 80 }}>{item.actualCubicFeet}</span>
-                )}
-
-                {/* OFFICE REVISED CF */}
-                {role === 'office' && (
-                  <input
-                    type="number"
-                    min="0"
-                    value={officeEdits[item.id] ?? item.revisedCubicFeet ?? 0}
-                    style={{ width: 80 }}
-                    onChange={e =>
-                      setOfficeEdits(prev => ({
-                        ...prev,
-                        [item.id]: e.target.value
-                      }))
-                    }
-                    onBlur={() =>
-                      updateItem(item.id, {
-                        revisedCubicFeet: Number(officeEdits[item.id] || 0)
-                      })
-                    }
-                  />
-                )}
-
-                <span style={{ width: 80 }}>{itemEstimatedTotal(item)}</span>
-                <span style={{ width: 80 }}>{itemActualTotal(item)}</span>
-                {role === 'office' && <span style={{ width: 80 }}>{itemRevisedTotal(item)}</span>}
-              </li>
-            ))}
+              return (
+                <li key={item.id} style={{ marginBottom: 6 }}>
+                  <strong>{item.name}</strong> — qty: {item.qty}
+                  <br />
+                  Est CF: {item.estimatedCubicFeet} | Est Total: {estimatedTotal}
+                  <br />
+                  Actual CF:{' '}
+                  {role === 'driver' ? (
+                    <input
+                      type="number"
+                      min="0"
+                      value={driverActualCF[item.id] ?? actualCF}
+                      style={{ width: 60 }}
+                      onChange={e => {
+                        const val = Number(e.target.value);
+                        setDriverActualCF(prev => ({ ...prev, [item.id]: val }));
+                        updateItem(item.id, { actualCubicFeet: val });
+                      }}
+                    />
+                  ) : (
+                    actualCF
+                  )}{' '}
+                  | Actual Total: {actualTotal}
+                  {role === 'office' && (
+                    <>
+                      <br />
+                      Rev CF:{' '}
+                      <input
+                        type="number"
+                        min="0"
+                        value={officeEdits[item.id] ?? revisedCF}
+                        style={{ width: 60 }}
+                        onChange={e =>
+                          setOfficeEdits(prev => ({ ...prev, [item.id]: e.target.value }))
+                        }
+                        onBlur={() => {
+                          const val = Number(officeEdits[item.id] || 0);
+                          updateItem(item.id, { revisedCubicFeet: val });
+                        }}
+                      />
+                      {' | '}Rev Total: {revisedTotal}
+                    </>
+                  )}
+                  <br />
+                  Commission CF: {commission}
+                </li>
+              );
+            })}
           </ul>
 
-          {/* ================= TOTALS ================= */}
+          {/* ================== TOTALS ================== */}
           <div style={{ marginTop: 10 }}>
-            <strong>Total Estimated CF:</strong> {totalEstimatedCF} <br />
-            <strong>Total Actual CF:</strong> {totalActualCF} <br />
-            <strong>Total Revised CF:</strong> {totalRevisedCF} <br />
-            {role === 'driver' && (
-              <>
-                <strong>Commission CF:</strong> {commissionCF} <br />
-              </>
-            )}
+            <strong>Total Estimated CF:</strong> {inventoryTotals?.estimatedCubicFeet ?? 0}
+            <br />
+            <strong>Total Actual CF:</strong> {inventoryTotals?.actualCubicFeet ?? 0}
+            <br />
+            <strong>Total Revised CF:</strong> {inventoryTotals?.revisedCubicFeet ?? 0}
+            <br />
+            <strong>Total Commission CF:</strong> {inventoryTotals?.commissionCF ?? 0}
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/* =================== APP =================== */
+export default function App() {
+  const [job, setJob] = useState(null);
+  const [role, setRole] = useState('driver');
+
+  useEffect(() => {
+    MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
+  }, []);
+
+  if (!job) return <div style={{ padding: 20 }}>Connecting…</div>;
+
+  const helper = job.labor.find(w => w.role === 'helper');
+
+  /* ================= INVENTORY UPDATE WITH TOTALS ================= */
+  const updateInventoryItem = (itemId, updates) => {
+    const newInventory = job.inventory.map(item =>
+      item.id === itemId ? { ...item, ...updates } : item
+    );
+
+    const totalEstimatedCF = newInventory.reduce(
+      (sum, i) => sum + (i.estimatedCubicFeet || 0) * (i.qty || 1),
+      0
+    );
+    const totalActualCF = newInventory.reduce(
+      (sum, i) => sum + ((i.actualCubicFeet ?? i.estimatedCubicFeet) * (i.qty || 1)),
+      0
+    );
+    const totalRevisedCF = newInventory.reduce(
+      (sum, i) => sum + ((i.revisedCubicFeet ?? 0) * (i.qty || 1)),
+      0
+    );
+    const commissionCF = newInventory.reduce((sum, i) => {
+      const actual = i.actualCubicFeet ?? i.estimatedCubicFeet;
+      const over = actual - (i.estimatedCubicFeet || 0);
+      return sum + Math.max(over, 0) * (i.qty || 1);
+    }, 0);
+
+    setJob(prev => ({
+      ...prev,
+      inventory: newInventory,
+      inventoryTotals: {
+        estimatedCubicFeet: totalEstimatedCF,
+        actualCubicFeet: totalActualCF,
+        revisedCubicFeet: totalRevisedCF,
+        commissionCF
+      }
+    }));
+  };
+
+  const addInventoryItem = (item) => {
+    const newInventory = [...job.inventory, item];
+    updateInventoryItem(null, { inventory: newInventory }); // recalculates totals
+    setJob(prev => ({ ...prev, inventory: newInventory }));
+  };
+
+  return (
+    <div className="app-container">
+      <h1>FleetFLOW</h1>
+
+      <div className="role-switcher">
+        {['driver', 'helper', 'office', 'warehouse', 'client'].map(r => (
+          <button
+            key={r}
+            onClick={() => setRole(r)}
+            className={role === r ? 'active' : ''}
+          >
+            {r.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      <InventoryPanel
+        role={role}
+        inventory={job.inventory}
+        inventoryTotals={job.inventoryTotals}
+        addItem={addInventoryItem}
+        updateItem={updateInventoryItem}
+      />
     </div>
   );
 }
