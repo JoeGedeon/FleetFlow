@@ -1,7 +1,6 @@
-import './styles/app.css';
-import { useEffect, useState } from 'react';
-import { MoveMastersAPI } from './api/moveMastersApi';
-
+import ‘./styles/app.css’;
+import { useEffect, useState } from ‘react’;
+import { MoveMastersAPI } from ‘./api/moveMastersApi’;
 import { JobStatus } from ‘./shared/jobSchema’;
 import DriverEarningsPanel from ‘./components/DriverEarningsPanel’;
 import InventoryPanel from ‘./components/InventoryPanel’;
@@ -29,7 +28,6 @@ JobStatus.COMPLETED
 function BatonDisplay({ currentStatus, role }) {
 const currentIndex = STATUS_FLOW.indexOf(currentStatus);
 
-// Determine whose turn it is based on status
 const getActiveRole = (status) => {
 switch (status) {
 case JobStatus.SURVEY:
@@ -123,7 +121,7 @@ const [processing, setProcessing] = useState(false);
 const payment = job.payments?.[paymentType];
 
 if (!payment) {
-return null; // Payment not configured for this job yet
+return null;
 }
 
 const handleCollectPayment = async () => {
@@ -142,11 +140,9 @@ try {
     timestamp: new Date().toISOString()
   });
   
-  // Refresh job data
   const updatedJob = await MoveMastersAPI.getJob(job.id);
   setJob(updatedJob);
   
-  // Execute callback if provided
   if (onPaymentComplete) {
     await onPaymentComplete();
   }
@@ -420,7 +416,7 @@ fontSize: 14
   
   <PricingSummary job={job} role={role} />
 
-  {/* ================= DRIVER ================= */}
+  {/* Driver role content - continuing in next part due to length */}
   {role === 'driver' && (
     <>
       {job.status === JobStatus.SURVEY && (
@@ -560,7 +556,6 @@ fontSize: 14
     </>
   )}
 
-  {/* ================= HELPER ================= */}
   {role === 'helper' && (
     <>
       <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
@@ -588,7 +583,6 @@ fontSize: 14
     </>
   )}
 
-  {/* ================= OFFICE ================= */}
   {role === 'office' && (
     <>
       {job.status === JobStatus.PENDING_APPROVAL && (
@@ -646,7 +640,6 @@ fontSize: 14
         />
       )}
 
-      {/* PAYMENT GATE #1 - PICKUP PAYMENT */}
       {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
         <>
           <PaymentGate
@@ -699,7 +692,6 @@ fontSize: 14
         </button>
       )}
 
-      {/* PAYMENT GATE #3 - DELIVERY PAYMENT */}
       {job.status === JobStatus.PAYMENT_PENDING && (
         <>
           <PaymentGate
@@ -767,7 +759,6 @@ fontSize: 14
     </>
   )}
 
-  {/* ================= WAREHOUSE ================= */}
   {role === 'warehouse' && (
     <>
       {job.status === JobStatus.IN_WAREHOUSE && (
@@ -817,7 +808,6 @@ fontSize: 14
     </>
   )}
 
-  {/* ================= CLIENT ================= */}
   {role === 'client' && (
     <>
       {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
