@@ -36,7 +36,6 @@ export default function InventoryPanel({
     <div className="panel">
       <h3>Inventory</h3>
 
-      {/* DRIVER ADD ITEMS */}
       {role === 'driver' && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           <input
@@ -70,27 +69,20 @@ export default function InventoryPanel({
         <>
           <ul>
             {inventory.map(item => {
-              const actualCF =
-                item.actualCubicFeet ?? item.estimatedCubicFeet;
+              const actualCF = item.actualCubicFeet ?? item.estimatedCubicFeet;
               const revisedCF = item.revisedCubicFeet ?? 0;
 
-              const estimatedTotal =
-                (item.estimatedCubicFeet || 0) * item.qty;
+              const estimatedTotal = (item.estimatedCubicFeet || 0) * item.qty;
               const actualTotal = actualCF * item.qty;
               const revisedTotal = revisedCF * item.qty;
-
-              const commissionCF = Math.max(
-                actualCF - (item.estimatedCubicFeet || 0),
-                0
-              ) * item.qty;
+              const commissionCF = Math.max(actualCF - (item.estimatedCubicFeet || 0), 0) * item.qty;
 
               return (
                 <li key={item.id} style={{ marginBottom: 10 }}>
                   <strong>{item.name}</strong> (x{item.qty})
                   <br />
 
-                  Est CF: {item.estimatedCubicFeet} | Est Total:{' '}
-                  {estimatedTotal}
+                  Est CF: {item.estimatedCubicFeet} | Est Total: {estimatedTotal}
                   <br />
 
                   Actual CF:{' '}
@@ -102,19 +94,14 @@ export default function InventoryPanel({
                       style={{ width: 60 }}
                       onChange={e => {
                         const val = Number(e.target.value);
-                        setDriverActualCF(prev => ({
-                          ...prev,
-                          [item.id]: val
-                        }));
-                        updateItem(item.id, {
-                          actualCubicFeet: val
-                        });
+                        setDriverActualCF(prev => ({ ...prev, [item.id]: val }));
+                        updateItem(item.id, { actualCubicFeet: val });
                       }}
                     />
                   ) : (
                     actualCF
-                  )}
-                  {' | '}Actual Total: {actualTotal}
+                  )}{' '}
+                  | Actual Total: {actualTotal}
 
                   {role === 'office' && (
                     <>
@@ -126,17 +113,10 @@ export default function InventoryPanel({
                         value={officeEdits[item.id] ?? revisedCF}
                         style={{ width: 60 }}
                         onChange={e =>
-                          setOfficeEdits(prev => ({
-                            ...prev,
-                            [item.id]: e.target.value
-                          }))
+                          setOfficeEdits(prev => ({ ...prev, [item.id]: e.target.value }))
                         }
                         onBlur={() =>
-                          updateItem(item.id, {
-                            revisedCubicFeet: Number(
-                              officeEdits[item.id] || 0
-                            )
-                          })
+                          updateItem(item.id, { revisedCubicFeet: Number(officeEdits[item.id] || 0) })
                         }
                       />
                       {' | '}Revised Total: {revisedTotal}
@@ -151,17 +131,13 @@ export default function InventoryPanel({
           </ul>
 
           <div style={{ marginTop: 12 }}>
-            <strong>Total Estimated CF:</strong>{' '}
-            {inventoryTotals.estimatedCubicFeet ?? 0}
+            <strong>Total Estimated CF:</strong> {inventoryTotals.estimatedCubicFeet ?? 0}
             <br />
-            <strong>Total Actual CF:</strong>{' '}
-            {inventoryTotals.actualCubicFeet ?? 0}
+            <strong>Total Actual CF:</strong> {inventoryTotals.actualCubicFeet ?? 0}
             <br />
-            <strong>Total Revised CF:</strong>{' '}
-            {inventoryTotals.revisedCubicFeet ?? 0}
+            <strong>Total Revised CF:</strong> {inventoryTotals.revisedCubicFeet ?? 0}
             <br />
-            <strong>Total Commission CF:</strong>{' '}
-            {inventoryTotals.commissionCF ?? 0}
+            <strong>Total Commission CF:</strong> {inventoryTotals.commissionCF ?? 0}
           </div>
         </>
       )}
