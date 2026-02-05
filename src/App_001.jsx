@@ -2,16 +2,12 @@ import './styles/app.css';
 import { useEffect, useState } from 'react';
 import { MoveMastersAPI } from './api/moveMastersApi';
 import { JobStatus } from './shared/jobSchema';
-
-// Import extracted components
-import DriverEarningsPanel from './components/Driver/DriverEarningsPanel';
-import InventoryPanel from './components/Shared/InventoryPanel';
-import PricingSummary from './components/Office/PricingSummary';
-import BatonDisplay from './shared/BatonDisplay';
-import ProgressTracker from './shared/ProgressTracker';
-import PaymentGate from './shared/PaymentGate';
-import SignaturePad from './shared/SignaturePad';
-import JobCommunications from './shared/JobCommunications';
+import DriverEarningsPanel from './components/DriverEarningsPanel';
+import InventoryPanel from './components/InventoryPanel';
+import PricingSummary from './components/PricingSummary';
+import PaymentGate from './components/PaymentGate';
+import SignaturePad from './components/SignaturePad';
+import JobCommunications from './components/JobCommunications';
 
 /* ================= STATUS FLOW ================= */
 const STATUS_FLOW = [
@@ -30,6 +26,78 @@ const STATUS_FLOW = [
   JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE,
   JobStatus.COMPLETED
 ];
+
+/* ================= BATON DISPLAY ================= */
+function BatonDisplay({ currentStatus, role }) {
+  const getActiveRole = (status) => {
+    switch (status) {
+      case JobStatus.SURVEY: return 'driver';
+      case JobStatus.PENDING_APPROVAL: return 'office';
+      case JobStatus.AWAITING_SIGNATURE: return 'client';
+      case JobStatus.LOADING: return 'driver';
+      case JobStatus.AWAITING_DISPATCH: return 'office';
+      case JobStatus.EN_ROUTE_TO_WAREHOUSE: return 'driver';
+      case JobStatus.IN_WAREHOUSE: return 'warehouse';
+      case JobStatus.AWAITING_WAREHOUSE_DISPATCH: return 'office';
+      case JobStatus.AWAITING_OUTTAKE: return 'warehouse';
+      case JobStatus.OUT_FOR_DELIVERY: return 'driver';
+      case JobStatus.PAYMENT_PENDING: return 'office';
+      case JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION: return 'client';
+      case JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE: return 'driver';
+      case JobStatus.COMPLETED: return null;
+      default: return null;
+    }
+  };
+
+  const activeRole = getActiveRole(currentStatus);
+  const isMyTurn = activeRole === role;
+
+  return (
+    <div style={{
+      padding: 16,
+      marginBottom: 20,
+      border: `3px solid ${isMyTurn ? '#22c55e' : '#94a3b8'}`,
+      borderRadius: 8,
+      backgroundColor: isMyTurn ? '#f0fdf4' : '#f8fafc'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h3 style={{ margin: 0, color: isMyTurn ? '#15803d' : '#475569' }}>
+            {isMyTurn ? '🏃 YOUR TURN' : '⏳ Waiting'}
+          </h3>
+          <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#64748b' }}>
+            {currentStatus.replace(/_/g, ' ')}
+          </p>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: 12, color: '#64748b' }}>Current Actor</div>
+          <div style={{ fontSize: 16, fontWeight: 'bold', textTransform: 'uppercase' }}>
+            {activeRole || 'COMPLETED'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ================= PROGRESS TRACKER ================= */
+function ProgressTracker({ currentStatus }) {
+  const currentIndex = STATUS_FLOW.indexOf(currentStatus);
+
+  return (
+    <div className="progress-tracker">
+      {STATUS_FLOW.map((status, index) => (
+        <div
+          key={status}
+          className={`progress-step ${index <= currentIndex ? 'complete' : ''} ${index === currentIndex ? 'active' : ''}`}
+        >
+          <span className="dot" />
+          <span className="label">{status.replace(/_/g, ' ')}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /* ================= MAIN APP ================= */
 export default function App() {
@@ -104,140 +172,17 @@ export default function App() {
       </div>
 
       <BatonDisplay currentStatus={job.status} role={role} />
-      <div className="status-bar">
-        <span className="status-chip">
-          {job.status === JobStatus.COMPLETED ? 'Delivered' : job.status}
-        </span>
-      </div>
-
       <ProgressTracker currentStatus={job.status} />
-      <PricingSummary job={job} role={role} />
 
+      {/* Role-specific sections */}
       {role === 'driver' && (
         <>
-          {job.status === JobStatus.SURVEY && (
-            <>
-              <InventoryPanel
-                role="driver"
-                inventory={job.inventory}
-                canEdit={true}
-                addItem={item =>
-                  MoveMastersAPI
-                    .addInventoryItem(job.id, item)
-                    .then(() => MoveMastersAPI.updateInventoryTotals(job.id))
-                    .then(setJob)
-                }
-              />
-              
-              <button
-                onClick={() =>
-                  MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
-                }
-              >
-                📸 Submit Survey to Office
-              </button>
-            </>
-          )}
-
-          {job.status !== JobStatus.SURVEY && (
-            <InventoryPanel
-              role="driver"
-              inventory={job.inventory}
-              canEdit={false}
-            />
-          )}
-
-          {job.status === JobStatus.LOADING && (
-            <>
-              <div style={{
-                padding: 16,
-                backgroundColor: '#f0fdf4',
-                border: '2px solid #22c55e',
-                borderRadius: 8,
-                marginBottom: 12,
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: '#15803d'
-              }}>
-                ✔ LOAD AUTHORIZED
-              </div>
-              
-              <button
-                onClick={() =>
-                  MoveMastersAPI.submitLoadingEvidence(job.id, {
-                    loadedTruckPhotos: ['loaded.jpg'],
-                    emptyOriginPhotos: ['empty.jpg']
-                  }).then(setJob)
-                }
-              >
-                📦 Submit Load Complete
-              </button>
-            </>
-          )}
-
-          {job.status === JobStatus.EN_ROUTE_TO_WAREHOUSE && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.driverArrivesAtWarehouse(job.id).then(setJob)
-              }
-            >
-              📍 Arrived at Warehouse
-            </button>
-          )}
-
-          {job.status === JobStatus.OUT_FOR_DELIVERY && (
-            <button
-              onClick={() =>
-                MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
-              }
-            >
-              📍 Truck Arrived at Destination
-            </button>
-          )}
-
-          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
-            <>
-              <div style={{
-                padding: 16,
-                backgroundColor: '#fef3c7',
-                border: '2px solid #f59e0b',
-                borderRadius: 8,
-                marginBottom: 12,
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: '#92400e'
-              }}>
-                📸 DELIVERY IN PROGRESS
-              </div>
-
-              <button
-                onClick={() =>
-                  MoveMastersAPI.submitDeliveryEvidence(job.id, {
-                    inPlacePhotos: ['placed.jpg'],
-                    assembledPhotos: ['assembled.jpg'],
-                    emptyTruckPhotos: ['empty_truck.jpg']
-                  }).then(setJob)
-                }
-              >
-                📸 Submit Delivery Evidence
-              </button>
-
-              <SignaturePad
-                label="Driver Signature - Confirm Delivery Complete"
-                onSign={async () => {
-                  await MoveMastersAPI.signOffByDriver(job.id);
-                  const updatedJob = await MoveMastersAPI.getJob(job.id);
-                  setJob(updatedJob);
-                }}
-                buttonText="Sign & Complete"
-              />
-            </>
-          )}
-
+          <InventoryPanel role="driver" inventory={job.inventory} canEdit={true} addItem={item => {
+            MoveMastersAPI.addInventoryItem(job.id, item)
+              .then(() => MoveMastersAPI.updateInventoryTotals(job.id))
+              .then(setJob);
+          }} />
           <DriverEarningsPanel job={job} />
-
           <JobCommunications
             job={job}
             role="driver"
@@ -252,8 +197,79 @@ export default function App() {
         </>
       )}
 
-      {/* Roles helper, office, warehouse, client remain unchanged */}
-      {/* All logic from your original code is kept intact */}
+      {role === 'helper' && (
+        <>
+          <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
+          <InventoryPanel role="helper" inventory={job.inventory} canEdit={false} />
+          <JobCommunications
+            job={job}
+            role="helper"
+            onSend={text =>
+              MoveMastersAPI.addJobMessage(job.id, {
+                fromRole: 'helper',
+                toRole: 'office',
+                text
+              }).then(setJob)
+            }
+          />
+        </>
+      )}
+
+      {role === 'office' && (
+        <>
+          <InventoryPanel role="office" inventory={job.inventory} updateItem={(itemId, updates) =>
+            MoveMastersAPI.updateInventoryItem(job.id, itemId, updates).then(setJob)
+          } />
+          <PricingSummary job={job} role={role} />
+          <PaymentGate job={job} setJob={setJob} paymentType="pickup" label="Pickup Payment" />
+          <JobCommunications
+            job={job}
+            role="office"
+            onSend={text =>
+              MoveMastersAPI.addJobMessage(job.id, {
+                fromRole: 'office',
+                toRole: 'driver',
+                text
+              }).then(setJob)
+            }
+          />
+        </>
+      )}
+
+      {role === 'warehouse' && (
+        <>
+          <InventoryPanel role="warehouse" inventory={job.inventory} />
+          <JobCommunications
+            job={job}
+            role="warehouse"
+            onSend={text =>
+              MoveMastersAPI.addJobMessage(job.id, {
+                fromRole: 'warehouse',
+                toRole: 'office',
+                text
+              }).then(setJob)
+            }
+          />
+        </>
+      )}
+
+      {role === 'client' && (
+        <>
+          <InventoryPanel role="client" inventory={job.inventory} />
+          <SignaturePad label="Client Signature" onSign={async () => {}} />
+          <JobCommunications
+            job={job}
+            role="client"
+            onSend={text =>
+              MoveMastersAPI.addJobMessage(job.id, {
+                fromRole: 'client',
+                toRole: 'office',
+                text
+              }).then(setJob)
+            }
+          />
+        </>
+      )}
     </div>
   );
 }
