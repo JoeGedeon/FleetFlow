@@ -1,0 +1,12 @@
+.driver-earnings-panel {
+  padding: 16px;
+  background-color: #f0fdf4;
+  border: 2px solid #22c55e;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.driver-earnings-panel h3 {
+  margin: 0 0 8px 0;
+  color: #15803d;
+}
