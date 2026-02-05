@@ -1,8 +1,10 @@
-// src/main.jsx
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './app_001.jsx';  // import your App component
-import './styles/app.css';        // optional
+import { useEffect, useState } from 'react';
+import InventoryPanel from './components/InventoryPanel';
+import DriverEarningsPanel from './components/DriverEarningsPanel';
+
+export default function App() {
+  // all your logic lives here
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
