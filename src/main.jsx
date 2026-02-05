@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import InventoryPanel from './components/InventoryPanel';
 import DriverEarningsPanel from './components/DriverEarningsPanel';
 
-export default function App() {
-  // all your logic lives here
-}
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
