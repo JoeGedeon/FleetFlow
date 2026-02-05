@@ -1,20 +1,32 @@
-import React from 'react';
-import './progressTracker.css';
+.progress-tracker {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px 0;
+}
 
-export default function ProgressTracker({ currentStatus, statusFlow }) {
-  const currentIndex = statusFlow.indexOf(currentStatus);
+.progress-step {
+  text-align: center;
+  flex: 1;
+  position: relative;
+}
 
-  return (
-    <div className="progress-tracker">
-      {statusFlow.map((status, index) => (
-        <div
-          key={status}
-          className={`progress-step ${index <= currentIndex ? 'complete' : ''} ${index === currentIndex ? 'active' : ''}`}
-        >
-          <span className="dot" />
-          <span className="label">{status.replace(/_/g, ' ')}</span>
-        </div>
-      ))}
-    </div>
-  );
+.progress-step .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  margin: 0 auto 4px auto;
+}
+
+.progress-step.complete .dot {
+  background-color: #22c55e;
+}
+
+.progress-step.active .dot {
+  border: 2px solid #3b82f6;
+}
+
+.progress-step .label {
+  font-size: 12px;
+  color: #64748b;
 }
