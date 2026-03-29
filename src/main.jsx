@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom/client';
 import InventoryPanel from './components/InventoryPanel';
 import DriverEarningsPanel from './components/DriverEarningsPanel';
 import { MoveMastersAPI } from './api/moveMastersApi';
+import { auth } from './firebase';
+import {
+  onAuthStateChanged, signInWithEmailAndPassword, signOut
+} from 'firebase/auth';
 
-/* ========================================================================== 
+/* ==========================================================================
  SCHEMAS & STATUS FLOW
 ========================================================================== */
 
@@ -34,7 +38,79 @@ const STATUS_FLOW = [
   JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE, JobStatus.COMPLETED
 ];
 
-/* ========================================================================== 
+/* ==========================================================================
+ AUTH SIGN-IN MODAL
+========================================================================== */
+
+function SignInModal({ onSignIn }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged will handle the rest
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', '').replace(/ \(auth.*\)/, ''));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-950 flex items-center justify-center p-6">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center text-white font-black italic shadow-lg shadow-blue-900 mx-auto mb-4 text-xl">F</div>
+          <h1 className="text-2xl font-black uppercase tracking-tighter italic text-white">FleetFLOW</h1>
+          <p className="text-stone-400 text-xs font-bold uppercase tracking-widest mt-1">Field Operations</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="driver@movemasteros.local"
+              required
+              className="w-full bg-stone-800 border border-stone-700 text-white rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              className="w-full bg-stone-800 border border-stone-700 text-white rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          {error && (
+            <div className="text-red-400 text-xs font-bold bg-red-950 border border-red-900 rounded-lg px-4 py-3">
+              {error}
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase tracking-widest italic hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-900 disabled:opacity-50"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
  SUB-COMPONENTS
 ========================================================================== */
 
@@ -53,7 +129,7 @@ const PricingSummary = ({ job }) => {
   );
 };
 
-/* ========================================================================== 
+/* ==========================================================================
  BATON & PROGRESS COMPONENTS
 ========================================================================== */
 
@@ -114,37 +190,65 @@ function ProgressTracker({ currentStatus }) {
   );
 }
 
-/* ========================================================================== 
+/* ==========================================================================
  MAIN APP COMPONENT
 ========================================================================== */
 
 export default function App() {
+  const [user, setUser] = useState(undefined); // undefined = loading auth state
   const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
-  const [loading, setLoading] = useState(true);
+  const [jobLoading, setJobLoading] = useState(true);
 
+  // Auth state listener
   useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser); // null = not signed in, object = signed in
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Load job when authenticated
+  useEffect(() => {
+    if (!user) return;
+
     const loadJob = async () => {
       try {
-        setLoading(true);
+        setJobLoading(true);
         const jobData = await MoveMastersAPI.getJob('FLEETFLOW-001');
         setJob(jobData);
       } catch (error) {
         console.error('Error loading job:', error);
       } finally {
-        setLoading(false);
+        setJobLoading(false);
       }
     };
     loadJob();
 
     // Subscribe to real-time updates
-    const unsubscribe = MoveMastersAPI.subscribeToJob('FLEETFLOW-001', (updatedJob) => {
+    const unsubscribeJob = MoveMastersAPI.subscribeToJob('FLEETFLOW-001', (updatedJob) => {
       setJob(updatedJob);
     });
-    return () => { if (unsubscribe) unsubscribe(); };
-  }, []);
+    return () => { if (unsubscribeJob) unsubscribeJob(); };
+  }, [user]);
 
-  if (loading || !job) {
+  // Auth loading
+  if (user === undefined) {
+    return (
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center p-8 text-stone-400 font-mono italic">
+        <div className="animate-spin text-4xl mb-4">🚚</div>
+        <div className="text-xs font-black uppercase tracking-widest">Loading...</div>
+      </div>
+    );
+  }
+
+  // Not signed in
+  if (!user) {
+    return <SignInModal />;
+  }
+
+  // Signed in but job loading
+  if (jobLoading || !job) {
     return (
       <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-8 text-stone-400 font-mono italic">
         <div className="animate-spin text-4xl mb-4">🚚</div>
@@ -161,8 +265,16 @@ export default function App() {
             <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-white font-black italic shadow-lg shadow-blue-200">F</div>
             <h1 className="m-0 text-xl font-black uppercase tracking-tighter italic text-stone-900">FleetFLOW</h1>
           </div>
-          <div className="bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">
-            Mode: {role}
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">
+              Mode: {role}
+            </div>
+            <button
+              onClick={() => signOut(auth)}
+              className="text-[10px] font-black text-stone-400 uppercase tracking-widest hover:text-red-500 transition-colors"
+            >
+              Sign out
+            </button>
           </div>
         </header>
 
