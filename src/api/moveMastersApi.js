@@ -1,559 +1,387 @@
-import { createJob, JobStatus } from '../shared/jobSchema';
+// src/api/moveMastersApi.js
+// Firestore-backed API — wraps all operations against the shared movemastersos project.
+// All mutations write to Firestore; reads come from Firestore so both MM.OS and FleetFlow
+// see the same data in real time.
 
-let JOB_DB = {
-  'FLEETFLOW-001': createJob('FLEETFLOW-001')
+import { createJob, JobStatus } from '../shared/jobSchema';
+import {
+  doc, getDoc, setDoc, updateDoc, onSnapshot,
+  serverTimestamp, collection, query, where, getDocs
+} from 'firebase/firestore';
+import { db } from '../firebase';
+
+const JOBS = 'jobs';
+
+/* ================= HELPERS ================= */
+
+const safeDate = v => {
+  if (!v) return new Date().toISOString();
+  if (typeof v === 'string') return v;
+  if (v && typeof v.toDate === 'function') return v.toDate().toISOString();
+  return new Date().toISOString();
 };
+
+// Firestore does not accept undefined values — strip them out
+const clean = obj => JSON.parse(JSON.stringify(obj, (k, v) => v === undefined ? null : v));
 
 /* ================= NORMALIZATION ================= */
 
 const normalizeJob = job => {
-  if (!Array.isArray(job.inventory)) {
-    job.inventory = [];
-  }
+  if (!job) return null;
 
+  if (!Array.isArray(job.inventory))    { job.inventory = []; }
   if (!job.inventoryTotals) {
-    job.inventoryTotals = {
-      estimatedCubicFeet: 0,
-      revisedCubicFeet: 0,
-      finalCubicFeet: 0
-    };
+    job.inventoryTotals = { estimatedCubicFeet: 0, revisedCubicFeet: 0, finalCubicFeet: 0 };
   }
+  if (!Array.isArray(job.paymentLedger)) { job.paymentLedger = []; }
 
-  if (!Array.isArray(job.paymentLedger)) {
-    job.paymentLedger = [];
-  }
-
-  const totalPaid = job.paymentLedger.reduce(
-    (sum, p) => sum + (p.amount || 0),
-    0
-  );
-
-  job.billing.totalPaid = totalPaid;
-
-  job.billing.balanceRemaining =
-    job.billing.approvedTotal !== null
-      ? Math.max(job.billing.approvedTotal - totalPaid, 0)
-      : null;
-
-  job.billing.isPaidInFull =
-    job.billing.balanceRemaining === 0 &&
-    job.billing.approvedTotal !== null;
-
-  job.billing.pricingPhase =
-  job.clientSigned
-    ? 'finalized'
-    : job.status === JobStatus.PENDING_APPROVAL
-      ? 'field_review'
-      : 'estimated';
+  const totalPaid = job.paymentLedger.reduce((sum, p) => sum + (p.amount || 0), 0);
+  job.billing.totalPaid           = totalPaid;
+  job.billing.balanceRemaining    = job.billing.approvedTotal !== null
+    ? Math.max(job.billing.approvedTotal - totalPaid, 0)
+    : null;
+  job.billing.isPaidInFull        = job.billing.balanceRemaining === 0 && job.billing.approvedTotal !== null;
+  job.billing.pricingPhase        = job.clientSigned ? 'finalized'
+    : job.status === JobStatus.PENDING_APPROVAL ? 'field_review' : 'estimated';
 
   job.permissions = {
-  driverCanEdit: job.status === JobStatus.SURVEY,
-  clientCanSign: job.status === JobStatus.AWAITING_SIGNATURE,
-  officeCanAuthorizeUnload:
-    job.status === JobStatus.PAYMENT_PENDING &&
-    job.billing.isPaidInFull === true,
-  driverCanUnload:
-    job.status === JobStatus.UNLOAD_AUTHORIZED
-};
+    driverCanEdit:           job.status === JobStatus.SURVEY,
+    clientCanSign:           job.status === JobStatus.AWAITING_SIGNATURE,
+    officeCanAuthorizeUnload: job.status === JobStatus.PAYMENT_PENDING && job.billing.isPaidInFull === true,
+    driverCanUnload:         job.status === JobStatus.UNLOAD_AUTHORIZED
+  };
 
   return job;
 };
 
-/* ================= LABOR CALCULATION ================= */
+/* ================= LABOR ================= */
 
 const calculateLabor = job => {
   const revenue = job.billing.approvedTotal || 0;
-
   job.labor = job.labor.map(worker => {
     let payout = 0;
-
-    if (worker.payType === 'percent') {
-      payout = (revenue * worker.rate) / 100;
-    }
-    if (worker.payType === 'flat') {
-      payout = worker.rate;
-    }
-    if (worker.payType === 'hourly') {
-      payout = worker.rate * (worker.hours || 0);
-    }
-
+    if (worker.payType === 'percent') payout = (revenue * worker.rate) / 100;
+    if (worker.payType === 'flat')    payout = worker.rate;
+    if (worker.payType === 'hourly')  payout = worker.rate * (worker.hours || 0);
     return { ...worker, payout };
   });
-
   return job;
 };
 
-/* ================= ACCESSORIAL PRICING ================= */
+/* ================= PRICING ================= */
 
 const calculateAccessorialPricing = job => {
   const a = job.accessorials || {};
   let total = 0;
-
-  // Long carry: over 75 ft
-  if (a.longCarryFeet && a.longCarryFeet > 75) {
-    total += (a.longCarryFeet - 75) * 1.25;
-  }
-
-  // Stairs: per flight
-  if (a.stairs && a.stairs > 0) {
-    total += a.stairs * 75;
-  }
-
-  // Elevator
-  if (a.elevator) {
-    total += 50;
-  }
-
-  // Bulky items
-  if (Array.isArray(a.bulkyItems)) {
-    total += a.bulkyItems.length * 100;
-  }
-
-  // Shuttle
-  if (a.shuttleRequired) {
-    total += 300;
-  }
-
-  // Storage handling
-  if (a.storageHandling) {
-    total += 200;
-  }
-
+  if (a.longCarryFeet && a.longCarryFeet > 75) total += (a.longCarryFeet - 75) * 1.25;
+  if (a.stairs  && a.stairs  > 0) total += a.stairs  * 75;
+  if (a.elevator)                 total += 50;
+  if (Array.isArray(a.bulkyItems)) total += a.bulkyItems.length * 100;
+  if (a.shuttleRequired)          total += 300;
+  if (a.storageHandling)          total += 200;
   return Math.round(total * 100) / 100;
-};
-
-
-/* ================= PRICING CALCULATION ================= */
-const getBaseRatePerCubicFoot = ({ region, season }) => {
-  const RATE_TABLE = {
-    FL: {
-      standard: 4.25,
-      peak: 5.25
-    },
-    TX: {
-      standard: 4.75,
-      peak: 5.75
-    },
-    CA: {
-      standard: 7.5,
-      peak: 9.0
-    }
-  };
-
-  return RATE_TABLE[region]?.[season] || 5.0;
-};
-
-const calculateBasePricing = job => {
-  const ratePerCubicFoot = getBaseRatePerCubicFoot({
-    region: job.pricingInputs?.region || 'FL',
-    season: job.pricingInputs?.season || 'standard'
-  });
-
-  const cf = job.inventoryTotals?.finalCubicFeet || 0;
-  const basePrice = cf * ratePerCubicFoot;
-
-  const accessorialTotal = calculateAccessorialPricing(job);
-
-  job.billing.basePrice = Math.round(basePrice * 100) / 100;
-  job.billing.accessorialTotal = accessorialTotal;
-  job.billing.approvedTotal =
-    Math.round((basePrice + accessorialTotal) * 100) / 100;
-
-  return job;
 };
 
 const calculatePricingBreakdown = job => {
   const breakdown = {
-    base: {
-      cubicFeet: job.inventoryTotals.finalCubicFeet,
-      ratePerCubicFoot: 8.5,
-      amount: 0
-    },
-    accessorials: [],
-    subtotal: 0,
-    finalTotal: 0,
+    base: { cubicFeet: job.inventoryTotals.finalCubicFeet, ratePerCubicFoot: 8.5, amount: 0 },
+    accessorials: [], subtotal: 0, finalTotal: 0,
     calculatedAt: new Date().toISOString()
   };
-
-  // Base cubic feet price
-  breakdown.base.amount =
-    breakdown.base.cubicFeet * breakdown.base.ratePerCubicFoot;
-
-  breakdown.subtotal += breakdown.base.amount;
-
-  // Accessorial pricing
+  breakdown.base.amount  = breakdown.base.cubicFeet * breakdown.base.ratePerCubicFoot;
+  breakdown.subtotal    += breakdown.base.amount;
   if (job.accessorials.longCarryFeet > 0) {
     const amount = job.accessorials.longCarryFeet * 1.25;
-    breakdown.accessorials.push({
-      type: 'long_carry',
-      units: job.accessorials.longCarryFeet,
-      rate: 1.25,
-      amount
-    });
+    breakdown.accessorials.push({ type: 'long_carry', units: job.accessorials.longCarryFeet, rate: 1.25, amount });
     breakdown.subtotal += amount;
   }
-
   if (job.accessorials.stairs > 0) {
     const amount = job.accessorials.stairs * 75;
-    breakdown.accessorials.push({
-      type: 'stairs',
-      units: job.accessorials.stairs,
-      rate: 75,
-      amount
-    });
+    breakdown.accessorials.push({ type: 'stairs', units: job.accessorials.stairs, rate: 75, amount });
     breakdown.subtotal += amount;
   }
-
   if (job.accessorials.elevator) {
     const amount = 150;
-    breakdown.accessorials.push({
-      type: 'elevator',
-      amount
-    });
+    breakdown.accessorials.push({ type: 'elevator', amount });
     breakdown.subtotal += amount;
   }
-
-  breakdown.finalTotal = Math.round(breakdown.subtotal * 100) / 100;
-
-  job.billing.pricingBreakdown = breakdown;
-  job.billing.approvedTotal = breakdown.finalTotal;
-
+  breakdown.finalTotal          = Math.round(breakdown.subtotal * 100) / 100;
+  job.billing.pricingBreakdown  = breakdown;
+  job.billing.approvedTotal     = breakdown.finalTotal;
   return job;
 };
+
+/* ================= FIRESTORE READ / WRITE ================= */
+
+// Fetch job from Firestore; fall back to creating a new in-memory default if missing
+const fetchJob = async jobId => {
+  const ref  = doc(db, JOBS, jobId);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    const data = snap.data();
+    // Deserialize Firestore Timestamps to ISO strings
+    const job  = {
+      ...data,
+      createdAt:  safeDate(data.createdAt),
+      updatedAt:  safeDate(data.updatedAt),
+      // Ensure nested arrays are present
+      inventory:     data.inventory     || [],
+      paymentLedger: data.paymentLedger || [],
+      labor:         data.labor         || [],
+      communications: data.communications || []
+    };
+    return normalizeJob(job);
+  }
+  // Job doesn't exist in Firestore — seed it from the default schema
+  const newJob = createJob(jobId);
+  await setDoc(ref, clean({ ...newJob, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }));
+  return normalizeJob(newJob);
+};
+
+// Write entire job back to Firestore
+const saveJob = async job => {
+  const ref = doc(db, JOBS, job.id);
+  const toWrite = clean({ ...job, updatedAt: serverTimestamp() });
+  await setDoc(ref, toWrite, { merge: true });
+  return normalizeJob(job);
+};
+
+// Partial update (only changed fields)
+const patchJob = async (jobId, patch) => {
+  const ref = doc(db, JOBS, jobId);
+  await updateDoc(ref, clean({ ...patch, updatedAt: serverTimestamp() }));
+  return fetchJob(jobId);
+};
+
 /* ================= API ================= */
 
 export const MoveMastersAPI = {
-  /* ---------- CORE ---------- */
 
-  getJob(jobId) {
-    return Promise.resolve(normalizeJob(JOB_DB[jobId]));
+  /* ---------- CORE ---------- */
+  async getJob(jobId) {
+    return fetchJob(jobId);
+  },
+
+  // Subscribe to real-time updates for a job
+  subscribeToJob(jobId, callback) {
+    const ref = doc(db, JOBS, jobId);
+    return onSnapshot(ref, snap => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const job  = normalizeJob({
+        ...data,
+        createdAt:      safeDate(data.createdAt),
+        updatedAt:      safeDate(data.updatedAt),
+        inventory:      data.inventory      || [],
+        paymentLedger:  data.paymentLedger  || [],
+        labor:          data.labor          || [],
+        communications: data.communications || []
+      });
+      callback(job);
+    });
   },
 
   /* ---------- SURVEY & PRICING ---------- */
-
-  submitFieldUpdate(jobId, payload) {
-    const job = JOB_DB[jobId];
+  async submitFieldUpdate(jobId, payload) {
+    const job = await fetchJob(jobId);
     job.proposedChanges = payload;
-    job.status = JobStatus.PENDING_APPROVAL;
+    job.status          = JobStatus.PENDING_APPROVAL;
     job.permissions.driverCanEdit = false;
-    return Promise.resolve(normalizeJob(job));
+    return saveJob(job);
   },
 
- /* ---------- INVENTORY ---------- */
-addInventoryItem(jobId, item) {
-  const job = JOB_DB[jobId];
+  /* ---------- INVENTORY ---------- */
+  async addInventoryItem(jobId, item) {
+    const job = await fetchJob(jobId);
+    if (job.loadingEvidence) return normalizeJob(job);
+    if (!Array.isArray(job.inventory)) job.inventory = [];
+    job.inventory.push({ ...item, estimatedCubicFeet: item.estimatedCubicFeet || 0, revisedCubicFeet: item.revisedCubicFeet || 0, qty: item.qty || 1 });
+    return saveJob(job);
+  },
 
-    // 🔒 Inventory is locked once loading evidence exists
-if (job.loadingEvidence) {
-  return Promise.resolve(normalizeJob(job));
-}
+  async updateInventoryItem(jobId, itemId, updates) {
+    const job = await fetchJob(jobId);
+    if (job.loadingEvidence) return normalizeJob(job);
+    job.inventory = job.inventory.map(i => i.id === itemId ? { ...i, ...updates } : i);
+    return saveJob(job);
+  },
 
-  if (!Array.isArray(job.inventory)) {
-    job.inventory = [];
-  }
+  async updateInventoryTotals(jobId) {
+    const job   = await fetchJob(jobId);
+    const items = Array.isArray(job.inventory) ? job.inventory : [];
+    job.inventoryTotals = {
+      estimatedCubicFeet: items.reduce((s, i) => s + (i.estimatedCubicFeet || 0) * (i.qty || 1), 0),
+      revisedCubicFeet:   items.reduce((s, i) => s + (i.revisedCubicFeet   || 0) * (i.qty || 1), 0),
+      finalCubicFeet: 0
+    };
+    job.inventoryTotals.finalCubicFeet = job.inventoryTotals.revisedCubicFeet > 0
+      ? job.inventoryTotals.revisedCubicFeet
+      : job.inventoryTotals.estimatedCubicFeet;
+    return saveJob(job);
+  },
 
-  job.inventory.push({
-    ...item,
-    estimatedCubicFeet: item.estimatedCubicFeet || 0,
-    revisedCubicFeet: item.revisedCubicFeet || 0,
-    qty: item.qty || 1
-  });
+  async approvePricing(jobId) {
+    let job = await fetchJob(jobId);
+    if (job.clientSigned) return normalizeJob(job);
+    job = calculatePricingBreakdown(job);
+    job.status = JobStatus.AWAITING_SIGNATURE;
+    job.permissions.clientCanSign = true;
+    return saveJob(job);
+  },
 
-  return Promise.resolve(normalizeJob(job));
-},
-
-updateInventoryItem(jobId, itemId, updates) {
-  const job = JOB_DB[jobId];
-// 🔒 Inventory cannot be edited after loading
-if (job.loadingEvidence) {
-  return Promise.resolve(normalizeJob(job));
-}
-  
-  job.inventory = job.inventory.map(item =>
-    item.id === itemId ? { ...item, ...updates } : item
-  );
-
-  return Promise.resolve(normalizeJob(job));
-},
-
-updateInventoryTotals(jobId) {
-  const job = JOB_DB[jobId];
-
-  const items = Array.isArray(job.inventory) ? job.inventory : [];
-
-  const totalEstimated = items.reduce(
-    (sum, i) => sum + (i.estimatedCubicFeet || 0) * (i.qty || 1),
-    0
-  );
-
-  const totalRevised = items.reduce(
-    (sum, i) => sum + (i.revisedCubicFeet || 0) * (i.qty || 1),
-    0
-  );
-
-  job.inventoryTotals = {
-    estimatedCubicFeet: totalEstimated,
-    revisedCubicFeet: totalRevised,
-    finalCubicFeet: totalRevised > 0 ? totalRevised : totalEstimated
-  };
-
-  return Promise.resolve(normalizeJob(job));
-},
-
-  approvePricing(jobId) {
-  let job = JOB_DB[jobId];
-
-      // 🔒 Pricing is locked once client has signed
-if (job.clientSigned) {
-  return Promise.resolve(normalizeJob(job));
-}
-
- job = calculatePricingBreakdown(job);
-
-  job.status = JobStatus.AWAITING_SIGNATURE;
-  job.permissions.clientCanSign = true;
-
-  return Promise.resolve(normalizeJob(job));
-},
-
-  signByClient(jobId) {
-    const job = JOB_DB[jobId];
-    job.clientSigned = true;
+  async signByClient(jobId) {
+    const job = await fetchJob(jobId);
+    job.clientSigned   = true;
     job.clientSignedAt = new Date().toISOString();
     job.permissions.clientCanSign = false;
-    return Promise.resolve(normalizeJob(job));
+    return saveJob(job);
   },
 
-  authorizeLoading(jobId) {
-    const job = JOB_DB[jobId];
+  async authorizeLoading(jobId) {
+    const job = await fetchJob(jobId);
     job.status = JobStatus.LOADING;
     job.permissions.driverCanEdit = true;
-    return Promise.resolve(normalizeJob(job));
+    return saveJob(job);
   },
 
   /* ---------- LOADING ---------- */
-
-  submitLoadingEvidence(jobId, evidence) {
-    const job = JOB_DB[jobId];
+  async submitLoadingEvidence(jobId, evidence) {
+    const job = await fetchJob(jobId);
     job.loadingEvidence = evidence;
-    job.status = JobStatus.AWAITING_DISPATCH;
-    return Promise.resolve(normalizeJob(job));
+    job.status          = JobStatus.AWAITING_DISPATCH;
+    return saveJob(job);
   },
 
   /* ---------- ROUTING ---------- */
-
-  routeToWarehouse(jobId) {
-    const job = JOB_DB[jobId];
-    job.status = JobStatus.EN_ROUTE_TO_WAREHOUSE;
-    return Promise.resolve(normalizeJob(job));
+  async routeToWarehouse(jobId) {
+    return patchJob(jobId, { status: JobStatus.EN_ROUTE_TO_WAREHOUSE });
   },
 
-  arriveAtWarehouse(jobId) {
-    const job = JOB_DB[jobId];
-    job.warehouse = {
-      ...job.warehouse,
-      inboundAt: new Date().toISOString(),
-      inboundBy: 'driver'
-    };
-    job.status = JobStatus.IN_WAREHOUSE;
-    return Promise.resolve(normalizeJob(job));
+  async arriveAtWarehouse(jobId) {
+    return patchJob(jobId, {
+      'warehouse.inboundAt': new Date().toISOString(),
+      'warehouse.inboundBy': 'driver',
+      status: JobStatus.IN_WAREHOUSE
+    });
   },
 
-  routeToDelivery(jobId) {
-    const job = JOB_DB[jobId];
-    job.status = JobStatus.OUT_FOR_DELIVERY;
-    return Promise.resolve(normalizeJob(job));
+  async routeToDelivery(jobId) {
+    return patchJob(jobId, { status: JobStatus.OUT_FOR_DELIVERY });
   },
 
-  /* ---------- DRIVER → WAREHOUSE HANDSHAKE ---------- */
-
-  driverArrivesAtWarehouse(jobId) {
-    const job = JOB_DB[jobId];
-    job.warehouse = {
-      ...job.warehouse,
-      inboundAt: new Date().toISOString(),
-      inboundBy: 'driver'
-    };
-    job.status = JobStatus.IN_WAREHOUSE;
-    return Promise.resolve(normalizeJob(job));
+  async driverArrivesAtWarehouse(jobId) {
+    return patchJob(jobId, {
+      'warehouse.inboundAt': new Date().toISOString(),
+      'warehouse.inboundBy': 'driver',
+      status: JobStatus.IN_WAREHOUSE
+    });
   },
 
-  /* ---------- 🏬 WAREHOUSE INBOUND ---------- */
-
-  warehouseInbound(jobId, payload) {
-    const job = JOB_DB[jobId];
-    job.warehouse = {
-      ...job.warehouse,
-      ...payload,
-      inboundAt: new Date().toISOString(),
-      inboundBy: payload.by || 'warehouse'
-    };
-    job.status = JobStatus.AWAITING_WAREHOUSE_DISPATCH;
-    return Promise.resolve(normalizeJob(job));
+  /* ---------- WAREHOUSE INBOUND ---------- */
+  async warehouseInbound(jobId, payload) {
+    const job = await fetchJob(jobId);
+    job.warehouse = { ...job.warehouse, ...payload, inboundAt: new Date().toISOString(), inboundBy: payload.by || 'warehouse' };
+    job.status    = JobStatus.AWAITING_WAREHOUSE_DISPATCH;
+    return saveJob(job);
   },
 
-  /* ---------- 🧠 OFFICE DISPATCH FROM WAREHOUSE ---------- */
-
-  dispatchFromWarehouse(jobId) {
-    const job = JOB_DB[jobId];
-    job.status = JobStatus.AWAITING_OUTTAKE;
-    return Promise.resolve(normalizeJob(job));
+  /* ---------- OFFICE DISPATCH FROM WAREHOUSE ---------- */
+  async dispatchFromWarehouse(jobId) {
+    return patchJob(jobId, { status: JobStatus.AWAITING_OUTTAKE });
   },
 
-  /* ---------- 🏬 WAREHOUSE OUTBOUND ---------- */
-
-  warehouseOutbound(jobId, payload) {
-    const job = JOB_DB[jobId];
-    job.warehouse = {
-      ...job.warehouse,
-      ...payload,
-      outboundAt: new Date().toISOString(),
-      outboundBy: payload.by || 'warehouse'
-    };
-    job.status = JobStatus.OUT_FOR_DELIVERY;
-    return Promise.resolve(normalizeJob(job));
+  /* ---------- WAREHOUSE OUTBOUND ---------- */
+  async warehouseOutbound(jobId, payload) {
+    const job = await fetchJob(jobId);
+    job.warehouse = { ...job.warehouse, ...payload, outboundAt: new Date().toISOString(), outboundBy: payload.by || 'warehouse' };
+    job.status    = JobStatus.OUT_FOR_DELIVERY;
+    return saveJob(job);
   },
 
   /* ---------- DELIVERY ARRIVAL & PAYMENT ---------- */
-
-  arriveAtDestination(jobId) {
-    const job = JOB_DB[jobId];
-    job.arrivedAt = new Date().toISOString();
-    job.status = JobStatus.PAYMENT_PENDING;
-    return Promise.resolve(normalizeJob(job));
+  async arriveAtDestination(jobId) {
+    return patchJob(jobId, { arrivedAt: new Date().toISOString(), status: JobStatus.PAYMENT_PENDING });
   },
 
-  confirmPayment(jobId) {
-    const job = JOB_DB[jobId];
-    job.billing.paymentReceived = true;
-    job.status = JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION;
-    return Promise.resolve(normalizeJob(job));
+  async confirmPayment(jobId) {
+    return patchJob(jobId, { 'billing.paymentReceived': true, status: JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION });
   },
 
-  recordPayment(jobId, payment) {
-  const job = JOB_DB[jobId];
-
-  if (!job.paymentLedger) {
-    job.paymentLedger = [];
-  }
-
-  job.paymentLedger.push({
-    id: Date.now(),
-    amount: payment.amount,
-    method: payment.method || 'unknown',
-    note: payment.note || '',
-    receivedAt: new Date().toISOString(),
-    receivedBy: payment.receivedBy || 'office'
-  });
-
-  return Promise.resolve(normalizeJob(job));
-},
+  async recordPayment(jobId, payment) {
+    const job = await fetchJob(jobId);
+    if (!job.paymentLedger) job.paymentLedger = [];
+    job.paymentLedger.push({
+      id:         Date.now(),
+      amount:     payment.amount,
+      method:     payment.method     || 'unknown',
+      note:       payment.note       || '',
+      receivedAt: new Date().toISOString(),
+      receivedBy: payment.receivedBy || 'office'
+    });
+    return saveJob(job);
+  },
 
   /* ---------- OFFICE DELIVERY ADJUSTMENTS ---------- */
+  async updateDeliveryAccessorials(jobId, updates) {
+    const job = await fetchJob(jobId);
+    if (job.status !== JobStatus.PAYMENT_PENDING && job.status !== JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION) {
+      return normalizeJob(job);
+    }
+    if (!job.deliveryAccessorials) {
+      job.deliveryAccessorials = { longCarryFeet: 0, stairs: 0, elevator: false, bulkyItems: [], shuttleRequired: false, notes: '' };
+    }
+    job.deliveryAccessorials = { ...job.deliveryAccessorials, ...updates };
+    return saveJob(job);
+  },
 
-updateDeliveryAccessorials(jobId, updates) {
-  const job = JOB_DB[jobId];
-
-  // Delivery adjustments only allowed after arrival and before client confirmation
-  if (
-    job.status !== JobStatus.PAYMENT_PENDING &&
-    job.status !== JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION
-  ) {
-    return Promise.resolve(normalizeJob(job));
-  }
-
-  if (!job.deliveryAccessorials) {
-    job.deliveryAccessorials = {
-      longCarryFeet: 0,
-      stairs: 0,
-      elevator: false,
-      bulkyItems: [],
-      shuttleRequired: false,
-      notes: ''
-    };
-  }
-
-  job.deliveryAccessorials = {
-    ...job.deliveryAccessorials,
-    ...updates
-  };
-
-  return Promise.resolve(normalizeJob(job));
-},
-
-approveDeliveryAdjustments(jobId) {
-  let job = JOB_DB[jobId];
-
-  // Only office can approve delivery-side changes
-  if (
-    job.status !== JobStatus.PAYMENT_PENDING ||
-    !job.billing.isPaidInFull
-  ) {
-    return Promise.resolve(normalizeJob(job));
-  }
-
-  // Merge delivery accessorials into permanent accessorials
-  job.accessorials = {
-    ...job.accessorials,
-    ...job.deliveryAccessorials
-  };
-
-  // Recalculate pricing using final accessorial state
-  job = calculatePricingBreakdown(job);
-
-  // Unlock unload gate
-  job.status = JobStatus.UNLOAD_AUTHORIZED;
-
-  return Promise.resolve(normalizeJob(job));
-},
-
-  
+  async approveDeliveryAdjustments(jobId) {
+    let job = await fetchJob(jobId);
+    if (job.status !== JobStatus.PAYMENT_PENDING || !job.billing.isPaidInFull) return normalizeJob(job);
+    job.accessorials = { ...job.accessorials, ...job.deliveryAccessorials };
+    job = calculatePricingBreakdown(job);
+    job.status = JobStatus.UNLOAD_AUTHORIZED;
+    return saveJob(job);
+  },
 
   /* ---------- CLIENT UNLOAD AUTH ---------- */
-
-  confirmDeliveryByClient(jobId) {
-    const job = JOB_DB[jobId];
-    job.deliveryConfirmedByClient = true;
-    job.deliveryConfirmedAt = new Date().toISOString();
-    job.status = JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE;
-    return Promise.resolve(normalizeJob(job));
+  async confirmDeliveryByClient(jobId) {
+    return patchJob(jobId, {
+      deliveryConfirmedByClient: true,
+      deliveryConfirmedAt:       new Date().toISOString(),
+      status:                    JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE
+    });
   },
 
   /* ---------- DRIVER CLOSEOUT ---------- */
-
-  submitDeliveryEvidence(jobId, evidence) {
-    const job = JOB_DB[jobId];
-    job.deliveryEvidence = evidence;
-    return Promise.resolve(normalizeJob(job));
+  async submitDeliveryEvidence(jobId, evidence) {
+    return patchJob(jobId, { deliveryEvidence: evidence });
   },
 
-  signOffByDriver(jobId) {
-    const job = calculateLabor(JOB_DB[jobId]);
-    job.driverSigned = true;
+  async signOffByDriver(jobId) {
+    const job = calculateLabor(await fetchJob(jobId));
+    job.driverSigned   = true;
     job.driverSignedAt = new Date().toISOString();
-    job.status = JobStatus.COMPLETED;
-    return Promise.resolve(normalizeJob(job));
+    job.status         = JobStatus.COMPLETED;
+    return saveJob(job);
   },
 
   /* ---------- LABOR ---------- */
-
-  addHelper(jobId, helper) {
-    const job = JOB_DB[jobId];
+  async addHelper(jobId, helper) {
+    const job = await fetchJob(jobId);
     job.labor.push(helper);
-    return Promise.resolve(normalizeJob(job));
+    return saveJob(job);
   },
 
-  /* ---------- JOB COMMUNICATIONS ---------- */
-
-  addJobMessage(jobId, message) {
-    const job = JOB_DB[jobId];
+  /* ---------- COMMUNICATIONS ---------- */
+  async addJobMessage(jobId, message) {
+    const job = await fetchJob(jobId);
     job.communications.push({
-      id: Date.now(),
-      fromRole: message.fromRole,
-      toRole: message.toRole,
-      text: message.text,
+      id:        Date.now(),
+      fromRole:  message.fromRole,
+      toRole:    message.toRole,
+      text:      message.text,
       timestamp: new Date().toISOString()
     });
-    return Promise.resolve(normalizeJob(job));
+    return saveJob(job);
   }
 };
