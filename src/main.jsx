@@ -1,19 +1,13 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import InventoryPanel from './components/InventoryPanel';
 import DriverEarningsPanel from './components/DriverEarningsPanel';
+import { MoveMastersAPI } from './api/moveMastersApi';
 
+/* ========================================================================== 
+ SCHEMAS & STATUS FLOW
+========================================================================== */
 
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-/* ==========================================================================
-  MOCK DATA & SCHEMAS (Consolidated from shared/jobSchema)
-  ==========================================================================
-*/
 const JobStatus = {
   SURVEY: 'SURVEY',
   PENDING_APPROVAL: 'PENDING_APPROVAL',
@@ -32,63 +26,20 @@ const JobStatus = {
 };
 
 const STATUS_FLOW = [
-  JobStatus.SURVEY,
-  JobStatus.PENDING_APPROVAL,
-  JobStatus.AWAITING_SIGNATURE,
-  JobStatus.LOADING,
-  JobStatus.AWAITING_DISPATCH,
-  JobStatus.EN_ROUTE_TO_WAREHOUSE,
-  JobStatus.IN_WAREHOUSE,
-  JobStatus.AWAITING_WAREHOUSE_DISPATCH,
-  JobStatus.AWAITING_OUTTAKE,
-  JobStatus.OUT_FOR_DELIVERY,
-  JobStatus.PAYMENT_PENDING,
+  JobStatus.SURVEY, JobStatus.PENDING_APPROVAL, JobStatus.AWAITING_SIGNATURE,
+  JobStatus.LOADING, JobStatus.AWAITING_DISPATCH, JobStatus.EN_ROUTE_TO_WAREHOUSE,
+  JobStatus.IN_WAREHOUSE, JobStatus.AWAITING_WAREHOUSE_DISPATCH,
+  JobStatus.AWAITING_OUTTAKE, JobStatus.OUT_FOR_DELIVERY, JobStatus.PAYMENT_PENDING,
   JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION,
-  JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE,
-  JobStatus.COMPLETED
+  JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE, JobStatus.COMPLETED
 ];
 
-/* ==========================================================================
-  MOCK API (Consolidated from api/moveMastersApi)
-  ==========================================================================
-*/
-const MoveMastersAPI = {
-  getJob: async (id) => ({
-    id,
-    status: JobStatus.SURVEY,
-    clientName: "Alpha Operator",
-    clientSigned: false,
-    inventory: [
-      { id: 1, name: 'Sectional Sofa', cf: 60, condition: 'Pre-existing scratch on left arm' },
-      { id: 2, name: 'Dining Table', cf: 30, condition: 'Good' }
-    ],
-    inventoryTotals: { estimatedCubicFeet: 90, finalCubicFeet: 90 },
-    billing: { 
-      approvedTotal: 1200, 
-      pricingBreakdown: { 
-        base: { cubicFeet: 90, ratePerCubicFoot: 10, amount: 900 }, 
-        accessorials: [{ type: 'Fuel_Surcharge', amount: 300 }], 
-        subtotal: 1200, 
-        finalTotal: 1200 
-      } 
-    },
-    labor: [{ role: 'driver', payout: 450 }, { role: 'helper', payout: 150 }],
-    communications: [{ id: 1, fromRole: 'office', toRole: 'driver', text: 'Ensure you document the pre-existing damage on the sofa.' }],
-    payments: { pickup: { paid: false, amount: 600 }, delivery: { paid: false, amount: 600 } }
-  }),
-  submitFieldUpdate: async (id, data) => ({ id, status: JobStatus.PENDING_APPROVAL }),
-  approvePricing: async (id) => ({ id, status: JobStatus.AWAITING_SIGNATURE }),
-};
+/* ========================================================================== 
+ SUB-COMPONENTS
+========================================================================== */
 
-/* ==========================================================================
-  SUB-COMPONENTS (Consolidated from components/)
-  ==========================================================================
-*/
-
-const PricingSummary = ({ job, role }) => {
-  // Use a fallback to ensure toLocaleString is never called on undefined
+const PricingSummary = ({ job }) => {
   const displayTotal = job?.billing?.pricingBreakdown?.finalTotal ?? job?.billing?.approvedTotal ?? 0;
-
   return (
     <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 mb-6">
       <div className="flex justify-between items-center mb-2">
@@ -102,64 +53,31 @@ const PricingSummary = ({ job, role }) => {
   );
 };
 
-const InventoryPanel = ({ inventory, role, canEdit = false }) => (
-  <div className="bg-white border border-stone-200 rounded-xl overflow-hidden mb-6">
-    <div className="bg-stone-900 px-4 py-2 text-white flex justify-between items-center">
-      <span className="text-[10px] font-black uppercase tracking-widest">Inventory Log</span>
-      <span className="text-[10px] font-bold text-stone-400">{inventory.length} Items</span>
-    </div>
-    <div className="divide-y divide-stone-100">
-      {inventory.map(item => (
-        <div key={item.id} className="p-3 flex justify-between items-start">
-          <div>
-            <div className="text-sm font-bold text-stone-800">{item.name}</div>
-            <div className="text-[10px] text-stone-400 italic">{item.condition}</div>
-          </div>
-          <div className="text-xs font-black text-stone-500">{item.cf} CF</div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const DriverEarningsPanel = ({ job }) => (
-  <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-6">
-    <div className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Driver Payout Logic</div>
-    <div className="flex justify-between items-end">
-      <div className="text-2xl font-black text-amber-900 italic">$450.00</div>
-      <div className="text-[10px] text-amber-700 font-bold">100% Signal Integrity</div>
-    </div>
-  </div>
-);
-
-/* ==========================================================================
-  BATON & PROGRESS COMPONENTS
-  ==========================================================================
-*/
+/* ========================================================================== 
+ BATON & PROGRESS COMPONENTS
+========================================================================== */
 
 function BatonDisplay({ currentStatus, role }) {
   const getActiveRole = (status) => {
     switch (status) {
-      case JobStatus.SURVEY: return 'driver';
-      case JobStatus.PENDING_APPROVAL: return 'office';
-      case JobStatus.AWAITING_SIGNATURE: return 'client';
-      case JobStatus.LOADING: return 'driver';
-      case JobStatus.AWAITING_DISPATCH: return 'office';
-      case JobStatus.EN_ROUTE_TO_WAREHOUSE: return 'driver';
-      case JobStatus.IN_WAREHOUSE: return 'warehouse';
-      case JobStatus.AWAITING_WAREHOUSE_DISPATCH: return 'office';
-      case JobStatus.AWAITING_OUTTAKE: return 'warehouse';
-      case JobStatus.OUT_FOR_DELIVERY: return 'driver';
-      case JobStatus.PAYMENT_PENDING: return 'office';
+      case JobStatus.SURVEY:                               return 'driver';
+      case JobStatus.PENDING_APPROVAL:                    return 'office';
+      case JobStatus.AWAITING_SIGNATURE:                  return 'client';
+      case JobStatus.LOADING:                             return 'driver';
+      case JobStatus.AWAITING_DISPATCH:                   return 'office';
+      case JobStatus.EN_ROUTE_TO_WAREHOUSE:               return 'driver';
+      case JobStatus.IN_WAREHOUSE:                        return 'warehouse';
+      case JobStatus.AWAITING_WAREHOUSE_DISPATCH:         return 'office';
+      case JobStatus.AWAITING_OUTTAKE:                    return 'warehouse';
+      case JobStatus.OUT_FOR_DELIVERY:                    return 'driver';
+      case JobStatus.PAYMENT_PENDING:                     return 'office';
       case JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION: return 'client';
-      case JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE: return 'driver';
+      case JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE:   return 'driver';
       default: return null;
     }
   };
-
   const activeRole = getActiveRole(currentStatus);
   const isMyTurn = activeRole === role;
-
   return (
     <div className={`p-4 mb-5 border-2 rounded-xl transition-all ${isMyTurn ? 'border-green-500 bg-green-50 shadow-md' : 'border-stone-200 bg-white opacity-80'}`}>
       <div className="flex justify-between items-center">
@@ -196,10 +114,10 @@ function ProgressTracker({ currentStatus }) {
   );
 }
 
-/* ==========================================================================
-  MAIN APP COMPONENT
-  ==========================================================================
-*/
+/* ========================================================================== 
+ MAIN APP COMPONENT
+========================================================================== */
+
 export default function App() {
   const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
@@ -218,6 +136,12 @@ export default function App() {
       }
     };
     loadJob();
+
+    // Subscribe to real-time updates
+    const unsubscribe = MoveMastersAPI.subscribeToJob('FLEETFLOW-001', (updatedJob) => {
+      setJob(updatedJob);
+    });
+    return () => { if (unsubscribe) unsubscribe(); };
   }, []);
 
   if (loading || !job) {
@@ -232,8 +156,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-blue-100 p-4 md:p-8">
       <div className="max-w-xl mx-auto">
-        
-        {/* Header Section */}
         <header className="flex justify-between items-center mb-6 pb-4 border-b border-stone-200">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-white font-black italic shadow-lg shadow-blue-200">F</div>
@@ -244,16 +166,15 @@ export default function App() {
           </div>
         </header>
 
-        {/* Role Switcher */}
         <div className="flex gap-1.5 mb-8 overflow-x-auto pb-2 no-scrollbar">
           {['driver', 'helper', 'office', 'warehouse', 'client'].map(r => (
             <button
               key={r}
               onClick={() => setRole(r)}
               className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                role === r 
-                ? 'bg-stone-900 text-white shadow-lg scale-105' 
-                : 'bg-white text-stone-400 border border-stone-200 hover:bg-stone-100'
+                role === r
+                  ? 'bg-stone-900 text-white shadow-lg scale-105'
+                  : 'bg-white text-stone-400 border border-stone-200 hover:bg-stone-100'
               }`}
             >
               {r}
@@ -261,23 +182,19 @@ export default function App() {
           ))}
         </div>
 
-        {/* Status Indicators */}
         <BatonDisplay currentStatus={job.status} role={role} />
         <ProgressTracker currentStatus={job.status} />
+        <PricingSummary job={job} />
 
-        {/* Dynamic Context Panel */}
-        <PricingSummary job={job} role={role} />
-
-        {/* Role-Specific Actions */}
         <main className="mt-8">
           {role === 'driver' && (
             <div className="space-y-6">
               {job.status === JobStatus.SURVEY && (
                 <div className="space-y-4">
-                  <InventoryPanel role="driver" inventory={job.inventory} canEdit={true} />
-                  <button 
+                  <InventoryPanel role="driver" inventory={job.inventory || []} canEdit={true} />
+                  <button
                     className="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest italic hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-100"
-                    onClick={() => MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(data => setJob({...job, status: data.status}))}
+                    onClick={() => MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(data => setJob(prev => ({...prev, status: data.status})))}
                   >
                     📸 Submit Survey to Office
                   </button>
@@ -286,25 +203,22 @@ export default function App() {
               <DriverEarningsPanel job={job} />
             </div>
           )}
-
           {role === 'office' && (
             <div className="space-y-6">
               {job.status === JobStatus.PENDING_APPROVAL && (
                 <div className="p-6 bg-white border border-stone-200 rounded-xl text-center">
                   <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Final Margin Audit Required</p>
-                  <button 
+                  <button
                     className="w-full bg-green-600 text-white py-4 rounded-xl font-black uppercase tracking-widest italic hover:bg-green-700 shadow-xl shadow-green-100 transition-all"
-                    onClick={() => MoveMastersAPI.approvePricing(job.id).then(data => setJob({...job, status: data.status}))}
+                    onClick={() => MoveMastersAPI.approvePricing(job.id).then(data => setJob(prev => ({...prev, status: data.status})))}
                   >
                     ✓ Approve & Send to Client
                   </button>
                 </div>
               )}
-              <InventoryPanel role="office" inventory={job.inventory} />
+              <InventoryPanel role="office" inventory={job.inventory || []} />
             </div>
           )}
-          
-          {/* Default view for other roles */}
           {!['driver', 'office'].includes(role) && (
             <div className="text-center py-12 text-stone-300 font-black uppercase tracking-widest italic text-xs">
               Waiting for Actor Input
@@ -320,3 +234,9 @@ export default function App() {
     </div>
   );
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
