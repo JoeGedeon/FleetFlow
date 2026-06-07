@@ -1,11 +1,6 @@
-{
-  base: 3825,
-  accessorials: {
-    longCarry: 250,
-    stairs: 180,
-    bulky: 300
-  },
-  subtotal: 4555,
-  tax: 0,
-  total: 4555
-}
+// src/api/pricing/pricingEngine.js
+// Pricing engine — calculations currently live in moveMastersApi.js.
+// This module is the extraction point when pricing logic needs to scale
+// independently (e.g. shared with PACER, tested in isolation).
+
+export { calculatePricingBreakdown } from '../moveMastersApi';
