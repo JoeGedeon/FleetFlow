@@ -5,12 +5,12 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA0f42Pv4N7MDKWYixg5a-D3MrjldU--Pw",
-  authDomain: "movemastersos.firebaseapp.com",
-  projectId: "movemastersos",
-  storageBucket: "movemastersos.firebasestorage.app",
-  messagingSenderId: "422211525514",
-  appId: "1:422211525514:web:e94d355b1720d816eec673"
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Prevent duplicate initialization (React hot-reload safe)
@@ -18,6 +18,6 @@ const app = getApps().length === 0
   ? initializeApp(firebaseConfig)
   : getApps()[0];
 
-export const db  = getFirestore(app);
+export const db   = getFirestore(app);
 export const auth = getAuth(app);
 export default app;
