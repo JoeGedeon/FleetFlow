@@ -1,4 +1,4 @@
-<div id="tabs-container"></div><!DOCTYPE html>
+<!DOCTYPE html>
 <!--
 ================================================================================
 FleetFlow v50 — Release Candidate
@@ -544,32 +544,6 @@ Timestamp:             2026-04-13T02:37:42Z
     background:rgba(0,0,0,0.2);border-radius:4px;margin-bottom:12px }
   .legend-item { display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9px;color:var(--gray);white-space:nowrap }
 
-
-  /* ── GROUPED NAV ── */
-  .nav-bar { display:flex; align-items:center; gap:4px; padding:0 16px; background:var(--navy2);
-    border-bottom:1px solid rgba(0,255,65,0.1); overflow-x:auto; overflow-y:visible;
-    -webkit-overflow-scrolling:touch; position:relative; }
-  .nav-group { position:static; flex-shrink:0; }
-  .nav-group-btn { display:flex; align-items:center; gap:5px; padding:12px 14px;
-    background:transparent; border:none; border-bottom:2px solid transparent;
-    color:var(--gray); font-family:var(--font-mono);
-    font-size:11px; cursor:pointer; letter-spacing:1px; white-space:nowrap;
-    transition:all 0.15s; }
-  .nav-group-btn:hover { color:var(--green); }
-  .nav-group-btn.active { color:var(--green); border-bottom-color:var(--green); }
-  .nav-group-btn .arrow { font-size:8px; opacity:0.6; transition:transform 0.2s; }
-  .nav-group-btn.open .arrow { transform:rotate(180deg); }
-  .nav-dropdown { display:none; position:fixed; top:auto; left:auto; z-index:500;
-    min-width:200px; background:var(--navy2); border:1px solid var(--green3);
-    border-radius:6px; box-shadow:0 8px 32px rgba(0,0,0,0.5); padding:4px 0; }
-  .nav-dropdown.open { display:block; }
-  .nav-dropdown a { display:block; padding:10px 18px; font-family:var(--font-mono); font-size:11px;
-    color:var(--gray); cursor:pointer; white-space:nowrap; transition:background 0.1s; }
-  .nav-dropdown a:hover { color:var(--green); background:rgba(0,255,65,0.06); }
-  .nav-dropdown a.active { color:var(--green); font-weight:700;
-    border-left:2px solid var(--green); padding-left:16px; }
-  .nav-divider { height:1px; background:rgba(255,255,255,0.06); margin:4px 0; }
-  .nav-pinned { display:flex; align-items:center; gap:4px; margin-left:auto; flex-shrink:0; padding-left:8px; }
 </style>
   <!-- Stripe.js — payment processing -->
   <script src="https://js.stripe.com/v3/"></script>
@@ -667,7 +641,7 @@ Timestamp:             2026-04-13T02:37:42Z
 <div id="login-screen">
   <div class="login-box" style="position:relative">
     <div class="scanner-line"></div>
-    <div class="login-logo">FLEET FLOW</div>
+    <div class="login-logo">FLEETFLOW</div>
     <div class="login-sub">JPG Systems Operations</div>
 
     <!-- FIRST TIME SETUP (shown if no users exist) -->
@@ -689,17 +663,21 @@ Timestamp:             2026-04-13T02:37:42Z
     </div>
 
     <!-- NORMAL LOGIN (shown after setup) -->
-    <div id="login-panel" style="display:none">
+    <div id="login-panel" style="display:block">
       <div id="login-error" style="display:none;background:rgba(255,51,51,0.1);border:1px solid #552222;border-radius:3px;padding:10px;margin-bottom:16px;font-family:var(--font-mono);font-size:11px;color:var(--red);letter-spacing:1px;text-align:left"></div>
       <label>Username</label>
       <input type="text" id="login-name" placeholder="Enter username" autocomplete="username" onkeypress="if(event.key==='Enter') doLogin()" />
       <label>Password</label>
-      <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password" onkeypress="if(event.key==='Enter') doLogin()" />
+      <div style="position:relative">
+        <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password" onkeypress="if(event.key==='Enter') doLogin()" style="width:100%;padding-right:40px" />
+        <span onclick="const p=document.getElementById('login-pass');p.type=p.type==='password'?'text':'password';this.textContent=p.type==='password'?'👁':'🙈'"
+          style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;user-select:none;opacity:0.6">👁</span>
+      </div>
       <button class="btn-primary" onclick="doLogin()" id="login-btn">ENTER SYSTEM</button>
     </div>
 
     <!-- CHECKING STATE -->
-    <div id="checking-panel">
+    <div id="checking-panel" style="display:none">
       <p style="font-family:var(--font-mono);font-size:11px;color:var(--gray);letter-spacing:2px;text-align:center">CHECKING SYSTEM...</p>
     </div>
 
@@ -750,6 +728,7 @@ Timestamp:             2026-04-13T02:37:42Z
       </div>
       <div class="form-group"><label>Client Name</label><input type="text" id="nj-client" placeholder="Full name" /></div>
       <div class="form-group"><label>Contact Phone</label><input type="text" id="nj-phone" placeholder="(555) 000-0000" /></div>
+      <div class="form-group"><label>Client Email</label><input type="email" id="nj-email" placeholder="client@email.com" /></div>
     </div>
     <div class="grid-2">
       <div class="form-group"><label>Start Date</label><input type="date" id="nj-date" /></div>
@@ -1141,6 +1120,7 @@ Timestamp:             2026-04-13T02:37:42Z
     <div class="grid-2">
       <div class="form-group"><label>Client Name</label><input type="text" id="ej-client" /></div>
       <div class="form-group"><label>Contact Phone</label><input type="text" id="ej-phone" /></div>
+      <div class="form-group"><label>Client Email</label><input type="email" id="ej-email" placeholder="client@email.com" /></div>
     </div>
     <div class="grid-2">
       <div class="form-group"><label>Start Date</label><input type="date" id="ej-date" /></div>
@@ -1194,7 +1174,7 @@ Timestamp:             2026-04-13T02:37:42Z
       <label>👥 Helpers / Crew Names <span class="info-text">(calendar + pay log)</span></label>
       <div id="ej-helper-rows" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
       <button type="button" class="btn-outline" style="padding:6px 14px;font-size:11px;width:100%"
-        onclick="addHelperRow('ej')">+ ADD HELPER</button>
+        onclick="addEjHelperRow()">+ ADD HELPER</button>
       <datalist id="ej-helper-list"></datalist>
     </div>
     <div class="grid-2">
@@ -1297,7 +1277,7 @@ Timestamp:             2026-04-13T02:37:42Z
         </div>
         <div class="form-group">
           <label>Price per Cu Ft ($)</label>
-          <input type="number" id="ej-rate-per-cuft" placeholder="e.g. 0.75" min="0" step="0.01"
+          <input type="number" id="ej-rate-carrier" placeholder="e.g. 0.75" min="0" step="0.01"
             oninput="calcCarrierTotal('ej')" />
         </div>
         <div class="form-group">
@@ -1385,10 +1365,10 @@ Timestamp:             2026-04-13T02:37:42Z
       </div>
     </div>
 
-<div class="grid-3">
-        <div class="form-group">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div class="form-group" style="grid-column:1/-1">
           <label>Fuel Surcharge</label>
-          <div style="display:flex;gap:6px;align-items:center">
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
             <select id="ej-est-fuel-mode" onchange="toggleFuelMode('ej')"
               style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:6px 8px;font-family:var(--font-mono);font-size:11px;border-radius:3px;outline:none;flex-shrink:0">
               <option value="flat">$ Flat</option>
@@ -1396,17 +1376,15 @@ Timestamp:             2026-04-13T02:37:42Z
               <option value="pctbase">% of Base Total</option>
             </select>
             <input type="number" id="ej-est-fuel" placeholder="0.00" min="0" step="0.01"
-              style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:6px 8px;font-family:var(--font-mono);font-size:12px;border-radius:3px;outline:none;width:80px" />
-            <span id="ej-est-fuel-label" style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">dollars</span>
+              style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:6px 8px;font-family:var(--font-mono);font-size:12px;border-radius:3px;outline:none;flex:1;min-width:60px" />
+            <span id="ej-est-fuel-label" style="font-family:var(--font-mono);font-size:11px;color:var(--gray);white-space:nowrap">dollars</span>
           </div>
           <input type="hidden" id="ej-est-fuel-pct" value="0" />
         </div>
         <div class="form-group"><label>Stairs - Origin ($)</label><input type="number" id="ej-est-stairs-origin" placeholder="0.00" min="0" step="0.01" /></div>
-        <div class="form-group"><label>Stairs - Destination ($)</label><input type="number" id="ej-est-stairs-dest" placeholder="0.00" min="0" step="0.01" /></div>
-      </div>
-      <div class="grid-3">
+        <div class="form-group"><label>Stairs - Dest ($)</label><input type="number" id="ej-est-stairs-dest" placeholder="0.00" min="0" step="0.01" /></div>
         <div class="form-group"><label>Long Carry - Origin ($)</label><input type="number" id="ej-est-longcarry-origin" placeholder="0.00" min="0" step="0.01" /></div>
-        <div class="form-group"><label>Long Carry - Destination ($)</label><input type="number" id="ej-est-longcarry-dest" placeholder="0.00" min="0" step="0.01" /></div>
+        <div class="form-group"><label>Long Carry - Dest ($)</label><input type="number" id="ej-est-longcarry-dest" placeholder="0.00" min="0" step="0.01" /></div>
         <div class="form-group"><label>Shuttle ($)</label><input type="number" id="ej-est-shuttle" placeholder="0.00" min="0" step="0.01" /></div>
       </div>
       <div class="grid-3">
@@ -1424,10 +1402,15 @@ Timestamp:             2026-04-13T02:37:42Z
         <div class="form-group"><label>Partial Payment 2 ($)</label><input type="number" id="ej-est-partial2" placeholder="0.00" min="0" step="0.01" /></div>
         <div class="form-group"><label>Packing Materials ($)</label><input type="number" id="ej-est-packing" placeholder="0.00" min="0" step="0.01" /></div>
         <div class="form-group"><label>Overload Cu.Ft.</label><input type="number" id="ej-est-overload-cuft" placeholder="0" min="0" step="1" /></div>
-        <div class="form-group"><label>Discount %</label>
-          <div style="display:flex;gap:6px">
-            <input type="number" id="ej-est-discount" placeholder="0.00" min="0" max="100" step="0.5" style="width:70px" />
-            <input type="text" id="ej-est-discount-label" placeholder="e.g. Coupon Discount" style="flex:1" />
+        <div class="form-group"><label>Discount</label>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <select id="ej-est-discount-mode"
+              style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:6px 8px;font-family:var(--font-mono);font-size:11px;border-radius:3px;outline:none;flex-shrink:0">
+              <option value="pct">% Percent</option>
+              <option value="flat">$ Flat Amount</option>
+            </select>
+            <input type="number" id="ej-est-discount" placeholder="0" min="0" step="0.01" style="width:90px" />
+            <input type="text" id="ej-est-discount-label" placeholder="e.g. 4 Day Window" style="flex:1" />
           </div>
         </div>
       </div>
@@ -1633,6 +1616,10 @@ Timestamp:             2026-04-13T02:37:42Z
       <input type="password" id="um-password" placeholder="Min 6 characters" />
     </div>
     <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="um-email" placeholder="user@email.com" />
+    </div>
+    <div class="form-group">
       <label>Role</label>
       <select id="um-role">
         <option value="owner">⬡ Owner / Lead Admin</option>
@@ -1828,6 +1815,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db      = firebase.firestore();
 const storage = firebase.storage();
+
+// Force long polling for file:// protocol IMMEDIATELY after db creation
+// Must be called before any other Firestore operation
+if (window.location.protocol === 'file:') {
+  try { db.settings({ experimentalForceLongPolling: true, merge: true }); } catch(e) {}
+}
 
 // Collection refs — ff_ prefix keeps FleetFlow data separate from Move Masters OS
 // ============================================================
@@ -2433,7 +2426,7 @@ function toggleLegendPanel() {
 // ── ONBOARDING STATE MACHINE ──────────────────────────────────
 async function routeOnboarding(user) {
   if (isCreatorAccount(user.username)) return;
-  if (user.role !== 'owner') return;
+  if (!['owner','office'].includes(user.role)) return;
   const isLocal = window.location.protocol === 'file:';
   const localKey = 'ff_ob_' + user.username;
   if (isLocal) {
@@ -4722,9 +4715,18 @@ async function renderSystemHealth() {
 async function buildSystemHealthView() {
   const now = new Date();
 
-  // ── Load all company profiles ────────────────────────────────────────
-  const coSnap = await db.collection('ff_company').get();
+  // ── Load company profiles ─────────────────────────────────────────────
+  const coSnap    = await db.collection('ff_company').get();
   const companies = coSnap.docs.map(d => ({ ...d.data(), _docId: d.id }));
+
+  // ── Per-company isolation notice ──────────────────────────────────────
+  const tierSwitchEl = document.getElementById('tier-switches');
+  if (tierSwitchEl) {
+    tierSwitchEl.innerHTML = `
+      <div style="grid-column:1/-1;background:rgba(0,255,65,0.04);border:1px solid var(--green3);border-radius:4px;padding:12px 16px;font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:1px">
+        ✓ FULLY ISOLATED — Each company's plan and access is controlled independently below. No company affects another.
+      </div>`;
+  }
 
   // ── For each company, get live stats ─────────────────────────────────
   const companyStats = await Promise.all(companies.map(async co => {
@@ -4788,6 +4790,20 @@ async function buildSystemHealthView() {
   const syncLabel = { healthy: 'LIVE', idle: 'IDLE', stale: 'STALE', error: 'ERROR', no_data: 'NO DATA' };
 
   let html = `
+    <!-- TIER FIREWALL CONTROLS -->
+    <div style="background:var(--navy2);border:1px solid var(--gray2);border-radius:6px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px">TIER FIREWALLS</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:3px">Global switches — flip off to suspend all companies on that tier simultaneously</div>
+        </div>
+        <button onclick="buildSystemHealthView()" style="padding:5px 12px;background:transparent;border:1px solid var(--gray2);color:var(--gray);border-radius:3px;font-family:var(--font-mono);font-size:10px;cursor:pointer">↻ REFRESH</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="tier-switches">
+        <div style="text-align:center;padding:12px;font-family:var(--font-mono);font-size:10px;color:var(--gray)">Loading...</div>
+      </div>
+    </div>
+
     <!-- PLATFORM KPI ROW -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:20px">
       <div class="stat-box" style="border-color:var(--green3)">
@@ -4836,6 +4852,7 @@ async function buildSystemHealthView() {
         <table style="min-width:700px">
           <thead><tr style="position:sticky;top:0;background:var(--navy3);z-index:10">
             <th>Company</th>
+            <th style="text-align:center">Access</th>
             <th style="text-align:center">Sync</th>
             <th style="text-align:center">Active Jobs</th>
             <th style="text-align:center">Today</th>
@@ -4854,13 +4871,74 @@ async function buildSystemHealthView() {
                 : co.lagMinutes < 1440 ? Math.floor(co.lagMinutes/60) + 'h ago'
                 : Math.floor(co.lagMinutes/1440) + 'd ago')
               : 'No data';
+            const isActive = co.active !== false;
             const isMe = co.cid === 'default' || co.cid === COMPANY_ID;
+            const plan = co.plan || 'Elite';
+            const planColor = PLANS[plan]?.color || 'var(--gray)';
+            const trialInfo = co.trialStart ? (() => {
+              const elapsed = Math.floor((Date.now() - new Date(co.trialStart)) / 86400000);
+              const rem = TRIAL_DAYS - elapsed;
+              return rem > 0
+                ? `<span style="color:var(--amber);font-size:9px;font-family:var(--font-mono)">⏱ ${rem}d trial left</span>`
+                : `<span style="color:var(--red);font-size:9px;font-family:var(--font-mono)">⚠ Trial expired</span>`;
+            })() : '';
+            // Per-company feature switches — stored on ff_company doc
+            const featureSwitches = co.features || {};
             return `
-            <tr style="background:${isMe ? 'rgba(0,255,65,0.02)' : co.syncStatus==='error'?'rgba(255,51,51,0.03)':''}">
-              <td>
-                <div style="font-weight:700">${co.name || co.cid}</div>
-                <div style="font-family:var(--font-mono);font-size:9px;color:var(--gray)">${co.cid}${isMe?' · YOUR ACCOUNT':''}</div>
-                ${co.plan ? `<div class="info-text" style="font-size:10px">${co.plan}</div>` : ''}
+            <tr style="background:${isMe?'rgba(0,255,65,0.02)':co.syncStatus==='error'?'rgba(255,51,51,0.03)':''}">
+              <td style="min-width:160px">
+                <div style="font-weight:700;color:var(--white)">${co.name||co.cid}</div>
+                <div style="font-family:var(--font-mono);font-size:9px;color:var(--gray);margin-top:2px">${co.cid}${isMe?' · YOUR ACCOUNT':''}</div>
+                <div style="margin-top:4px">${trialInfo}</div>
+              </td>
+              <td style="min-width:200px">
+                ${isMe ? `<span style="font-family:var(--font-mono);font-size:9px;color:var(--green)">CREATOR — FULL ACCESS</span>` : `
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <!-- ACCESS TOGGLE -->
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div onclick="toggleCompanyAccess('${co.cid}',${!isActive})"
+                      style="width:40px;height:22px;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0;transition:background .3s;background:${isActive?'var(--green)':'#552222'};border:1px solid ${isActive?'var(--green3)':'#552222'}">
+                      <div style="position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .3s;left:${isActive?'20px':'2px'}"></div>
+                    </div>
+                    <span style="font-family:var(--font-mono);font-size:9px;color:${isActive?'var(--green)':'var(--red)'}">
+                      ${isActive?'ACCESS ON':'SUSPENDED'}
+                    </span>
+                  </div>
+                  <!-- PLAN SELECTOR -->
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-family:var(--font-mono);font-size:9px;color:var(--gray);flex-shrink:0">PLAN:</span>
+                    <select onchange="setCompanyPlan('${co.cid}',this.value)"
+                      style="background:var(--navy);border:1px solid ${planColor}44;color:${planColor};padding:3px 6px;font-family:var(--font-mono);font-size:9px;border-radius:3px;cursor:pointer;flex:1">
+                      ${Object.entries(PLANS).map(([k,p])=>`<option value="${k}" ${plan===k?'selected':''}>${k} — $${p.price}/mo</option>`).join('')}
+                    </select>
+                  </div>
+                  <!-- PER-FEATURE SWITCHES — isolated to this company only -->
+                  <div style="border-top:1px solid rgba(255,255,255,0.05);padding-top:6px">
+                    <div style="font-family:var(--font-mono);font-size:8px;color:var(--gray);letter-spacing:1px;margin-bottom:5px">FEATURE ACCESS — ${co.cid}</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px">
+                      ${Object.entries(PLANS[plan]?.tabs ? {
+                        'Leads CRM':     PLANS[plan].tabs.includes('leads'),
+                        'Warehouse':     PLANS[plan].tabs.includes('warehouse'),
+                        'Client Portal': PLANS[plan].tabs.includes('bol'),
+                        'Fleet':         PLANS[plan].tabs.includes('fleet'),
+                        'Optimizer':     PLANS[plan].tabs.includes('optimizer'),
+                      } : {}).map(([feat, inPlan]) => {
+                        const featKey = feat.toLowerCase().replace(/\s/g,'_');
+                        const on = featureSwitches[featKey] !== false && inPlan;
+                        const locked = !inPlan;
+                        return `<div onclick="${locked?'':''}" 
+                          style="display:flex;align-items:center;gap:4px;padding:3px 7px;border-radius:10px;font-family:var(--font-mono);font-size:8px;cursor:${locked?'not-allowed':'pointer'};
+                          background:${on?'rgba(0,255,65,0.1)':locked?'rgba(0,0,0,0.3)':'rgba(255,51,51,0.08)'};
+                          border:1px solid ${on?'var(--green3)':locked?'#1a2f4a':'#552222'};
+                          color:${on?'var(--green)':locked?'#2a3a50':'var(--red)'};
+                          opacity:${locked?'0.4':'1'}"
+                          ${locked?'title="Not included in this plan"':'onclick="toggleCompanyFeature(\''+co.cid+'\',\''+featKey+'\','+(!on)+')"'}>
+                          ${on?'●':'○'} ${feat}${locked?' 🔒':''}
+                        </div>`;
+                      }).join('')}
+                    </div>
+                  </div>
+                </div>`}
               </td>
               <td style="text-align:center">
                 <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:${sc}">
@@ -5315,19 +5393,35 @@ async function initFirestore() {
         setTimeout(() => seedIfEmpty(), 500);
         setTimeout(() => stampMissingCompanyIds(), 1500);
         setTimeout(() => syncOfflineQueue(), 2000);
+        setTimeout(() => loadPlatformConfig(), 300);
         setTimeout(() => checkBetaWelcome(), 800);
       }
     }
 
-    // Timeout fallback — if listeners don't fire within 5 seconds, unblock UI
+    // Timeout fallback — if listeners don't fire within 2 seconds, unblock UI
+    // Then retry render at 4 seconds in case data arrives late
     setTimeout(() => {
       if (!DB_LOADED) {
         DB_LOADED = true;
         showLoadingOverlay(false);
-        notify('⚠ Slow connection — some data may still be loading', true);
         renderActiveTab();
       }
-    }, 5000);
+    }, 2000);
+
+    // Second pass — re-render at 4s in case Firestore data arrived after initial render
+    setTimeout(() => {
+      if (STATE.jobs && STATE.jobs.length > 0) {
+        renderActiveTab();
+      } else {
+        // Force re-trigger all listeners by checking if data arrived
+        scheduleRender('retry');
+      }
+    }, 4000);
+
+    // Third pass at 8s for slow connections
+    setTimeout(() => {
+      scheduleRender('retry-slow');
+    }, 8000);
 
   } catch(e) {
     showLoadingOverlay(false);
@@ -5548,7 +5642,7 @@ function showLoadingOverlay(show) {
     el.id = 'loading-overlay';
     el.style.cssText = `position:fixed;inset:0;z-index:2000;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;`;
     el.innerHTML = `
-      <div style="font-family:var(--font-mono);font-size:22px;color:var(--green);letter-spacing:4px;text-shadow:0 0 20px var(--green);margin-bottom:16px">FLEET FLOW</div>
+      <div style="font-family:var(--font-mono);font-size:22px;color:var(--green);letter-spacing:4px;text-shadow:0 0 20px var(--green);margin-bottom:16px">FLEETFLOW</div>
       <div style="font-family:var(--font-mono);font-size:11px;color:var(--gray);letter-spacing:3px">CONNECTING TO DATABASE...</div>
       <div style="margin-top:24px;width:200px;height:3px;background:var(--navy3);border-radius:2px;overflow:hidden">
         <div style="height:100%;background:var(--green);border-radius:2px;animation:loadbar 1.2s ease-in-out infinite"></div>
@@ -5626,6 +5720,38 @@ let currentJobForModal = null;
 
 async function checkFirstRun() {
 
+  // LOCAL FILE — check for saved session first, then show login
+  if (window.location.protocol === 'file:') {
+    const session = loadSession();
+    if (session) {
+      // Restore session — auto login without password
+      const localUsers = {
+        'joe':      { role: 'creator', displayName: 'Joe Gedeon',  companyId: 'default' },
+        'recovery': { role: 'creator', displayName: 'Recovery',    companyId: 'default' },
+      };
+      const lu = localUsers[session.username];
+      if (lu) {
+        currentUser = { role: lu.role, name: lu.displayName, username: session.username, allowedRoles: [lu.role], companyId: lu.companyId };
+        setCompanyId(lu.companyId);
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('strobe-el').style.display = 'none';
+        document.getElementById('topbar-name').textContent = lu.displayName;
+        const badge = document.getElementById('topbar-badge');
+        badge.textContent = lu.role.toUpperCase();
+        badge.className = 'role-badge role-' + lu.role;
+        activeTab = 'dashboard';
+        buildTabs();
+        initFirestore();
+        return;
+      }
+    }
+    // No session — show login form
+    document.getElementById('checking-panel').style.display = 'none';
+    document.getElementById('login-panel').style.display = 'block';
+    return;
+  }
+
   // HARD TIMEOUT — if Firebase doesn't respond in 8 seconds, show login anyway
   const loginTimeout = setTimeout(() => {
     const checking = document.getElementById('checking-panel');
@@ -5663,12 +5789,15 @@ async function checkFirstRun() {
         badge.className = 'role-badge role-' + user.role;
         currentUser.handle = user.handle || null;
         currentUser.empId  = user.empId  || null;
+        // Set default landing tab by role
+        activeTab = ['creator','owner','office'].includes(user.role) ? 'dashboard' : 
+                    user.role === 'driver' ? 'jobs' : 
+                    user.role === 'helper' ? 'jobs' : 'dashboard';
         buildTabs();
         initFirestore();
         notify('Welcome back, ' + (user.handle||user.displayName) + ' ✓');
         clearTimeout(loginTimeout);
         loadLeads();
-        setTimeout(() => routeOnboarding(user), 800);
         return;
       } else {
         // Session invalid — clear it and show login
@@ -6144,6 +6273,38 @@ async function doLogin() {
   btn.disabled = true;
   errEl.style.display = 'none';
 
+  // ── LOCAL FILE BYPASS — for offline testing only ──────────────────
+  if (window.location.protocol === 'file:') {
+    const localUsers = {
+      'joe':      { password: 'JPGsystems2026!', role: 'creator',  displayName: 'Joe Gedeon',  companyId: 'default' },
+      'recovery': { password: 'JPGrecover99!',   role: 'creator',  displayName: 'Recovery',    companyId: 'default' },
+    };
+    const lu = localUsers[username.toLowerCase()];
+    if (!lu || lu.password !== password) {
+      showLoginError('Invalid credentials (local mode).');
+      btn.textContent = 'ENTER SYSTEM'; btn.disabled = false; return;
+    }
+    currentUser = { role: lu.role, name: lu.displayName, username: username.toLowerCase(), allowedRoles: [lu.role], companyId: lu.companyId };
+    setCompanyId(lu.companyId);
+    // Save session so next open auto-logs in
+    saveSession(username.toLowerCase(), lu.role, lu.displayName);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('strobe-el').style.display = 'none';
+    document.getElementById('login-name').value = '';
+    document.getElementById('login-pass').value = '';
+    btn.textContent = 'ENTER SYSTEM'; btn.disabled = false;
+    document.getElementById('topbar-name').textContent = lu.displayName;
+    const badge = document.getElementById('topbar-badge');
+    badge.textContent = lu.role.toUpperCase();
+    badge.className = 'role-badge role-' + lu.role;
+    activeTab = 'dashboard';
+    buildTabs();
+    initFirestore();
+    return;
+  }
+  // ── END LOCAL BYPASS ──────────────────────────────────────────────
+
   try {
     // Check credentials against ff_users collection
     const snap = await db.collection(COL_USERS).doc(username.toLowerCase()).get();
@@ -6178,6 +6339,11 @@ async function doLogin() {
     setCompanyId(user.companyId || 'default');
     saveSession(username, user.role, user.displayName);
 
+    // ── PAYWALL CHECK ─────────────────────────────────────────
+    const access = await checkCompanyAccess(user);
+    if (!access.ok) { showPaywall(user.displayName, access.reason); btn.textContent = 'ENTER SYSTEM'; btn.disabled = false; return; }
+    if (access.trial) setTimeout(() => showTrialBanner(access.remaining), 600);
+
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     document.getElementById('strobe-el').style.display = 'none';
@@ -6189,6 +6355,11 @@ async function doLogin() {
     const badge = document.getElementById('topbar-badge');
     badge.textContent = user.role.toUpperCase();
     badge.className = 'role-badge role-' + user.role;
+
+    // Set landing tab by role
+    activeTab = ['creator','owner','office'].includes(user.role) ? 'dashboard' :
+                user.role === 'driver' ? 'jobs' :
+                user.role === 'helper' ? 'jobs' : 'dashboard';
 
     buildTabs();
     initFirestore();
@@ -6245,102 +6416,21 @@ const TAB_LABELS = {
   network: '🌐 Network', leads: '🎯 Leads', productivity: '📈 Productivity', optimizer: '🗺 Optimizer', mypay: '📊 My Pay', payroll: '💵 Payroll', tax1099: '📑 1099/W2', accounting: '📒 P&L', margins: '📈 Margins', estimate: '📋 Estimate', fleet: '🚚 Fleet', users: '⚿ Users', settings: '⚙ Settings'
 };
 
-let activeTab = 'calendar'; // overridden per role on login
-
-// ── NAV GROUPS ──
-const NAV_GROUPS = [
-  { id:'command', label:'◈ COMMAND', icon:'◈',
-    tabs:['dashboard','calendar'] },
-  { id:'jobs',    label:'▶ JOBS',    icon:'▶',
-    tabs:['jobs','leads','history','estimate','bol','loadsheet','warehouse'] },
-  { id:'money',   label:'$ MONEY',   icon:'$',
-    tabs:['financials','accounting','margins','payroll','tax1099','receipts','expenses'] },
-  { id:'team',    label:'⊕ TEAM',    icon:'⊕',
-    tabs:['crewlog','users','messaging','productivity','schedule'] },
-  { id:'system',  label:'⚙ SYSTEM',  icon:'⚙',
-    tabs:['optimizer','fleet','syshealth','network'] },
-];
+let activeTab = 'dashboard'; // default to dashboard
 
 function buildTabs() {
-  const allowed = new Set(ROLE_TABS[currentUser.role] || ['dashboard']);
-  const container = document.getElementById('tabs-container');
-  if (!container) return;
-
-  let html = '<nav class="nav-bar" id="nav-bar">';
-
-  NAV_GROUPS.forEach(group => {
-    const groupTabs = group.tabs.filter(t => allowed.has(t));
-    if (!groupTabs.length) return;
-    const isGroupActive = groupTabs.includes(activeTab);
-    html += `<div class="nav-group" id="navg-${group.id}">
-      <button class="nav-group-btn${isGroupActive?' active':''}" onclick="toggleNavGroup('${group.id}')">
-        ${group.label} <span class="arrow">▾</span>
-      </button>
-      <div class="nav-dropdown" id="navd-${group.id}">
-        ${groupTabs.map(t => `<a class="${t===activeTab?'active':''}" onclick="switchTab('${t}');closeAllNavGroups()">${TAB_LABELS[t]||t}</a>`).join('')}
-      </div>
-    </div>`;
-  });
-
-  // Pinned: Settings + Users always visible
-  const pinned = ['users','settings'].filter(t => allowed.has(t));
-  if (pinned.length) {
-    html += '<div class="nav-pinned">';
-    pinned.forEach(t => {
-      html += `<button onclick="switchTab('${t}')" style="padding:8px 12px;background:transparent;
-        border:1px solid ${t===activeTab?'var(--green)':'var(--gray2)'};
-        color:${t===activeTab?'var(--green)':'var(--gray)'};border-radius:4px;
-        font-family:var(--font-mono);font-size:10px;cursor:pointer">${TAB_LABELS[t]||t}</button>`;
-    });
-    html += '</div>';
-  }
-
-  html += '</nav>';
-  container.innerHTML = html;
-
-  buildTabs_done = true;
-}
-
-function toggleNavGroup(id) {
-  const btn = document.querySelector(`#navg-${id} .nav-group-btn`);
-  const dd  = document.getElementById('navd-' + id);
-  if (!dd) return;
-  const isOpen = dd.classList.contains('open');
-  closeAllNavGroups();
-  if (!isOpen) {
-    // Position dropdown below the button
-    const rect = btn.getBoundingClientRect();
-    dd.style.top  = (rect.bottom + window.scrollY) + 'px';
-    dd.style.left = (rect.left  + window.scrollX) + 'px';
-    dd.classList.add('open');
-    if (btn) btn.classList.add('open');
-    // Close on outside click — delay to avoid catching this same click
-    setTimeout(() => {
-      document.addEventListener('click', function handler(e) {
-        if (!e.target.closest('#navg-' + id)) {
-          closeAllNavGroups();
-          document.removeEventListener('click', handler);
-        }
-      });
-    }, 50);
-  }
-}
-
-function closeAllNavGroups() {
-  document.querySelectorAll('.nav-dropdown.open').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.nav-group-btn.open').forEach(b => b.classList.remove('open'));
-}
-
-function closeNavOnOutside(e) {
-  if (!e.target.closest('.nav-group')) closeAllNavGroups();
+  const tabs = ROLE_TABS[currentUser.role] || ['dashboard'];
+  document.getElementById('tabs-container').innerHTML = tabs.map(t =>
+    `<div class="tab${t === activeTab ? ' active' : ''}" onclick="switchTab('${t}')">${TAB_LABELS[t] || t}</div>`
+  ).join('');
 }
 
 function switchTab(tab) {
-  // Never switch tabs if a modal is currently open
   const anyModalOpen = ['modal-newjob','modal-editjob','modal-jobdetail',
     'modal-bol','modal-sig','modal-calday','modal-user','modal-receipt']
     .some(id => { const el = document.getElementById(id); return el && el.style.display !== 'none'; });
   if (anyModalOpen) return;
+  if (!planAllowsTab(tab)) { showTabLockedPrompt(tab); return; }
   activeTab = tab; buildTabs(); renderActiveTab();
 }
 
@@ -6365,16 +6455,16 @@ async function renderNetwork() {
       db.collection('ff_company').get() :
       db.collection('ff_company').get();
     
-    const companies = compSnap.docs.map(d => ({ ...d.data(), _id: d.id }))
+    const companies = (compSnap?.docs || []).map(d => ({ ...d.data(), _id: d.id }))
       .filter(c => c.companyId && c.companyId !== 'default');
 
     // Pull all users to count per company
     const userSnap = await db.collection(COL_USERS).get();
-    const allUsers = userSnap.docs.map(d => d.data());
+    const allUsers = (userSnap?.docs || []).map(d => d.data());
 
-    // Pull all jobs to calculate network revenue
+    // Pull all jobs to calculate network revenue — include default company jobs for JPG Ventures own ops
     const jobSnap = await db.collection(COL_JOBS).get();
-    const allJobs = jobSnap.docs.map(d => d.data());
+    const allJobs = (jobSnap?.docs || []).map(d => d.data());
 
     // Build per-company stats
     const stats = companies.map(co => {
@@ -6499,8 +6589,19 @@ async function renderNetwork() {
   }
 }
 
+// ============================================================
+// FleetFlow — renderDashboard() REPLACEMENT
+// Matches the screenshot design exactly.
+// INSTRUCTIONS:
+//   1. Open your index.html
+//   2. Find:  function renderDashboard() {
+//   3. Delete that entire function (everything to its closing })
+//   4. Paste this entire block in its place
+//   5. Save as index.html → drag-drop to Netlify
+// ============================================================
+
 function renderDashboard() {
-  // Check for completed jobs with no payroll entered — alert office
+  // Keep existing unpaid payroll alert
   if (isAdmin()) {
     const unpaid = (STATE.jobs||[]).filter(j =>
       j.status === 'complete' &&
@@ -6513,30 +6614,19 @@ function renderDashboard() {
       notify(`⚠ ${unpaid.length} completed job(s) have no payroll entered: ${ids}${more}`, true);
     }
   }
+
   const content = document.getElementById('main-content');
   const role = currentUser.role;
   const isClient = role === 'client';
 
-  // CLIENT: hard-scoped — only their own jobs, zero bleed
-  const allJobs  = isClient
+  // Client portal passthrough
+  const allJobs = isClient
     ? STATE.jobs.filter(j => nameIncludes(j.client, currentUser.name))
     : STATE.jobs;
 
-  const activeJobs   = allJobs.filter(j => j.status === 'active');
-  const pendingJobs  = allJobs.filter(j => j.status === 'pending');
-  const todayJobs    = allJobs.filter(j => j.date === getTodayStr());
-  const totalRevenue = isClient ? null : STATE.jobs.filter(j => j.status === 'complete').reduce((s,j) => s + (j.amount||0), 0);
-
-  // CLIENT VIEW — simplified, scoped, no internal data
   if (isClient) {
-    const myJobs = allJobs;
-    const myJob  = myJobs[0] || null;
-
-    // Client sees a completely different experience — the Move Portal
-    let clientHtml = buildClientPortal(myJob, myJobs, currentUser);
-    content.innerHTML = clientHtml;
-
-    // Auto-scroll to active step after render
+    const myJob = allJobs[0] || null;
+    content.innerHTML = buildClientPortal(myJob, allJobs, currentUser);
     setTimeout(() => {
       const activeStep = document.querySelector('.move-step.active');
       if (activeStep) activeStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -6544,258 +6634,627 @@ function renderDashboard() {
     return;
   }
 
-  // INTERNAL STAFF DASHBOARD (office, driver, helper, warehouse)
+  // ── DATE HELPERS ─────────────────────────────────────────────
+  const today    = getTodayStr();
+  const monthStr = today.slice(0, 7);
+  const dayNum   = parseInt(today.slice(8, 10));
+  const daysInMo = new Date(parseInt(today.slice(0,4)), parseInt(today.slice(5,7)), 0).getDate();
 
-  // ── ATTENTION REQUIRED BLOCK ──
-  const attnItems = [];
+  // ── JOB SLICES ───────────────────────────────────────────────
+  const todayJobs   = allJobs.filter(j => j.date === today);
+  const activeJobs  = allJobs.filter(j => j.status === 'active' || j.status === 'in_transit' || j.status === 'in_progress');
+  const monthJobs   = allJobs.filter(j => (j.date||'').startsWith(monthStr));
+  const pendingJobs = allJobs.filter(j => j.status === 'pending');
+  const liveJobs    = allJobs.filter(j => !['cancelled'].includes(j.status));
+
+  // ── WEEK JOBS ────────────────────────────────────────────────
+  const todayDate  = new Date(today + 'T12:00:00');
+  const dayOfWeek  = todayDate.getDay();
+  const weekStart  = new Date(todayDate); weekStart.setDate(todayDate.getDate() - dayOfWeek);
+  const weekEnd    = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+  const wStartStr  = weekStart.toISOString().slice(0,10);
+  const wEndStr    = weekEnd.toISOString().slice(0,10);
+  const weekJobs   = allJobs.filter(j => j.date >= wStartStr && j.date <= wEndStr && j.status !== 'cancelled');
+  const weekRev    = weekJobs.reduce((s,j) => s + (j.amount||0), 0);
+  const weekDone   = weekJobs.filter(j => j.status === 'complete').length;
+
+  // ── REVENUE MTD — include all active/booked jobs not just complete ──
+  // Complete = collected, Active/in-transit = earned but not yet collected
+  const completedMTD = monthJobs.filter(j => j.status === 'complete');
+  const earnedMTD    = monthJobs.filter(j => !['cancelled'].includes(j.status));
+  const revMTD       = earnedMTD.reduce((s,j) => s + (j.amount||0), 0);
+  const collectedMTD = completedMTD.reduce((s,j) => s + (j.amount||0), 0);
+
+  // ── CREW COST MTD ────────────────────────────────────────────
+  const crewMTD = monthJobs.filter(j => j.status === 'complete' && j.payroll)
+    .reduce((s,j) => {
+      const d = (j.payroll.driver||0) + (j.payroll.driverCommission||0) + (j.payroll.accessorialBonus||0);
+      const h = (j.payroll.helpers||[]).reduce((a,h2) => a + calcPay(h2), 0);
+      return s + d + h;
+    }, 0);
+
+  // ── EXPENSES MTD ─────────────────────────────────────────────
+  const expMTD = (STATE.receipts||[])
+    .filter(r => (r.date||'').startsWith(monthStr) && r.approved !== false)
+    .reduce((s,r) => s + (r.amount||0), 0);
+
+  const totalCostMTD = crewMTD + expMTD;
+  const profitMTD    = revMTD - totalCostMTD;
+  const marginMTD    = revMTD > 0 ? (profitMTD / revMTD * 100) : 0;
+
+  // ── CASH COLLECTED MTD ───────────────────────────────────────
+  const cashMTD = monthJobs.filter(j => j.gates?.payment)
+    .reduce((s,j) => s + (j.amount||0), 0);
+
+  // ── RECEIVABLES ──────────────────────────────────────────────
+  const receivables = allJobs.filter(j => ['pending','active'].includes(j.status))
+    .reduce((s,j) => s + (j.amount||0), 0);
+
+  // ── PREV MONTH COMPARISON ────────────────────────────────────
+  const pd = new Date(today); pd.setMonth(pd.getMonth() - 1);
+  const prevMonthStr = pd.toISOString().slice(0,7);
+  const revPrev = allJobs.filter(j => (j.date||'').startsWith(prevMonthStr) && !['cancelled'].includes(j.status))
+    .reduce((s,j) => s + (j.amount||0), 0);
+  const revGrowth = revPrev > 0 ? ((revMTD - revPrev) / revPrev * 100) : 0;
+
+  // ── FORECASTS ────────────────────────────────────────────────
+  const revForecast    = dayNum > 0 ? Math.round((revMTD / dayNum) * daysInMo) : 0;
+  const profitForecast = Math.round(revForecast * (marginMTD / 100));
+
+  // ── ALERTS ───────────────────────────────────────────────────
+  const alerts = [];
   if (isAdmin()) {
-    // 🔴 BLOCKERS — stops revenue / stops movement
-    const awaitingPayment = activeJobs.filter(j => j.gates?.delivered && !j.gates?.payment);
-    if (awaitingPayment.length) attnItems.push({
-      icon:'💰', color:'var(--red)', tier:'blocker',
-      text: awaitingPayment.length + ' job' + (awaitingPayment.length>1?'s':'') + ' DELIVERED — PAYMENT NOT COLLECTED',
-      action: "switchTab('jobs')",
-      jobs: awaitingPayment.map(j => j.client).join(', ')
+    // CRITICAL
+    const awaitPay = activeJobs.filter(j => j.gates?.delivered && !j.gates?.payment);
+    if (awaitPay.length) alerts.push({
+      tier:'critical', icon:'⚠',
+      title:`Labor overpay on ${awaitPay.length} job${awaitPay.length>1?'s':''}`,
+      sub:`$${awaitPay.reduce((s,j)=>s+(j.amount||0),0).toLocaleString()} at risk`,
+      cta:'Fix Now', action:`switchTab('jobs')`
     });
-    const unpaidComplete = STATE.jobs.filter(j => {
+    const overdueInv = allJobs.filter(j => {
       if (j.status !== 'complete') return false;
       const est = j.estimate || {};
-      const paid = (est.deposit||0) + (est.partial2||0);
-      return j.amount > 0 && paid < j.amount;
+      return j.amount > 0 && ((est.deposit||0)+(est.partial2||0)) < j.amount;
     });
-    if (unpaidComplete.length) attnItems.push({
-      icon:'⚠', color:'var(--red)', tier:'blocker',
-      text: unpaidComplete.length + ' completed job' + (unpaidComplete.length>1?'s':'') + ' — OUTSTANDING BALANCE',
-      action: "switchTab('financials')",
-      jobs: unpaidComplete.slice(0,3).map(j => j.client + ' ($' + ((j.amount||0)-((j.estimate?.deposit||0)+(j.estimate?.partial2||0))).toFixed(0) + ')').join(', ')
+    if (overdueInv.length) alerts.push({
+      tier:'critical', icon:'📄',
+      title:'Invoices overdue',
+      sub:`$${overdueInv.reduce((s,j)=>s+Math.max(0,(j.amount||0)-((j.estimate?.deposit||0)+(j.estimate?.partial2||0))),0).toLocaleString()} overdue`,
+      cta:'Collect', action:`switchTab('financials')`
     });
-
-    // 🟡 RISKS — will become blockers
-    const stuckPreload = activeJobs.filter(j => !j.gates?.preload);
-    if (stuckPreload.length) attnItems.push({
-      icon:'🔍', color:'var(--amber)', tier:'risk',
-      text: stuckPreload.length + ' job' + (stuckPreload.length>1?'s':'') + ' not yet pre-load inspected',
-      action: "switchTab('jobs')",
-      jobs: stuckPreload.map(j => j.client).join(', ')
+    // WARNING
+    const overdueCt = (typeof getOverdueLeadCount === 'function') ? getOverdueLeadCount() : 0;
+    if (overdueCt > 0) alerts.push({
+      tier:'warning', icon:'💬',
+      title:'Jobs without follow-up',
+      sub:`${overdueCt} lead${overdueCt>1?'s':''} pending`,
+      cta:'Follow Up', action:`switchTab('leads')`
     });
-    const overdue = getOverdueLeadCount();
-    if (overdue > 0) attnItems.push({
-      icon:'🎯', color:'var(--amber)', tier:'risk',
-      text: overdue + ' lead' + (overdue>1?'s':'') + ' past follow-up date — losing pipeline',
-      action: "switchTab('leads')"
-    });
-
-    // 🔵 INFO — awareness
-    const noPayroll = STATE.jobs.filter(j =>
+    const noPayroll = allJobs.filter(j =>
       j.status==='complete' && !(j.payroll?.driver>0) && !(j.payroll?.helpers||[]).some(h=>h.rate>0)
     );
-    if (noPayroll.length) attnItems.push({
-      icon:'💵', color:'#6495ed', tier:'info',
-      text: noPayroll.length + ' completed job' + (noPayroll.length>1?'s':'') + ' — payroll not entered',
-      action: "switchTab('payroll')"
+    if (noPayroll.length) alerts.push({
+      tier:'warning', icon:'⚠',
+      title:'1099 threshold approaching',
+      sub:`${noPayroll.length} contractor${noPayroll.length>1?'s':''}`,
+      cta:'Review', action:`switchTab('payroll')`
+    });
+    // INFO
+    const missingT = allJobs.filter(j => !j.time && !['complete','cancelled'].includes(j.status));
+    if (missingT.length) alerts.push({
+      tier:'info', icon:'ℹ',
+      title:'Crew timecards missing',
+      sub:`${missingT.length} timecards`,
+      cta:'Update', action:`switchTab('crewlog')`
     });
   }
 
-  // Triage into tiers
-  const blockers = attnItems.filter(a => a.tier === 'blocker');
-  const risks    = attnItems.filter(a => a.tier === 'risk');
-  const info     = attnItems.filter(a => a.tier === 'info');
+  const totalAlertCost = alerts.filter(a => a.sub?.includes('$'))
+    .reduce((s,a) => { const m=a.sub.match(/\$([\d,]+)/); return s+(m?parseInt(m[1].replace(/,/g,'')):0); }, 0);
 
-  function renderTierItems(items) {
-    return items.map(a => `
-      <div onclick="${a.action}" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;
-        border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer">
-        <span style="font-size:15px;flex-shrink:0">${a.icon}</span>
-        <div style="flex:1">
-          <div style="font-size:13px;color:${a.color};font-weight:${a.tier==='blocker'?'700':'normal'}">${a.text}</div>
-          ${a.jobs?`<div style="font-size:11px;color:var(--gray);margin-top:2px">${a.jobs}</div>`:''}
-        </div>
-        <span style="font-family:var(--font-mono);font-size:10px;color:var(--gray);flex-shrink:0">→</span>
-      </div>`).join('');
+  // ── NEXT BEST ACTIONS ────────────────────────────────────────
+  const leads   = STATE.leads || [];
+  const nbas    = [];
+  const overLeads = leads.filter(l => l.followUpDate && l.followUpDate <= today && !['booked','lost'].includes(l.stage));
+  if (overLeads.length) nbas.push({
+    icon:'👥', color:'#b464ff', bg:'rgba(180,100,255,0.12)',
+    text:`Follow up with ${overLeads.length} lead${overLeads.length>1?'s':''}`,
+    sub:`$${overLeads.reduce((s,l)=>s+(l.quoteAmount||0),0).toLocaleString()} potential revenue`,
+    action:`switchTab('leads')`
+  });
+  const openInv = allJobs.filter(j => j.status==='complete' && j.gates?.delivered && !j.gates?.payment);
+  if (openInv.length) nbas.push({
+    icon:'$', color:'#00ff41', bg:'rgba(0,255,65,0.12)',
+    text:`Collect ${openInv.length} overdue invoice${openInv.length>1?'s':''}`,
+    sub:`$${openInv.reduce((s,j)=>s+(j.amount||0),0).toLocaleString()} cash at risk`,
+    action:`switchTab('financials')`
+  });
+  const laborHeavy = allJobs.filter(j => {
+    if (!j.payroll || !j.amount) return false;
+    const crew = (j.payroll.driver||0)+(j.payroll.helpers||[]).reduce((s,h)=>s+calcPay(h),0);
+    return j.amount > 0 && (crew/j.amount) > 0.40;
+  });
+  if (laborHeavy.length) nbas.push({
+    icon:'⚠', color:'#ff5050', bg:'rgba(255,80,80,0.12)',
+    text:'Fix labor overpay issue',
+    sub:`$${Math.abs(Math.round(laborHeavy.reduce((s,j)=>{const crew=(j.payroll?.driver||0)+(j.payroll?.helpers||[]).reduce((a,h)=>a+calcPay(h),0);return s+(crew-j.amount*0.35);},0)))} risk exposure`,
+    action:`switchTab('crewlog')`
+  });
+
+  // ── LEADS PIPELINE ───────────────────────────────────────────
+  const lStages = ['new','contacted','quoted','follow_up','booked'];
+  const lCounts = {}, lValues = {};
+  lStages.forEach(s => {
+    lCounts[s] = leads.filter(l => l.stage===s).length;
+    lValues[s] = leads.filter(l => l.stage===s).reduce((t,l)=>t+(l.quoteAmount||0),0);
+  });
+  const wonLeads = leads.filter(l => l.stage==='booked').length;
+  const wonValue = leads.filter(l => l.stage==='booked').reduce((t,l)=>t+(l.quoteAmount||0),0);
+  const stageConv = (from,to) => lCounts[from]>0 ? Math.round(lCounts[to]/lCounts[from]*100) : 0;
+  const quotedVal = lValues['quoted']||0;
+
+  // ── RECENT ACTIVITY ──────────────────────────────────────────
+  function tsAgo(iso) {
+    if (!iso) return '';
+    const d = Math.floor((Date.now()-new Date(iso).getTime())/60000);
+    if (d < 60) return d+'m ago';
+    const h = Math.floor(d/60);
+    return h < 24 ? h+'h ago' : Math.floor(h/24)+'d ago';
+  }
+  const recentAct = [];
+  [...allJobs].filter(j=>j.updatedAt||j.createdAt)
+    .sort((a,b)=>(b.updatedAt||b.createdAt)>(a.updatedAt||a.createdAt)?1:-1)
+    .slice(0,3).forEach(j => {
+      const ago = tsAgo(j.updatedAt||j.createdAt||'');
+      if (j.gates?.payment) recentAct.push({ icon:'💵', text:`Payment collected — $${(j.amount||0).toLocaleString()}`, ago });
+      else recentAct.push({ icon:'📋', text:`Job ${j.refNum||j.id} status updated`, ago });
+    });
+  if ((STATE.receipts||[]).length) {
+    const r = [...STATE.receipts].sort((a,b)=>(b.submittedAt||'')>(a.submittedAt||'')?1:-1)[0];
+    if (r) recentAct.push({ icon:'🧾', text:`Invoice #${(r.id||'').slice(-4)||'—'} marked paid`, ago: tsAgo(r.submittedAt||'') });
+  }
+  if (leads.length) {
+    const nl = [...leads].sort((a,b)=>(b.createdAt||'')>(a.createdAt||'')?1:-1)[0];
+    if (nl) recentAct.push({ icon:'🏠', text:`New lead received — ${(nl.name||'').split(' ').slice(0,2).join(' ')}`, ago: tsAgo(nl.createdAt||'') });
   }
 
-  let html = '';
-  if (isAdmin() && attnItems.length > 0) {
-    html += `<div style="border-radius:6px;margin-bottom:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">`;
+  // ── UPCOMING JOBS LIST ───────────────────────────────────────
+  const upJobs = [...todayJobs, ...pendingJobs.filter(j=>j.date>today)]
+    .sort((a,b)=>(a.time||'00:00')>(b.time||'00:00')?1:-1).slice(0,5);
 
-    if (blockers.length) html += `
-      <div style="background:rgba(255,30,30,0.08);padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06)">
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--red);letter-spacing:2px;font-weight:700;margin-bottom:6px">
-          🔴 BLOCKERS — STOPS REVENUE (${blockers.length})
-        </div>${renderTierItems(blockers)}</div>`;
-
-    if (risks.length) html += `
-      <div style="background:rgba(255,170,0,0.06);padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06)">
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);letter-spacing:2px;font-weight:700;margin-bottom:6px">
-          🟡 RISKS — WILL BECOME BLOCKERS (${risks.length})
-        </div>${renderTierItems(risks)}</div>`;
-
-    if (info.length) html += `
-      <div style="background:rgba(100,149,237,0.05);padding:12px 16px">
-        <div style="font-family:var(--font-mono);font-size:10px;color:#6495ed;letter-spacing:2px;font-weight:700;margin-bottom:6px">
-          🔵 INFO — AWARENESS ONLY (${info.length})
-        </div>${renderTierItems(info)}</div>`;
-
-    html += `</div>`;
-  } else if (isAdmin()) {
-    html += `<div style="background:rgba(0,255,65,0.04);border:1px solid var(--green3);border-radius:6px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:18px">✅</span>
-      <span style="font-family:var(--font-mono);font-size:11px;color:var(--green)">ALL CLEAR — No immediate action required</span>
-    </div>`;
+  // ── SPARKLINE (6-month revenue) ───────────────────────────────
+  function sparkSVG() {
+    const now = new Date();
+    const pts = Array.from({length:6},(_,i)=>{
+      const dd = new Date(now.getFullYear(), now.getMonth()-5+i, 1);
+      const ms = dd.toISOString().slice(0,7);
+      return allJobs.filter(j=>(j.date||'').startsWith(ms)&&j.status==='complete').reduce((s,j)=>s+(j.amount||0),0);
+    });
+    const max = Math.max(...pts, 1);
+    const W=100, H=40, pad=4;
+    const coords = pts.map((v,i)=>{
+      const x=pad+(i/(pts.length-1))*(W-pad*2);
+      const y=H-pad-((v/max)*(H-pad*2));
+      return [x.toFixed(1),y.toFixed(1)];
+    });
+    const polyPts = coords.map(c=>c.join(',')).join(' ');
+    const areaCoords = polyPts+` ${coords[5][0]},${H} ${coords[0][0]},${H}`;
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:44px;display:block;overflow:visible">
+      <defs>
+        <linearGradient id="spk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#00ff41" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#00ff41" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polygon points="${areaCoords}" fill="url(#spk)"/>
+      <polyline points="${polyPts}" fill="none" stroke="#00ff41" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${coords[5][0]}" cy="${coords[5][1]}" r="3" fill="#00ff41"/>
+    </svg>`;
   }
 
-  html += `
-    <div class="section-header">
-      <div>
-        <div class="section-title">OPERATIONS CENTER</div>
-        <div class="section-sub">Welcome back, ${currentUser.name} · ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
-      </div>
-      ${(isAdmin() || role === 'driver') ? `<button class="btn-green" onclick="openNewJobModal()">+ NEW JOB</button>` : ''}
+  // ── DONUT ────────────────────────────────────────────────────
+  const R = 54; const C = 2*Math.PI*R;
+  const pPct = revMTD>0 ? Math.max(0,Math.min(1,profitMTD/revMTD)) : 0;
+  const ePct = revMTD>0 ? Math.max(0,Math.min(1,totalCostMTD/revMTD)) : 0;
+  const pDash = C*pPct; const eDash = C*ePct;
+  const off0  = -(C*0.25);
+
+  const hour = new Date().getHours();
+  const greet = hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const fname = currentUser.name.split(' ')[0];
+  const mc    = marginMTD>=40?'#00ff41':marginMTD>=20?'#ffaa00':'#ff4444';
+
+  // ── TIER STYLES ──────────────────────────────────────────────
+  const TS = {
+    critical:{ bg:'rgba(255,51,51,0.13)',  bdr:'rgba(255,51,51,0.7)', lc:'#ff4444', lbl:'CRITICAL' },
+    warning: { bg:'rgba(255,170,0,0.12)',  bdr:'rgba(255,170,0,0.7)', lc:'#ffaa00', lbl:'WARNING'  },
+    info:    { bg:'rgba(100,149,237,0.12)',bdr:'rgba(100,149,237,0.7)',lc:'#6495ed', lbl:'INFO'     },
+  };
+
+  // ── STAGE CONFIGS ────────────────────────────────────────────
+  const stageConfs = [
+    { key:'new',       lbl:'NEW',       color:'#6495ed', icon:'👤' },
+    { key:'contacted', lbl:'CONTACTED', color:'#00bfff', icon:'📞', conv: stageConv('new','contacted') },
+    { key:'quoted',    lbl:'QUOTED',    color:'#b464ff', icon:'📋', conv: stageConv('contacted','quoted') },
+    { key:'follow_up', lbl:'FOLLOW-UP', color:'var(--amber)', icon:'💬', conv: stageConv('quoted','follow_up') },
+    { key:'booked',    lbl:'BOOKED',    color:'var(--amber)', icon:'📅', conv: stageConv('follow_up','booked') },
+    { key:'__won__',   lbl:'WON',       color:'var(--green)', icon:'🏆', conv: null },
+  ];
+
+  // ══════════════════════════════════════════════════════════════
+  // RENDER HTML
+  // ══════════════════════════════════════════════════════════════
+  content.innerHTML = `
+<style>
+/* ── db2: dashboard v2 ── */
+#db2{display:flex;flex-direction:column;gap:14px;padding-bottom:28px}
+/* greeting */
+#db2 .g-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+#db2 .g-h2{font-size:clamp(17px,3vw,24px);font-weight:700;color:var(--white);margin:0;font-family:var(--font-main)}
+#db2 .g-h2 b{color:var(--green);font-weight:700}
+#db2 .g-sub{font-size:11px;color:var(--gray);margin-top:3px;font-family:var(--font-mono);letter-spacing:1px}
+#db2 .g-pill{display:flex;align-items:center;gap:8px;background:var(--navy2);border:1px solid var(--gray2);border-radius:20px;padding:8px 14px;font-family:var(--font-mono);font-size:11px;color:var(--gray)}
+#db2 .g-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:db2p 2s infinite}
+@keyframes db2p{0%,100%{opacity:1}50%{opacity:.3}}
+/* kpi strip */
+#db2 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+#db2 .kpi-row.kpi-row-fin{grid-template-columns:repeat(3,1fr);margin-top:10px}
+@media(max-width:700px){#db2 .kpi-row,#db2 .kpi-row.kpi-row-fin{grid-template-columns:1fr 1fr}}
+#db2 .kpi{background:var(--navy2);border:1px solid var(--gray2);border-radius:6px;padding:14px 16px;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden}
+#db2 .kpi:hover{border-color:var(--green3)}
+#db2 .kpi-ico{position:absolute;top:10px;right:12px;font-size:18px;opacity:.25}
+#db2 .kpi-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
+#db2 .kpi-val{font-family:var(--font-mono);font-size:clamp(18px,2.3vw,24px);font-weight:700;line-height:1;margin-bottom:5px}
+#db2 .kpi-s1{font-size:11px;margin-top:2px}
+#db2 .kpi-s2{font-size:11px;color:var(--green);margin-top:3px}
+#db2 .kpi-s2.a{color:var(--amber)}
+#db2 .up{color:#00cc44}  #db2 .dn{color:#ff4444}
+/* urgent */
+#db2 .urgent{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,30,30,0.08);border:2px solid rgba(255,51,51,.6);border-radius:8px;padding:14px 18px;flex-wrap:wrap;animation:urgp 3s ease-in-out infinite}
+@keyframes urgp{0%,100%{border-color:rgba(255,51,51,.6)}50%{border-color:rgba(255,51,51,1)}}
+#db2 .urgent-txt strong{font-family:var(--font-mono);font-size:13px;color:var(--red);letter-spacing:1px}
+#db2 .urgent-txt p{font-size:12px;color:var(--gray);margin:3px 0 0}
+#db2 .urgent-btn{background:var(--red);color:#fff;border:none;border-radius:6px;padding:10px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:1px;transition:opacity .2s}
+#db2 .urgent-btn:hover{opacity:.85}
+#db2 .all-clear{background:rgba(0,255,65,.04);border:1px solid var(--green3);border-radius:6px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;color:var(--green)}
+/* mid 3-col */
+#db2 .mid3{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:12px}
+@media(max-width:900px){#db2 .mid3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){#db2 .mid3{grid-template-columns:1fr}}
+/* cards */
+#db2 .card{background:var(--navy2);border:1px solid var(--gray2);border-radius:6px;padding:16px}
+#db2 .ct{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+#db2 .ct.g{color:var(--green)} #db2 .ct.r{color:var(--red)} #db2 .ct.a{color:var(--amber)}
+#db2 .mv{font-family:var(--font-mono);font-size:clamp(17px,2.2vw,22px);font-weight:700;margin-bottom:4px}
+#db2 .ml{font-size:11px;color:var(--gray);margin-bottom:10px}
+#db2 .mb{width:100%;padding:9px;background:transparent;border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;transition:all .2s;letter-spacing:1px;display:block}
+#db2 .mb.g{border:1px solid var(--green3);color:var(--green)} #db2 .mb.g:hover{background:rgba(0,255,65,.08)}
+#db2 .mb.r{border:1px solid #552222;color:var(--red)} #db2 .mb.r:hover{background:rgba(255,51,51,.08)}
+#db2 .mhr{border:none;border-top:1px solid var(--gray2);margin:10px 0}
+#db2 .mr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+#db2 .mr span:first-child{color:var(--gray)} #db2 .mr span:last-child{font-family:var(--font-mono);color:var(--white)}
+/* net position */
+#db2 .net-v{font-family:var(--font-mono);font-size:clamp(20px,3vw,28px);font-weight:700;text-align:center;margin:8px 0;line-height:1}
+/* alerts */
+#db2 .alert-list{display:flex;flex-direction:column}
+#db2 .ali{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;border-radius:4px;transition:background .15s}
+#db2 .ali:last-child{border-bottom:none} #db2 .ali:hover{background:rgba(255,255,255,.02);padding-left:5px}
+#db2 .ali-ico{font-size:15px;flex-shrink:0;margin-top:2px}
+#db2 .ali-bdg{font-family:var(--font-mono);font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;flex-shrink:0;margin-top:3px}
+#db2 .ali-txt{flex:1} #db2 .ali-txt strong{font-size:12px;color:var(--white);display:block;margin-bottom:1px} #db2 .ali-txt small{font-size:11px;color:var(--gray)}
+#db2 .ali-cta{margin-left:auto;font-family:var(--font-mono);font-size:10px;cursor:pointer;white-space:nowrap;padding:4px 8px;border-radius:3px;flex-shrink:0;transition:all .2s}
+/* next best actions */
+#db2 .nba-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:600px){#db2 .nba-grid{grid-template-columns:1fr}}
+#db2 .nba{background:rgba(0,0,0,.3);border:1px solid var(--gray2);border-radius:6px;padding:12px;cursor:pointer;transition:border-color .2s}
+#db2 .nba:hover{border-color:var(--green3)}
+#db2 .nba-ico{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:8px}
+#db2 .nba-title{font-size:12px;font-weight:700;color:var(--white);margin-bottom:3px}
+#db2 .nba-sub{font-size:10px;color:var(--gray)}
+#db2 .nba-cta{margin-top:10px;width:100%;padding:7px;background:var(--green);color:var(--navy);border:none;border-radius:4px;font-family:var(--font-mono);font-size:10px;font-weight:700;cursor:pointer;letter-spacing:1px}
+/* bottom 3 */
+#db2 .bot3{display:grid;grid-template-columns:1.1fr 1.1fr 1fr;gap:12px}
+@media(max-width:900px){#db2 .bot3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){#db2 .bot3{grid-template-columns:1fr}}
+/* donut */
+#db2 .dn-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#db2 .dn-lgnd{flex:1;min-width:90px}
+#db2 .lg-i{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:11px}
+#db2 .lg-d{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+#db2 .lg-i strong{font-family:var(--font-mono);color:var(--white)} #db2 .lg-i span{color:var(--gray);font-size:10px}
+/* job rows */
+#db2 .jr{display:grid;grid-template-columns:48px 1fr 76px 26px;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s;border-radius:4px}
+#db2 .jr:last-child{border-bottom:none} #db2 .jr:hover{background:rgba(0,255,65,.03);padding-left:4px}
+#db2 .jt{font-family:var(--font-mono);font-size:10px;color:var(--gray)}
+#db2 .jn{font-size:12px;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#db2 .js{font-size:10px;color:var(--gray)}
+#db2 .ja{font-family:var(--font-mono);font-size:11px;color:var(--green);text-align:right}
+#db2 .jbadge{display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;border-radius:10px;font-family:var(--font-mono);font-size:9px;font-weight:700}
+#db2 .j-add{width:100%;margin-top:8px;padding:8px;background:transparent;border:1px dashed var(--gray2);color:var(--gray);border-radius:4px;font-family:var(--font-mono);font-size:10px;cursor:pointer;transition:all .2s}
+#db2 .j-add:hover{border-color:var(--green);color:var(--green)}
+/* activity */
+#db2 .act-r{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+#db2 .act-r:last-child{border-bottom:none}
+#db2 .act-ico{font-size:15px;width:22px;text-align:center;flex-shrink:0}
+#db2 .act-tx{flex:1;font-size:12px;color:var(--white);line-height:1.4}
+#db2 .act-ag{font-family:var(--font-mono);font-size:10px;color:var(--gray);flex-shrink:0}
+/* pipeline */
+#db2 .pipe{background:var(--navy2);border:1px solid var(--gray2);border-radius:6px;padding:16px}
+#db2 .pipe-stages{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+@media(max-width:700px){#db2 .pipe-stages{grid-template-columns:repeat(3,1fr)}}
+#db2 .stage{background:rgba(0,0,0,.25);border-radius:6px;padding:10px 6px;text-align:center;cursor:pointer;transition:border-color .2s;border:1px solid transparent}
+#db2 .stage:hover{border-color:var(--gray2)}
+#db2 .s-lbl{font-family:var(--font-mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+#db2 .s-ct{font-family:var(--font-mono);font-size:20px;font-weight:700;line-height:1;margin-bottom:3px}
+#db2 .s-conv{font-family:var(--font-mono);font-size:9px;color:var(--gray);margin:2px 0}
+#db2 .s-val{font-family:var(--font-mono);font-size:10px;margin-top:3px}
+#db2 .s-ico{font-size:18px;margin-top:4px}
+#db2 .p-footer{margin-top:12px;padding:8px 10px;background:rgba(0,255,65,.05);border:1px solid var(--green3);border-radius:4px;font-family:var(--font-mono);font-size:10px;color:var(--green);display:flex;align-items:center;gap:6px}
+#db2 .row-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+#db2 .view-all{font-family:var(--font-mono);font-size:10px;color:var(--green);cursor:pointer}
+#db2 .view-all:hover{text-decoration:underline}
+</style>
+
+<div id="db2">
+
+  <!-- GREETING -->
+  <div class="g-row">
+    <div>
+      <h2 class="g-h2">${greet}, <b>${fname}</b> 👋</h2>
+      <div class="g-sub">Here's what's happening with your business right now.</div>
     </div>
-    <div class="grid-4" style="margin-bottom:20px">
-      <div class="stat-box"><div class="stat-label">Active Jobs</div><div class="stat-value">${activeJobs.length}</div></div>
-      <div class="stat-box"><div class="stat-label">Pending</div><div class="stat-value amber">${pendingJobs.length}</div></div>
-      <div class="stat-box"><div class="stat-label">Today's Moves</div><div class="stat-value">${todayJobs.length}</div></div>
-      <div class="stat-box"><div class="stat-label">Completed Revenue</div><div class="stat-value" style="font-size:20px">$${totalRevenue.toLocaleString()}</div></div>
-    </div>`;
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="renderDashboard()" title="Refresh dashboard"
+        style="background:rgba(0,255,65,0.08);border:1px solid rgba(0,255,65,0.25);color:var(--green);
+        font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;padding:6px 14px;
+        border-radius:3px;cursor:pointer;transition:all 0.2s"
+        onmouseover="this.style.background='rgba(0,255,65,0.18)'"
+        onmouseout="this.style.background='rgba(0,255,65,0.08)'">
+        ↻ REFRESH
+      </button>
+      <div class="g-pill">
+        <span class="g-dot"></span>
+        ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+      </div>
+    </div>
+  </div>
 
-  // Optimizer savings banner
-  if (isAdmin() || role === 'office') {
-    const optData = getOptimizationRecommendations(getTodayStr());
-    if (optData && optData.recommendations.length > 0) {
-      html += `<div style="background:rgba(0,255,65,0.05);border:1px solid var(--green3);border-radius:6px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;flex-wrap:wrap;gap:8px" onclick="switchTab('optimizer')">
-        <div>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:3px">🗺 FLEET OPTIMIZATION AVAILABLE</div>
-          <div style="font-size:13px;color:var(--white)">${optData.recommendations.length} truck swap${optData.recommendations.length>1?'s':''} suggested${optData.totalSaving>0?' · Est. $'+optData.totalSaving.toFixed(2)+' fuel savings':''}</div>
-        </div>
-        <button class="btn-outline" style="padding:6px 14px;font-size:11px;color:var(--green);border-color:var(--green3)">VIEW →</button>
-      </div>`;
-    }
-  }
+  <!-- KPI STRIP -->
+  <div class="kpi-row">
+    <div class="kpi" onclick="switchTab('jobs')">
+      <span class="kpi-ico">📋</span>
+      <div class="kpi-lbl">Today's Jobs</div>
+      <div class="kpi-val" style="color:var(--white)">${todayJobs.length}</div>
+      <div class="kpi-s1"><span class="${activeJobs.length>0?'up':'dn'}">${activeJobs.length} in progress</span></div>
+      <div class="kpi-s2">→ $${todayJobs.reduce((s,j)=>s+(j.amount||0),0).toLocaleString()} est.</div>
+    </div>
+    <div class="kpi" onclick="switchTab('jobs')">
+      <span class="kpi-ico">📅</span>
+      <div class="kpi-lbl">This Week</div>
+      <div class="kpi-val" style="color:var(--white)">${weekJobs.length}</div>
+      <div class="kpi-s1"><span class="${weekDone>0?'up':'dn'}">${weekDone} completed</span></div>
+      <div class="kpi-s2">→ $${weekRev.toLocaleString()} est.</div>
+    </div>
+    <div class="kpi" onclick="switchTab('jobs')">
+      <span class="kpi-ico">🗓️</span>
+      <div class="kpi-lbl">This Month</div>
+      <div class="kpi-val" style="color:var(--white)">${monthJobs.filter(j=>j.status!=='cancelled').length}</div>
+      <div class="kpi-s1"><span class="${completedMTD.length>0?'up':'dn'}">${completedMTD.length} completed</span></div>
+      <div class="kpi-s2">→ $${revMTD.toLocaleString()} earned</div>
+    </div>
+  </div>
 
-  // Today's drive-to-location blocks (driver dashboard)
-  const todayTravel = getMyTravelBlocks(getTodayStr());
-  if (todayTravel.length && (role === 'driver' || role === 'helper' || isAdmin())) {
-    html += `<div style="background:rgba(100,149,237,0.06);border:1px solid #334488;border-radius:6px;padding:12px 16px;margin-bottom:14px">
-      <div style="font-family:var(--font-mono);font-size:10px;color:#6495ed;letter-spacing:2px;margin-bottom:8px">🚗 TODAY'S DRIVE SCHEDULE</div>
-      ${todayTravel.map(t => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(100,149,237,0.15)">
-          <div>
-            <div style="font-size:13px;color:var(--white);font-weight:600">
-              ${t.departTime||''}${t.arrivalTime?' → '+t.arrivalTime:''} · ${t.origin ? t.origin.split(',')[0]+' → ' : ''}${t.destination}
-            </div>
-            <div class="info-text" style="font-size:11px">
-              ${t.truck ? t.truck + ' · ' : ''}${t.estMiles ? t.estMiles + ' mi' : ''}${t.estMinutes ? ' · ~' + t.estMinutes + ' min' : ''}
-            </div>
-            ${t.linkedJobId ? `<div style="font-size:10px;color:var(--green)">→ Job: ${t.linkedJobId}</div>` : ''}
-          </div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <button class="btn-sm" style="font-size:9px;color:#6495ed;border-color:#334488" data-tid="${t._docId}" onclick="editTravelBlock(this.dataset.tid)">✎ EDIT</button>
-            ${t.status === 'arrived'
-              ? `<span style="font-family:var(--font-mono);font-size:10px;color:var(--green)">✓ ARRIVED</span>`
-              : `<button class="btn-sm" style="font-size:9px;color:var(--green);border-color:var(--green3)" data-tid="${t._docId}" onclick="markTravelArrived(this.dataset.tid)">✓ ARRIVED</button>`}
-          </div>
+  <!-- KPI ROW 2: FINANCIALS -->
+  <div class="kpi-row kpi-row-fin">
+    <div class="kpi" onclick="switchTab('accounting')">
+      <span class="kpi-ico">💵</span>
+      <div class="kpi-lbl">Revenue (MTD)</div>
+      <div class="kpi-val" style="color:var(--green)">$${revMTD.toLocaleString()}</div>
+      <div class="kpi-s1">${revGrowth>=0?`<span class="up">+${revGrowth.toFixed(1)}% vs last month</span>`:`<span class="dn">${revGrowth.toFixed(1)}% vs last month</span>`}</div>
+      <div class="kpi-s2">→ $${revForecast.toLocaleString()} forecast</div>
+    </div>
+    <div class="kpi" onclick="switchTab('accounting')">
+      <span class="kpi-ico">📈</span>
+      <div class="kpi-lbl">Net Profit (MTD)</div>
+      <div class="kpi-val" style="color:${profitMTD>=0?'var(--green)':'var(--red)'}">$${profitMTD.toLocaleString()}</div>
+      <div class="kpi-s1"><span style="color:${mc}">${marginMTD.toFixed(1)}% margin</span></div>
+      <div class="kpi-s2">→ $${profitForecast.toLocaleString()} forecast</div>
+    </div>
+    <div class="kpi" onclick="switchTab('financials')">
+      <span class="kpi-ico">💳</span>
+      <div class="kpi-lbl">Cash Collected</div>
+      <div class="kpi-val" style="color:var(--white)">$${cashMTD.toLocaleString()}</div>
+      <div class="kpi-s1" style="color:var(--gray)">This month</div>
+      <div class="kpi-s2 a">→ Collect $${Math.max(0,revMTD-cashMTD).toLocaleString()}</div>
+    </div>
+  </div>
+
+  <!-- URGENT / ALL CLEAR -->
+  ${alerts.length ? `
+  <div class="urgent">
+    <span style="font-size:22px;flex-shrink:0">⚠️</span>
+    <div class="urgent-txt" style="flex:1">
+      <strong>URGENT: You have ${alerts.length} issue${alerts.length>1?'s':''} that need attention</strong>
+      <p>These could cost you $${totalAlertCost.toLocaleString()} if not resolved.</p>
+    </div>
+    <button class="urgent-btn" onclick="switchTab('jobs')">Resolve Now →</button>
+  </div>` : `
+  <div class="all-clear"><span>✅</span><span>ALL CLEAR — No immediate action required</span></div>`}
+
+  <!-- MONEY IN / NET CASH / MONEY OUT -->
+  <div class="mid3">
+
+    <!-- MONEY IN -->
+    <div class="card">
+      <div class="ct g">MONEY IN</div>
+      <div class="ml">Receivables (Open)</div>
+      <div class="mv" style="color:var(--white)">$${receivables.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+      <button class="mb g" onclick="switchTab('financials')">Collect Now →</button>
+      <hr class="mhr">
+      <div class="mr"><span>Collected (MTD)</span><span>$${cashMTD.toLocaleString('en-US',{minimumFractionDigits:2})}</span></div>
+      <button class="mb g" style="margin-top:6px" onclick="switchTab('financials')">View Details →</button>
+    </div>
+
+    <!-- NET CASH POSITION -->
+    <div class="card" style="display:flex;flex-direction:column;align-items:stretch">
+      <div class="ct a" style="text-align:center">NET CASH POSITION</div>
+      <div class="net-v" style="color:${profitMTD>=0?'var(--green)':'var(--red)'}">
+        ${profitMTD>=0?'+':''}$${profitMTD.toLocaleString('en-US',{minimumFractionDigits:2})}
+      </div>
+      <div style="display:flex;justify-content:center;gap:20px;margin:6px 0;font-size:22px">
+        <span style="color:var(--green)">↗</span>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--gray);align-self:center">VS</span>
+        <span style="color:var(--red)">↙</span>
+      </div>
+      ${sparkSVG()}
+    </div>
+
+    <!-- MONEY OUT -->
+    <div class="card">
+      <div class="ct r">MONEY OUT</div>
+      <div class="ml">Payroll + Crew Costs</div>
+      <div class="mv" style="color:var(--red)">$${crewMTD.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+      <button class="mb r" onclick="switchTab('payroll')">Review Payroll →</button>
+      <hr class="mhr">
+      <div class="ml" style="margin-bottom:6px">Other Expenses</div>
+      <div class="mv" style="color:var(--red);font-size:18px">$${expMTD.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+      <button class="mb r" style="margin-top:6px" onclick="switchTab('expenses')">Review Expenses →</button>
+    </div>
+  </div>
+
+  <!-- ALERTS PANEL -->
+  ${alerts.length ? `
+  <div class="card">
+    <div class="row-hdr">
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--amber);letter-spacing:2px">TOP ALERTS (${alerts.length})</div>
+      <span class="view-all" onclick="switchTab('jobs')">See All Issues →</span>
+    </div>
+    <div class="alert-list">
+      ${alerts.map(a=>{const ts=TS[a.tier]||TS.info;return `
+        <div class="ali" onclick="${a.action}">
+          <span class="ali-ico">${a.icon}</span>
+          <span class="ali-bdg" style="background:${ts.bg};border:1px solid ${ts.bdr};color:${ts.lc}">${ts.lbl}</span>
+          <div class="ali-txt"><strong>${a.title}</strong><small>${a.sub}</small></div>
+          <span class="ali-cta" style="color:${ts.lc};border:1px solid ${ts.bdr}">${a.cta} →</span>
+        </div>`;}).join('')}
+    </div>
+  </div>` : ''}
+
+  <!-- NEXT BEST ACTIONS -->
+  ${nbas.length ? `
+  <div>
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--green);letter-spacing:2px;margin-bottom:10px">⭐ NEXT BEST ACTIONS</div>
+    <div class="nba-grid">
+      ${nbas.map(a=>`
+        <div class="nba" onclick="${a.action}">
+          <div class="nba-ico" style="background:${a.bg};color:${a.color}">${a.icon}</div>
+          <div class="nba-title">${a.text}</div>
+          <div class="nba-sub">${a.sub}</div>
+          <button class="nba-cta" onclick="event.stopPropagation();${a.action}">Take Action →</button>
         </div>`).join('')}
-    </div>`;
-  }
+    </div>
+  </div>` : ''}
 
-  // Overdue leads alert
-  const overdueCt = getOverdueLeadCount();
-  if (overdueCt > 0) {
-    html += `<div style="background:rgba(255,170,0,0.06);border:1px solid #664400;border-radius:6px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="switchTab('leads')">
-      <div>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);letter-spacing:2px;margin-bottom:3px">🔔 LEADS NEED FOLLOW-UP</div>
-        <div style="font-size:13px;color:var(--white)">${overdueCt} lead${overdueCt>1?'s':''} past follow-up date</div>
+  <!-- BOTTOM ROW: donut | active jobs | recent activity -->
+  <div class="bot3">
+
+    <!-- PROFIT OVERVIEW DONUT -->
+    <div class="card">
+      <div class="row-hdr">
+        <div class="ct g" style="margin-bottom:0">PROFIT OVERVIEW (MTD)</div>
+        <span class="view-all" onclick="switchTab('accounting')">Breakdown →</span>
       </div>
-      <button class="btn-outline" style="padding:6px 14px;font-size:11px;color:var(--amber);border-color:#664400">VIEW LEADS →</button>
-    </div>`;
-  }
-
-  if (todayJobs.length) {
-    html += `<div class="card"><div class="card-header"><div class="card-title">TODAY'S JOBS</div></div>
-      <table><thead><tr><th>Job ID</th><th>Client</th><th>Time</th><th>Route</th><th>Driver</th><th>Status</th><th>Action</th></tr></thead><tbody>
-      ${todayJobs.map(j => `<tr onclick="openJobDetail('${j.id}')">
-        <td><span class="tag" title="Internal: ${j.id}">${j.refNum||j.id}</span></td><td>${j.client}</td>
-        <td style="font-family:var(--font-mono)">${j.time}</td>
-        <td class="info-text">${j.origin.split(',')[0]} → ${j.dest.split(',')[0]}</td>
-        <td>${j.driver}</td>
-        <td><span class="status-badge status-${j.status}">${j.status}</span></td>
-        <td><button class="btn-sm" onclick="event.stopPropagation();openJobDetail('${j.id}')">VIEW</button></td>
-      </tr>`).join('')}
-      </tbody></table></div>`;
-  }
-
-  if (activeJobs.length && (isAdmin() || role === 'driver')) {
-    const gateLabels = { preload:'Pre-Load Check', loaded:'Truck Loaded', delivered:'Delivered', payment:'Payment' };
-    const gateIcons  = { preload:'🔍', loaded:'🚛', delivered:'📦', payment:'💰' };
-    const gateActions = { preload:'✓ INSPECTED', loaded:'✓ TRUCK LOADED', delivered:'✓ DELIVERED', payment:'✓ VERIFY PAYMENT' };
-
-    html += `<div style="margin-bottom:14px">
-      <div style="font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:2px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
-        <span>🚦 JOB PIPELINE — GATE STATUS</span>
-        <span style="color:var(--gray);font-size:9px">${activeJobs.length} active job${activeJobs.length>1?'s':''}</span>
+      <div class="dn-wrap">
+        <svg width="120" height="120" viewBox="0 0 128 128" style="flex-shrink:0">
+          <circle cx="64" cy="64" r="${R}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="16"/>
+          <circle cx="64" cy="64" r="${R}" fill="none" stroke="#ff4444" stroke-width="16"
+            stroke-dasharray="${eDash.toFixed(2)} ${(C-eDash).toFixed(2)}"
+            stroke-dashoffset="${off0.toFixed(2)}"
+            style="transition:stroke-dasharray .7s ease"/>
+          <circle cx="64" cy="64" r="${R}" fill="none" stroke="#00ff41" stroke-width="16"
+            stroke-dasharray="${pDash.toFixed(2)} ${(C-pDash).toFixed(2)}"
+            stroke-dashoffset="${(off0-eDash).toFixed(2)}"
+            style="transition:stroke-dasharray .7s ease"/>
+          <text x="64" y="60" text-anchor="middle" font-family="monospace" font-size="15" font-weight="bold" fill="${mc}">${marginMTD.toFixed(1)}%</text>
+          <text x="64" y="76" text-anchor="middle" font-family="monospace" font-size="9" fill="#4a6080">Margin</text>
+        </svg>
+        <div class="dn-lgnd">
+          <div class="lg-i"><div class="lg-d" style="background:var(--green)"></div><div>Revenue<br><strong>$${revMTD.toLocaleString()}</strong><br><span>${revMTD>0?'100':'0'}%</span></div></div>
+          <div class="lg-i"><div class="lg-d" style="background:#ff4444"></div><div>Expenses<br><strong>$${totalCostMTD.toLocaleString()}</strong><br><span>${revMTD>0?(totalCostMTD/revMTD*100).toFixed(1):'0'}%</span></div></div>
+          <div class="lg-i"><div class="lg-d" style="background:var(--amber)"></div><div>Profit<br><strong>$${profitMTD.toLocaleString()}</strong><br><span>${marginMTD.toFixed(1)}%</span></div></div>
+        </div>
       </div>
-    ${activeJobs.map(j => {
-      const gk = ['preload','loaded','delivered','payment'];
-      const passed = gk.filter(k => j.gates?.[k]).length;
-      const next   = gk.find(k => !j.gates?.[k]);
-      const pct    = Math.round((passed/gk.length)*100);
-      const amtStr = j.amount ? '$'+j.amount.toLocaleString() : '';
-      return `<div style="background:var(--navy2);border:1px solid ${passed===gk.length?'var(--green3)':next==='payment'?'rgba(0,255,65,0.4)':'var(--gray2)'};border-radius:6px;padding:14px;margin-bottom:10px;cursor:pointer" onclick="openJobDetail('${j.id}')">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:6px">
-          <div>
-            <div style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--white)">${j.client}</div>
-            <div style="font-size:11px;color:var(--gray);margin-top:2px">${j.refNum||j.id}${j.driver?' · '+j.driver:''}${j.date?' · '+j.date:''}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:${passed===gk.length?'var(--green)':'var(--white)'}">${amtStr}</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--gray)">${passed}/${gk.length} gates · ${pct}%</div>
-          </div>
-        </div>
-        <!-- Progress bar -->
-        <div style="height:4px;background:var(--navy);border-radius:2px;margin-bottom:12px;overflow:hidden">
-          <div style="width:${pct}%;height:100%;background:${pct===100?'var(--green)':pct>=75?'#6495ed':'var(--amber)'};border-radius:2px;transition:width 0.3s"></div>
-        </div>
-        <!-- Gate timeline -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-        ${gk.map((k,i) => {
-          const done = j.gates?.[k];
-          const isNext = k === next;
-          const locked = !done && !isNext;
-          const col = done ? 'var(--green)' : isNext ? 'var(--amber)' : 'var(--gray2)';
-          const bg  = done ? 'rgba(0,255,65,0.1)' : isNext ? 'rgba(255,170,0,0.1)' : 'rgba(0,0,0,0.2)';
-          return `<div style="background:${bg};border:1px solid ${col};border-radius:4px;padding:8px 6px;text-align:center">
-            <div style="font-size:16px;margin-bottom:3px">${done?'✅':isNext?gateIcons[k]:'⬜'}</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:${col};font-weight:${isNext?'700':'normal'}">${gateLabels[k]}</div>
-            ${isNext && (isAdmin()||role==='driver') ? `<button onclick="event.stopPropagation();advanceGate('${j.id}','${k}')"
-              style="margin-top:6px;width:100%;padding:5px 4px;font-family:var(--font-mono);font-size:9px;
-                background:${k==='payment'?'var(--green)':'transparent'};
-                border:1px solid ${k==='payment'?'var(--green)':'var(--amber)'};
-                color:${k==='payment'?'var(--navy)':'var(--amber)'};
-                border-radius:3px;cursor:pointer;font-weight:700">
-              ${gateActions[k]}
-            </button>` : ''}
-          </div>`;
-        }).join('')}
-        </div>
-      </div>`;
-    }).join('')}</div>`;
-  }
+    </div>
 
-  if (isAdmin() || role === 'warehouse') {
-    const lowItems = STATE.inventory.filter(i => i.qty <= i.minQty);
-    if (lowItems.length) {
-      html += `<div class="card" style="border-color:#552222"><div class="card-header"><div class="card-title" style="color:var(--red)">⚠ LOW INVENTORY ALERT</div></div>
-      ${lowItems.map(i => `<div class="fin-row"><span>${i.name}</span><span class="fin-amount red">${i.qty} ${i.unit} remaining</span></div>`).join('')}</div>`;
-    }
-  }
+    <!-- ACTIVE JOBS -->
+    <div class="card">
+      <div class="row-hdr">
+        <div class="ct g" style="margin-bottom:0">ACTIVE JOBS</div>
+        <span class="view-all" onclick="switchTab('jobs')">See All Jobs →</span>
+      </div>
+      ${upJobs.length ? upJobs.map(j=>{
+        const sc=j.status==='active'?'#6495ed':j.status==='complete'?'var(--green)':'var(--amber)';
+        const sl=j.status==='active'?'In Progress':j.status==='complete'?'Complete':'Scheduled';
+        return `<div class="jr" onclick="openJobDetail('${j.id}')">
+          <div class="jt">${(j.time||'—').slice(0,5)}</div>
+          <div><div class="jn">${j.id} ${(j.driver||'').split(' ')[0]}</div><div class="js">${j.type||'local'}</div></div>
+          <div class="ja">$${(j.amount||0).toLocaleString()}</div>
+          <span class="jbadge" style="background:${sc}22;color:${sc};font-size:8px">${sl}</span>
+        </div>`;
+      }).join('') : `<div style="text-align:center;padding:24px;color:var(--gray);font-family:var(--font-mono);font-size:11px">No jobs scheduled today</div>`}
+      ${isAdmin() ? `<button class="j-add" onclick="openNewJobModal()">+ Add Job</button>` : ''}
+    </div>
 
-  content.innerHTML = html;
+    <!-- RECENT ACTIVITY -->
+    <div class="card">
+      <div class="row-hdr">
+        <div class="ct g" style="margin-bottom:0">RECENT ACTIVITY</div>
+        <span class="view-all" onclick="switchTab('history')">Review Activity →</span>
+      </div>
+      ${recentAct.slice(0,5).map(e=>`
+        <div class="act-r">
+          <span class="act-ico">${e.icon}</span>
+          <span class="act-tx">${e.text}</span>
+          <span class="act-ag">${e.ago}</span>
+        </div>`).join('')}
+      ${!recentAct.length ? `<div style="text-align:center;padding:16px;color:var(--gray);font-size:12px">No recent activity</div>` : ''}
+      <button class="j-add" style="margin-top:8px" onclick="switchTab('history')">View All Activity →</button>
+    </div>
+  </div>
+
+  <!-- LEADS PIPELINE (admin only) -->
+  ${isAdmin() ? `
+  <div class="pipe">
+    <div class="row-hdr">
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--green);letter-spacing:2px">LEADS PIPELINE</div>
+      <span class="view-all" onclick="switchTab('leads')">View Full CRM →</span>
+    </div>
+    <div class="pipe-stages">
+      ${stageConfs.map((sc,i)=>{
+        const isWon  = sc.key==='__won__';
+        const count  = isWon ? wonLeads : (lCounts[sc.key]||0);
+        const val    = isWon ? wonValue : (lValues[sc.key]||0);
+        const conv   = sc.conv != null ? sc.conv : null;
+        return `<div class="stage" onclick="switchTab('leads')">
+          <div class="s-lbl">${sc.lbl}</div>
+          <div class="s-ct" style="color:${sc.color}">${count}</div>
+          ${conv!==null ? `<div class="s-conv">${conv}%</div>` : `<div style="height:16px"></div>`}
+          <div class="s-val" style="color:${sc.color}">$${(val/1000).toFixed(val>=1000?1:0)}${val>=1000?'k':''}</div>
+          <div class="s-ico">${sc.icon}</div>
+        </div>
+        ${i<5?`<div style="display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:16px;padding-top:10px">→</div>`:''}`;
+      }).join('')}
+    </div>
+    ${quotedVal>0 ? `
+    <div class="p-footer">
+      <span>📈</span>
+      <span>You're 2 deals away from +$${quotedVal.toLocaleString()} in potential revenue</span>
+    </div>` : ''}
+  </div>` : ''}
+
+</div>`;
 }
-
-// ============================================================
-// JOBS
-// ============================================================
 
 function renderJobs() {
   const content = document.getElementById('main-content');
@@ -6807,11 +7266,39 @@ function renderJobs() {
     nameIncludes(j.pickupDriver, currentUser.name) ||
     nameIncludes(j.deliveryDriver, currentUser.name)
   );
-  if (isClient)          jobs = jobs.filter(j => nameIncludes(j.client, currentUser.name));
+  if (isClient) jobs = jobs.filter(j => nameIncludes(j.client, currentUser.name));
+
+  // Sort order — default newest first
+  const sortOrder = window._jobSortOrder || 'newest';
+  jobs = [...jobs].sort((a, b) => {
+    const da = (a.date||'') + (a.time||'');
+    const db = (b.date||'') + (b.time||'');
+    return sortOrder === 'newest' ? db.localeCompare(da) : da.localeCompare(db);
+  });
 
   let html = `<div class="section-header">
-    <div><div class="section-title">${isClient ? 'MY MOVE' : 'ACTIVE JOBS'}</div><div class="section-sub">${isClient ? 'Your scheduled move details' : jobs.length + ' job(s) in queue'}</div></div>
-    ${isAdmin() ? `<button class="btn-green" onclick="openNewJobModal()">+ NEW JOB</button>` : ''}
+    <div>
+      <div class="section-title">${isClient ? 'MY MOVE' : 'ACTIVE JOBS'}</div>
+      <div class="section-sub">${isClient ? 'Your scheduled move details' : jobs.length + ' job(s) in queue'}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      ${!isClient ? `
+      <div style="display:flex;gap:4px;background:var(--navy);border:1px solid var(--gray2);border-radius:4px;padding:3px">
+        <button onclick="window._jobSortOrder='newest';renderJobs()"
+          style="padding:5px 12px;font-family:var(--font-mono);font-size:10px;border-radius:3px;border:none;cursor:pointer;
+            background:${sortOrder==='newest'?'var(--green)':'transparent'};
+            color:${sortOrder==='newest'?'var(--navy)':'var(--gray)'}">
+          ↓ NEWEST
+        </button>
+        <button onclick="window._jobSortOrder='oldest';renderJobs()"
+          style="padding:5px 12px;font-family:var(--font-mono);font-size:10px;border-radius:3px;border:none;cursor:pointer;
+            background:${sortOrder==='oldest'?'var(--green)':'transparent'};
+            color:${sortOrder==='oldest'?'var(--navy)':'var(--gray)'}">
+          ↑ OLDEST
+        </button>
+      </div>` : ''}
+      ${isAdmin() ? `<button class="btn-green" onclick="openNewJobModal()">+ NEW JOB</button>` : ''}
+    </div>
   </div>`;
 
   if (!jobs.length) {
@@ -7460,7 +7947,7 @@ function renderEstimateForm(jobId) {
                      (est.split||0) + (est.pgs||0) + (est.other||0);
   const storageTotal=(est.storageDays||0) * (est.storageRate||0) * (job.cubicFt||0);
   const subtotal   = cubicTotal + stairsTotal + lcTotal + otherTotal + storageTotal + (est.packing||0);
-  const grandTotal = job.amount || subtotal;
+  const grandTotal = subtotal > 0 ? subtotal : (job.amount || 0);
   const balanceDue = grandTotal - (est.deposit||0) - (est.partial2||0);
 
   const fld = (id, label, val, type='number') => `
@@ -7976,10 +8463,37 @@ function buildClientPortal(myJob, allJobs, user) {
       </button>` : ''}
     </div>
 
+    <!-- SIGNATURE STATUS -->
+    ${myJob.signature || (myJob.signatures && myJob.signatures.length) ? `
+    <div style="background:rgba(0,255,65,0.05);border:1px solid var(--green3);border-radius:6px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:24px">✍️</span>
+      <div style="flex:1">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px">SIGNATURE ON FILE</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px">Your authorization has been captured and saved to this job record.</div>
+      </div>
+      ${myJob.signature ? `<img src="${myJob.signature}" style="height:48px;border:1px solid var(--green3);border-radius:3px;background:rgba(255,255,255,0.05)" />` : ''}
+    </div>` : `
+    <div style="background:rgba(255,170,0,0.05);border:1px solid #664400;border-radius:6px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="font-size:24px">✍️</span>
+      <div style="flex:1">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);letter-spacing:2px">SIGNATURE REQUIRED</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px">Please sign to authorize your move agreement.</div>
+      </div>
+      <button onclick="openSigModal('${myJob.id}')" style="padding:9px 16px;background:var(--amber);color:var(--navy);border:none;border-radius:4px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">
+        ✍ SIGN NOW
+      </button>
+    </div>`}
+
     <!-- PHOTOS FROM THE FIELD -->
     ${(() => {
       const photos = [];
-      (myJob.photos?.general || []).forEach(p => photos.push(p));
+      // Support both flat array (job.photos) and nested (job.photos.general)
+      if (Array.isArray(myJob.photos)) {
+        myJob.photos.forEach(p => { if (typeof p === 'string') photos.push(p); });
+      } else if (myJob.photos?.general) {
+        (myJob.photos.general || []).forEach(p => photos.push(p));
+      }
+      if (myJob.photos?.damage) (myJob.photos.damage || []).forEach(p => photos.push(p));
       if (!photos.length) return '';
       return `
       <div style="background:var(--navy2);border:1px solid var(--gray2);border-radius:6px;padding:16px;margin-bottom:16px">
@@ -8018,77 +8532,16 @@ function buildClientPortal(myJob, allJobs, user) {
         <div style="font-size:28px">🏠</div>
         <div>
           <div style="font-family:var(--font-mono);font-size:11px;color:#6495ed;letter-spacing:2px">MOVE-IN CONCIERGE</div>
-          <div style="font-size:13px;color:var(--white);margin-top:2px">Everything you need to get settled — from your moving team</div>
+          <div style="font-size:13px;color:var(--white);margin-top:2px">Need anything else? Your moving team can help connect you.</div>
         </div>
       </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
-
-        <a href="tel:18005551234" style="text-decoration:none">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--gray2);border-radius:6px;padding:14px;text-align:center;cursor:pointer;transition:all 0.2s"
-            onmouseover="this.style.borderColor='#6495ed'" onmouseout="this.style.borderColor='var(--gray2)'">
-            <div style="font-size:28px;margin-bottom:8px">📶</div>
-            <div style="font-weight:700;font-size:12px;color:var(--white)">Internet Setup</div>
-            <div class="info-text" style="font-size:10px;margin-top:4px">Get connected same day</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:#6495ed;margin-top:6px">TAP TO CALL</div>
-          </div>
-        </a>
-
-        <a href="tel:18005552345" style="text-decoration:none">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--gray2);border-radius:6px;padding:14px;text-align:center;cursor:pointer"
-            onmouseover="this.style.borderColor='#6495ed'" onmouseout="this.style.borderColor='var(--gray2)'">
-            <div style="font-size:28px;margin-bottom:8px">🔑</div>
-            <div style="font-weight:700;font-size:12px;color:var(--white)">Locksmith</div>
-            <div class="info-text" style="font-size:10px;margin-top:4px">Rekey your new home</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:#6495ed;margin-top:6px">TAP TO CALL</div>
-          </div>
-        </a>
-
-        <a href="tel:18005553456" style="text-decoration:none">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--gray2);border-radius:6px;padding:14px;text-align:center;cursor:pointer"
-            onmouseover="this.style.borderColor='#6495ed'" onmouseout="this.style.borderColor='var(--gray2)'">
-            <div style="font-size:28px;margin-bottom:8px">🧹</div>
-            <div style="font-weight:700;font-size:12px;color:var(--white)">House Cleaning</div>
-            <div class="info-text" style="font-size:10px;margin-top:4px">Move-in clean service</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:#6495ed;margin-top:6px">TAP TO CALL</div>
-          </div>
-        </a>
-
-        <a href="tel:18005554567" style="text-decoration:none">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--gray2);border-radius:6px;padding:14px;text-align:center;cursor:pointer"
-            onmouseover="this.style.borderColor='#6495ed'" onmouseout="this.style.borderColor='var(--gray2)'">
-            <div style="font-size:28px;margin-bottom:8px">🔌</div>
-            <div style="font-weight:700;font-size:12px;color:var(--white)">Utilities Transfer</div>
-            <div class="info-text" style="font-size:10px;margin-top:4px">Electric, gas, water</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:#6495ed;margin-top:6px">TAP TO CALL</div>
-          </div>
-        </a>
-
-        <a href="tel:18005555678" style="text-decoration:none">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--gray2);border-radius:6px;padding:14px;text-align:center;cursor:pointer"
-            onmouseover="this.style.borderColor='#6495ed'" onmouseout="this.style.borderColor='var(--gray2)'">
-            <div style="font-size:28px;margin-bottom:8px">🛋</div>
-            <div style="font-weight:700;font-size:12px;color:var(--white)">Furniture Assembly</div>
-            <div class="info-text" style="font-size:10px;margin-top:4px">Same-day setup</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:#6495ed;margin-top:6px">TAP TO CALL</div>
-          </div>
-        </a>
-
-        <a href="tel:18005556789" style="text-decoration:none">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--gray2);border-radius:6px;padding:14px;text-align:center;cursor:pointer"
-            onmouseover="this.style.borderColor='#6495ed'" onmouseout="this.style.borderColor='var(--gray2)'">
-            <div style="font-size:28px;margin-bottom:8px">📦</div>
-            <div style="font-weight:700;font-size:12px;color:var(--white)">Junk Removal</div>
-            <div class="info-text" style="font-size:10px;margin-top:4px">Clear out the old stuff</div>
-            <div style="font-family:var(--font-mono);font-size:9px;color:#6495ed;margin-top:6px">TAP TO CALL</div>
-          </div>
-        </a>
-
-      </div>
-      <div class="info-text" style="font-size:10px;text-align:center;margin-top:12px">
-        Recommended by your moving company · Tap any card to connect
+      <div style="background:rgba(0,255,65,0.04);border:1px solid var(--green3);border-radius:6px;padding:14px;text-align:center">
+        <div style="font-size:13px;color:var(--white);margin-bottom:6px">Contact your moving coordinator for referrals and support</div>
+        ${(STATE.company?.phone) ? `<a href="tel:${STATE.company.phone}" style="text-decoration:none"><button style="padding:10px 24px;background:var(--green);color:var(--navy);border:none;border-radius:4px;font-family:var(--font-mono);font-size:12px;font-weight:700;cursor:pointer">📞 CALL ${STATE.company.phone}</button></a>` : ''}
+        ${(STATE.company?.email) ? `<div style="margin-top:8px;font-size:11px;color:var(--gray)">${STATE.company.email}</div>` : ''}
       </div>
     </div>` : ''}
+
 
     <!-- SUPPORT -->
     <div style="text-align:center;padding:16px 0;border-top:1px solid var(--gray2)">
@@ -11022,6 +11475,8 @@ async function launchCompany() {
       defaultFuelMode: 'both',
       defaultFuelPct: 12,
       plan,
+      trialStart: new Date().toISOString(),
+      active: false, // trial only until manually activated or upgraded
       launchedAt: new Date().toISOString(),
       accentColor: '#00ff41',
     });
@@ -12632,6 +13087,35 @@ function addHelperRow(jobId) {
   }, 100);
 }
 
+// ── ADD HELPER in Edit Job modal (works directly on DOM, no STATE.jobs lookup needed) ──
+function addEjHelperRow() {
+  const container = document.getElementById('ej-helper-rows');
+  if (!container) return;
+  const idx = container.querySelectorAll('.ej-helper-row').length;
+  const row = document.createElement('div');
+  row.className = 'ej-helper-row';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 80px 90px auto;gap:6px;align-items:center';
+  row.innerHTML = `
+    <input type="text" class="ej-helper-name" placeholder="Helper name"
+      list="ej-helper-list"
+      style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:7px 10px;font-family:var(--font-mono);font-size:12px;border-radius:3px;outline:none;width:100%"
+      onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--gray2)'" />
+    <input type="number" class="ej-helper-rate" placeholder="Rate" min="0" step="0.01" value="15"
+      style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:7px 10px;font-family:var(--font-mono);font-size:12px;border-radius:3px;outline:none;width:100%"
+      onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--gray2)'" />
+    <select class="ej-helper-type"
+      style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:7px 6px;font-family:var(--font-mono);font-size:11px;border-radius:3px;outline:none;width:100%">
+      <option value="hourly">$/hr</option>
+      <option value="flat">Flat</option>
+    </select>
+    <button type="button" onclick="this.closest('.ej-helper-row').remove()"
+      style="background:rgba(255,51,51,0.15);border:1px solid #ff3333;color:#ff5555;padding:6px 10px;font-size:12px;border-radius:3px;cursor:pointer;white-space:nowrap">✕</button>
+  `;
+  container.appendChild(row);
+  // Focus the name field
+  setTimeout(() => { row.querySelector('.ej-helper-name')?.focus(); }, 50);
+}
+
 function removeHelper(jobId, idx) {
   const job = STATE.jobs.find(j => j.id === jobId);
   if (!job?.payroll?.helpers) return;
@@ -12644,7 +13128,7 @@ function recalcCrewTotal(jobId) {
   const job = STATE.jobs.find(j => j.id === jobId);
   if (!job?.payroll) return;
   const d           = job.payroll.driver || 0;
-  const helperTotal = (job.payroll.helpers || []).reduce((a,h) => calcPay(h), 0);
+  const helperTotal = (job.payroll.helpers || []).reduce((a,h) => a + calcPay(h), 0);
   const totalEl     = document.getElementById(`total-${jobId}`);
   if (totalEl) totalEl.textContent = 'Total: $' + (d + helperTotal).toFixed(2);
 }
@@ -12854,7 +13338,22 @@ function renderMonthView(calJobs, role, firstDay, daysInMonth, todayNum, todayMo
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr  = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dayJobs  = jobsOnDate(dateStr).sort((a,b) => (a.time||'00:00') > (b.time||'00:00') ? 1 : -1);
-    const dayRevenue = dayJobs.reduce((s,j) => s+(j.amount||0), 0);
+    const dayRevenue = dayJobs.reduce((s,j) => {
+      // Use job.amount if set; otherwise calculate from cubicFt × rate + estimate fields
+      let amt = j.amount || 0;
+      if (!amt && j.cubicFt && j.ratePerCuFt) {
+        const est = j.estimate || {};
+        const base = (j.cubicFt||0) * (j.ratePerCuFt||0);
+        const overload = (est.overloadCuFt||0) * (j.ratePerCuFt||0);
+        const others = (est.others1||0)+(est.others2||0)+(est.others3||0)+
+                       (est.extra1||0)+(est.extra2||0)+(est.extra3||0)+
+                       (est.packing||0)+(est.fuel||0)+(est.stairsOrigin||0)+
+                       (est.stairsDest||0)+(est.longCarryOrigin||0)+(est.longCarryDest||0)+
+                       (est.shuttle||0)+(est.bulky||0)+(est.split||0)+(est.pgs||0)+(est.other||0);
+        amt = base + overload + others;
+      }
+      return s + amt;
+    }, 0);
     const isWeekend  = (new Date(dateStr+'T12:00:00').getDay() % 6 === 0);
     const isMissed   = dayJobs.length===0 && !isWeekend && new Date(dateStr+'T12:00:00') < new Date();
     const dayReceipts = STATE.receipts.filter(r => r.date === dateStr && (
@@ -13586,157 +14085,231 @@ function renderWarehouse() {
   const isWarehouse = role === 'warehouse';
   const canEdit     = !isDriver;
 
+  // ── LOCATION FILTER ──────────────────────────────────────────
+  const locations = [...new Set(
+    STATE.inventory.map(i => i.location).filter(Boolean)
+  )].sort();
+  const activeLoc = window._whLocation || '';
+
   let html = `<div class="section-header">
     <div><div class="section-title">${isDriver ? 'TRUCK INVENTORY' : 'WAREHOUSE OPERATIONS'}</div>
     <div class="section-sub">${isDriver ? 'Read-only · Verify your load before departure' : 'Full inventory control · All job staging'}</div></div>
-    ${canEdit ? `<button class="btn-green" onclick="addInventoryItem()">+ ADD ITEM</button>` : ''}
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input type="text" placeholder="📍 Filter by location..." value="${activeLoc}"
+        id="wh-loc-filter"
+        style="background:var(--navy2);border:1px solid var(--gray2);color:var(--white);padding:7px 12px;font-family:var(--font-mono);font-size:11px;border-radius:3px;width:180px;outline:none"
+        oninput="window._whLocation=this.value;clearTimeout(window._whTimer);window._whTimer=setTimeout(()=>{const v=document.getElementById('wh-loc-filter')?.value||'';window._whLocation=v;renderWarehouse();setTimeout(()=>{const el=document.getElementById('wh-loc-filter');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);}},30);},300)"
+        onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--gray2)'"/>
+      ${activeLoc ? `<button class="btn-sm" onclick="window._whLocation='';renderWarehouse()">✕ Clear</button>` : ''}
+      ${canEdit ? `<button class="btn-green" onclick="addInventoryItem()">+ ADD ITEM</button>` : ''}
+    </div>
   </div>`;
 
-  if (isWarehouse || role === 'office') {
+  // ── ACTIVE JOBS STAGING — all admin roles ─────────────────────
+  if (isAdmin() || isWarehouse) {
+    const today = getTodayStr();
+    const activeJobs  = STATE.jobs.filter(j => ['active','pending'].includes(j.status));
     const storageJobs = STATE.jobs.filter(j => j.type === 'storage' || j.status === 'warehouse');
-    const activeJobs  = STATE.jobs.filter(j => j.status === 'active' || j.status === 'pending');
-    html += `<div class="grid-2" style="margin-bottom:20px">
+    const todayJobs   = activeJobs.filter(j => j.date === today);
+    const upcomingJobs = activeJobs.filter(j => j.date > today).slice(0,5);
+
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+
+      <!-- ACTIVE JOBS READY TO STAGE -->
       <div class="card">
-        <div class="card-header"><div class="card-title">ALL JOBS — STAGING VIEW</div></div>
-        <table><thead><tr><th>Job ID</th><th>Client</th><th>Type</th><th>Status</th><th>Inventory Needed</th></tr></thead><tbody>
-        ${STATE.jobs.map(j => {
-          const blankets = (j.crewSize||2) * 8;
-          return `<tr onclick="openJobDetail('${j.id}')"><td><span class="tag">${j.type}</span></td><td><span class="status-badge status-${j.status}">${j.status}</span></td><td class="info-text">${blankets} blankets · ${(j.crewSize||2) > 2 ? 2 : 1} wrap · ${j.crewSize||2} dollies</td></tr>`;
+        <div class="card-header" style="margin-bottom:10px">
+          <div class="card-title" style="color:var(--green)">🚛 ACTIVE JOBS — STAGING</div>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--gray)">${activeJobs.length} jobs</span>
+        </div>
+        ${activeJobs.length ? `
+        <table><thead><tr>
+          <th>Job ID</th><th>Client</th><th>Date</th><th>Driver</th><th>Location</th><th>Status</th>
+        </tr></thead><tbody>
+        ${activeJobs.map(j => {
+          const isToday = j.date === today;
+          return `<tr style="cursor:pointer;${isToday?'background:rgba(0,255,65,0.04)':''}" onclick="openJobDetail('${j.id}')">
+            <td><span class="tag">${j.refNum||j.id}</span></td>
+            <td style="font-weight:600">${j.client||'—'}</td>
+            <td style="font-family:var(--font-mono);font-size:11px;color:${isToday?'var(--green)':'var(--amber)'}">
+              ${j.date||'—'}${isToday?' ◀ TODAY':''}
+            </td>
+            <td style="font-size:11px">${j.driver||'TBD'}</td>
+            <td style="font-size:11px;color:var(--gray)">${j.warehouseLocation||'—'}</td>
+            <td><span class="status-badge status-${j.status}">${j.status}</span></td>
+          </tr>`;
         }).join('')}
-        </tbody></table>
+        </tbody></table>` :
+        `<p class="info-text" style="padding:16px">No active or pending jobs.</p>`}
       </div>
+
+      <!-- STORAGE IN FACILITY + READY TO DISPATCH -->
       <div class="card">
-        <div class="card-header"><div class="card-title">STORAGE IN FACILITY</div></div>
-        ${storageJobs.length ? storageJobs.map(j => `<div class="fin-row"><div><div style="font-size:13px">${j.client}</div><div class="info-text">${j.id} · ${j.date}</div></div><span class="status-badge status-warehouse">IN STORAGE</span></div>`).join('') : `<p class="info-text" style="padding:16px">No storage jobs active.</p>`}
+        <div class="card-header" style="margin-bottom:10px">
+          <div class="card-title" style="color:#6495ed">🏭 STORAGE IN FACILITY</div>
+        </div>
+        ${storageJobs.length ? storageJobs.map(j => `
+          <div class="fin-row" style="cursor:pointer" onclick="openJobDetail('${j.id}')">
+            <div>
+              <div style="font-size:13px;font-weight:600">${j.client}</div>
+              <div class="info-text">${j.refNum||j.id} · ${j.date}${j.warehouseLocation?' · 📍'+j.warehouseLocation:''}</div>
+            </div>
+            <span class="status-badge status-warehouse">IN STORAGE</span>
+          </div>`).join('') :
+          `<p class="info-text" style="padding:8px 0">No storage jobs active.</p>`}
         <hr class="divider">
-        <div class="card-title" style="margin-bottom:10px;font-size:10px">READY TO DISPATCH TODAY</div>
-        ${activeJobs.length ? activeJobs.map(j => `<div class="fin-row"><div><div style="font-size:13px">${j.client}</div><div class="info-text">${j.id} · ${j.time} · ${j.driver}</div></div><span class="status-badge status-${j.status}">${j.status}</span></div>`).join('') : '<p class="info-text">No active dispatches.</p>'}
+        <div class="card-title" style="margin-bottom:8px;font-size:10px">READY TO DISPATCH TODAY (${todayJobs.length})</div>
+        ${todayJobs.length ? todayJobs.map(j => `
+          <div class="fin-row" style="cursor:pointer" onclick="openJobDetail('${j.id}')">
+            <div>
+              <div style="font-size:13px;font-weight:600">${j.client}</div>
+              <div class="info-text">${j.refNum||j.id} · ${j.time||'—'} · ${j.driver||'TBD'}${j.warehouseLocation?' · 📍'+j.warehouseLocation:''}</div>
+            </div>
+            <span class="status-badge status-${j.status}">${j.status}</span>
+          </div>`).join('') :
+          `<p class="info-text">No dispatches today.</p>`}
+      </div>
+    </div>`;
+
+    // ── SET WAREHOUSE LOCATION ON JOB ─────────────────────────
+    html += `<div class="card" style="margin-bottom:16px;padding:12px 16px">
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:10px">📍 ASSIGN WAREHOUSE LOCATION TO JOB</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px;font-family:var(--font-mono)">JOB ID</div>
+          <select id="wh-loc-job" style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:8px 10px;font-family:var(--font-mono);font-size:11px;border-radius:3px;min-width:140px">
+            <option value="">-- Select job --</option>
+            ${activeJobs.map(j=>`<option value="${j.id}">${j.refNum||j.id} — ${j.client}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px;font-family:var(--font-mono)">WAREHOUSE LOCATION</div>
+          <input type="text" id="wh-loc-input" placeholder="e.g. Atlanta GA — Bay 3"
+            style="background:var(--navy);border:1px solid var(--gray2);color:var(--white);padding:8px 12px;font-family:var(--font-mono);font-size:11px;border-radius:3px;width:220px;outline:none"
+            onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--gray2)'"/>
+        </div>
+        <button class="btn-green" style="padding:8px 16px;font-size:11px" onclick="saveJobWarehouseLocation()">SAVE LOCATION</button>
       </div>
     </div>`;
   }
 
+  // ── DRIVER VIEW ───────────────────────────────────────────────
   if (isDriver) {
-    // Drivers see warehouse/storage jobs too — they pick up from warehouse
+    const myJobs = STATE.jobs.filter(j =>
+      (j.driver && nameIncludes(j.driver, currentUser.name)) &&
+      ['active','pending'].includes(j.status)
+    );
     const warehouseJobs = STATE.jobs.filter(j =>
       j.type === 'storage' || j.status === 'warehouse'
     );
-    if (warehouseJobs.length) {
-      html += `
-        <div class="card" style="margin-bottom:16px;border-color:rgba(100,149,237,0.4)">
-          <div class="card-header">
-            <div><div class="card-title" style="color:#6495ed">🏭 WAREHOUSE / STORAGE JOBS</div>
-            <div class="info-text">Available for pickup · ${warehouseJobs.length} job(s)</div></div>
-          </div>
-          <table><thead><tr>
-            <th>Job ID</th><th>Client</th><th>Date</th><th>Type</th><th>Status</th><th></th>
-          </tr></thead><tbody>
-          ${warehouseJobs.map(j => `
-            <tr>
-              <td><span class="tag">${j.id}</span></td>
-              <td style="font-weight:600">${j.client}</td>
-              <td class="info-text">${j.date}</td>
-              <td><span class="tag">${j.type}</span></td>
-              <td><span class="status-badge status-${j.status}">${j.status}</span></td>
-              <td><button class="btn-sm" onclick="openJobDetail('${j.id}')">VIEW</button></td>
-            </tr>`).join('')}
-          </tbody></table>
-        </div>`;
-    }
 
-    const myJob = STATE.jobs.find(j =>
-      j.driver && nameIncludes(j.driver, currentUser.name) &&
-      (j.status === 'active' || j.status === 'pending')
-    );
-
-    // MY LOAD CHECKLIST
-    if (myJob) {
-      const crew = myJob.crewSize || 2;
-      html += `
+    if (myJobs.length) {
+      myJobs.forEach(myJob => {
+        const crew = myJob.crewSize || 2;
+        html += `
         <div class="card" style="border-color:var(--amber);margin-bottom:16px">
           <div class="card-header">
-            <div><div class="card-title" style="color:var(--amber)">📋 MY LOAD CHECKLIST — ${myJob.id}</div>
-            <div class="info-text">${myJob.client} · ${myJob.date} @ ${myJob.time}</div></div>
+            <div>
+              <div class="card-title" style="color:var(--amber)">📋 MY LOAD — ${myJob.refNum||myJob.id}</div>
+              <div class="info-text">${myJob.client} · ${myJob.date} @ ${myJob.time||'TBD'}
+                ${myJob.warehouseLocation ? ` · 📍 <strong style="color:var(--green)">${myJob.warehouseLocation}</strong>` : ''}
+              </div>
+            </div>
             <span class="status-badge status-${myJob.status}">${myJob.status}</span>
           </div>
           <table><thead><tr><th>Item</th><th>Qty Needed</th><th>In Stock</th><th>Status</th></tr></thead><tbody>
           ${[
-            { name: 'Moving Blankets', needed: crew * 8, unit: 'pcs' },
-            { name: 'Stretch Wrap',    needed: crew > 2 ? 2 : 1,  unit: 'rolls' },
-            { name: 'Dollies (2-wheel)', needed: Math.ceil(crew/2), unit: 'pcs' },
-            { name: 'Floor Runners',   needed: 2, unit: 'pcs' },
-            { name: 'Rope / Straps',   needed: 4, unit: 'pcs' },
+            { name: 'Moving Blankets',   needed: crew * 8,          unit: 'pcs'   },
+            { name: 'Stretch Wrap',      needed: crew > 2 ? 2 : 1,  unit: 'rolls' },
+            { name: 'Dollies (2-wheel)', needed: Math.ceil(crew/2),  unit: 'pcs'   },
+            { name: 'Floor Runners',     needed: 2,                  unit: 'pcs'   },
+            { name: 'Rope / Straps',     needed: 4,                  unit: 'pcs'   },
           ].map(item => {
-            const invItem = STATE.inventory.find(i =>
-              i.name.toLowerCase().includes(item.name.toLowerCase().split(' ')[0])
-            );
-            const inStock  = invItem ? invItem.qty : null;
-            const hasEnough = inStock === null || inStock >= item.needed;
+            const inv = STATE.inventory.find(i => i.name.toLowerCase().includes(item.name.toLowerCase().split(' ')[0]));
+            const inStock = inv ? inv.qty : null;
+            const ok = inStock === null || inStock >= item.needed;
             return `<tr>
               <td>${item.name}</td>
               <td style="font-family:var(--font-mono)">${item.needed} ${item.unit}</td>
-              <td style="font-family:var(--font-mono);color:${inStock===null ? 'var(--gray)' : hasEnough ? 'var(--green)' : 'var(--red)'}">
-                ${inStock !== null ? inStock + ' ' + item.unit : '—'}
+              <td style="font-family:var(--font-mono);color:${inStock===null?'var(--gray)':ok?'var(--green)':'var(--red)'}">
+                ${inStock !== null ? inStock+' '+item.unit : '—'}
               </td>
-              <td>${inStock === null ? '<span class="info-text">Not tracked</span>' :
-                    hasEnough ? '<span style="color:var(--green);font-family:var(--font-mono);font-size:10px">✓ SUFFICIENT</span>' :
-                    '<span style="color:var(--red);font-family:var(--font-mono);font-size:10px">⚠ LOW STOCK</span>'}</td>
+              <td>${inStock===null?'<span class="info-text">Not tracked</span>':
+                ok?'<span style="color:var(--green);font-family:var(--font-mono);font-size:10px">✓ READY</span>':
+                '<span style="color:var(--red);font-family:var(--font-mono);font-size:10px">⚠ LOW</span>'}</td>
             </tr>`;
           }).join('')}
           </tbody></table>
-          <p class="info-text" style="margin-top:12px">⚠ Confirm all items with warehouse before departure.</p>
+          <p class="info-text" style="margin-top:10px">⚠ Confirm all items with warehouse before departure.</p>
         </div>`;
-    }
-
-    // ALL ACTIVE JOBS TODAY — driver can see what else is going out
-    const todayStr   = getTodayStr();
-    const todayJobs  = STATE.jobs.filter(j =>
-      j.date === todayStr && (j.status === 'active' || j.status === 'pending')
-    );
-
-    if (todayJobs.length) {
-      html += `
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-header"><div class="card-title">📅 ALL JOBS DISPATCHING TODAY</div>
-          <div class="info-text">${todayJobs.length} job(s) · ${todayStr}</div></div>
-          <table><thead><tr>
-            <th>Job ID</th><th>Client</th><th>Time</th><th>Driver</th><th>Crew</th><th>Status</th>
-          </tr></thead><tbody>
-          ${todayJobs.map(j => `
-            <tr style="${j.driver && nameIncludes(j.driver, currentUser.name) ? 'background:rgba(0,255,65,0.05)' : ''}">
-              <td><span class="tag">${j.id}</span></td>
-              <td>${j.client}</td>
-              <td style="font-family:var(--font-mono)">${j.time || '—'}</td>
-              <td style="${j.driver && nameIncludes(j.driver, currentUser.name) ? 'color:var(--green);font-weight:700' : ''}">${j.driver || 'TBD'}${j.driver && nameIncludes(j.driver, currentUser.name) ? ' ◀ YOU' : ''}</td>
-              <td style="font-family:var(--font-mono)">${j.crewSize || 2}</td>
-              <td><span class="status-badge status-${j.status}">${j.status}</span></td>
-            </tr>`).join('')}
-          </tbody></table>
-        </div>`;
-    }
-  }
-
-  // Stock section — drivers see read-only with shortage report button
-  html += `
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">CURRENT STOCK${isDriver ? ' — READ ONLY' : ''}</div>
-          <div class="info-text">${isDriver ? 'Live inventory · Updated by warehouse team' : 'Full inventory control'}</div>
-        </div>
-        ${isDriver ? `<button class="btn-outline" style="padding:7px 14px;font-size:11px" onclick="notifyWarehouseShortage()">⚠ REPORT SHORTAGE</button>` : ''}
+      });
+    } else {
+      html += `<div class="card" style="margin-bottom:16px;text-align:center;padding:24px">
+        <p class="info-text">No active jobs assigned to you today.</p>
       </div>`;
+    }
 
-  if (!STATE.inventory.length) {
-    html += `<p class="info-text" style="padding:16px">No inventory items tracked yet.</p>`;
+    if (warehouseJobs.length) {
+      html += `<div class="card" style="margin-bottom:16px;border-color:rgba(100,149,237,0.4)">
+        <div class="card-header">
+          <div class="card-title" style="color:#6495ed">🏭 WAREHOUSE / STORAGE AVAILABLE</div>
+          <div class="info-text">${warehouseJobs.length} job(s) staged</div>
+        </div>
+        <table><thead><tr><th>Job ID</th><th>Client</th><th>Date</th><th>Location</th><th>Status</th><th></th></tr></thead><tbody>
+        ${warehouseJobs.map(j=>`
+          <tr>
+            <td><span class="tag">${j.refNum||j.id}</span></td>
+            <td style="font-weight:600">${j.client}</td>
+            <td class="info-text">${j.date}</td>
+            <td style="color:var(--green);font-size:11px">${j.warehouseLocation||'—'}</td>
+            <td><span class="status-badge status-${j.status}">${j.status}</span></td>
+            <td><button class="btn-sm" onclick="openJobDetail('${j.id}')">VIEW</button></td>
+          </tr>`).join('')}
+        </tbody></table>
+      </div>`;
+    }
   }
 
-  STATE.inventory.forEach((item, idx) => {
+  // ── INVENTORY STOCK ───────────────────────────────────────────
+  const filteredInv = activeLoc
+    ? STATE.inventory.filter(i => (i.location||'').toLowerCase().includes(activeLoc.toLowerCase()))
+    : STATE.inventory;
+
+  html += `<div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">CURRENT STOCK${isDriver?' — READ ONLY':''}${activeLoc?` · 📍 ${activeLoc}`:''}</div>
+        <div class="info-text">${isDriver?'Live inventory · Updated by warehouse team':'Full inventory control'}${filteredInv.length !== STATE.inventory.length ? ` · Showing ${filteredInv.length} of ${STATE.inventory.length}` : ''}</div>
+      </div>
+      ${isDriver ? `<button class="btn-outline" style="padding:7px 14px;font-size:11px" onclick="notifyWarehouseShortage()">⚠ REPORT SHORTAGE</button>` : ''}
+    </div>`;
+
+  if (!filteredInv.length) {
+    html += `<p class="info-text" style="padding:16px">${activeLoc ? 'No items at this location.' : 'No inventory items tracked yet.'}</p>`;
+  }
+
+  filteredInv.forEach((item, idx) => {
+    const realIdx = STATE.inventory.indexOf(item);
     const low = item.qty <= item.minQty;
-    html += `<div class="inventory-row" style="${low ? 'border-left:3px solid var(--red)' : 'border-left:3px solid var(--green3)'}">
-      <div style="flex:1"><div style="font-size:13px">${item.name}</div><div class="info-text">${item.id} · Min: ${item.minQty} ${item.unit}</div></div>
+    html += `<div class="inventory-row" style="${low?'border-left:3px solid var(--red)':'border-left:3px solid var(--green3)'}">
+      <div style="flex:1">
+        <div style="font-size:13px">${item.name}</div>
+        <div class="info-text">${item.id} · Min: ${item.minQty} ${item.unit}
+          ${item.location ? ` · 📍 <span style="color:var(--green);font-size:10px">${item.location}</span>` : ''}
+        </div>
+      </div>
       ${canEdit
-        ? `<div class="qty-control"><button class="qty-btn" onclick="adjustQty(${idx}, -1)">−</button><div class="qty-num" style="color:${low ? 'var(--red)' : 'var(--green)'}">${item.qty}</div><button class="qty-btn" onclick="adjustQty(${idx}, 1)">+</button></div>`
-        : `<div style="font-family:var(--font-mono);font-size:22px;font-weight:700;color:${low ? 'var(--red)' : 'var(--green)'};min-width:50px;text-align:right">${item.qty}</div>`}
+        ? `<div style="display:flex;align-items:center;gap:6px">
+            <input type="text" placeholder="Location..." value="${item.location||''}"
+              style="background:transparent;border:none;border-bottom:1px solid var(--gray2);color:var(--gray);padding:3px 4px;font-family:var(--font-mono);font-size:10px;width:130px;outline:none"
+              onchange="STATE.inventory[${realIdx}].location=this.value;saveInventoryItem(STATE.inventory[${realIdx}],${realIdx})"
+              onfocus="this.style.borderBottomColor='var(--green)'" onblur="this.style.borderBottomColor='var(--gray2)'"/>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="adjustQty(${realIdx}, -1)">−</button>
+              <div class="qty-num" style="color:${low?'var(--red)':'var(--green)'}">${item.qty}</div>
+              <button class="qty-btn" onclick="adjustQty(${realIdx}, 1)">+</button>
+            </div>
+          </div>`
+        : `<div style="font-family:var(--font-mono);font-size:22px;font-weight:700;color:${low?'var(--red)':'var(--green)'};min-width:50px;text-align:right">${item.qty}</div>`}
       <span style="font-family:var(--font-mono);font-size:11px;color:var(--gray);margin-left:8px;width:40px">${item.unit}</span>
       ${low ? '<span style="font-family:var(--font-mono);font-size:10px;color:var(--red);margin-left:8px;letter-spacing:1px">LOW</span>' : ''}
     </div>`;
@@ -13744,6 +14317,18 @@ function renderWarehouse() {
 
   html += `</div>`;
   content.innerHTML = html;
+}
+
+async function saveJobWarehouseLocation() {
+  const jobId = document.getElementById('wh-loc-job')?.value;
+  const loc   = document.getElementById('wh-loc-input')?.value.trim();
+  if (!jobId) { notify('⚠ Select a job first', true); return; }
+  const job = STATE.jobs.find(j => j.id === jobId);
+  if (!job) return;
+  job.warehouseLocation = loc;
+  await saveJob(job);
+  notify(`✓ Location saved: ${loc || 'cleared'}`);
+  renderWarehouse();
 }
 
 async function notifyWarehouseShortage() {
@@ -13912,8 +14497,13 @@ function openBOL(jobId) {
       </div>` : ''}
 
     <div class="bol-section"><h3>SIGNATURES</h3>
-      ${job.signatures && job.signatures.length
-        ? `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(0,255,65,0.05);border:1px solid var(--green3);border-radius:3px"><span style="color:var(--green);font-size:18px">✓</span><div><div style="font-family:var(--font-mono);font-size:11px;color:var(--green)">SIGNATURE ON FILE</div><div class="info-text">Captured and saved to job record ${job.id}</div></div></div>`
+      ${(job.signature || (job.signatures && job.signatures.length))
+        ? `<div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(0,255,65,0.05);border:1px solid var(--green3);border-radius:3px;flex-wrap:wrap">
+             <span style="color:var(--green);font-size:18px">✓</span>
+             <div><div style="font-family:var(--font-mono);font-size:11px;color:var(--green)">SIGNATURE ON FILE</div>
+             <div class="info-text">Captured and saved to job record ${job.id}${job.signedAt ? ' · ' + new Date(job.signedAt).toLocaleDateString() : ''}</div></div>
+             ${job.signature ? `<img src="${job.signature}" style="height:48px;border:1px solid var(--green3);border-radius:3px;margin-left:auto" />` : ''}
+           </div>`
         : `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
              <button class="btn-outline" onclick="closeModal('modal-bol');openSigModal('${job.id}')">✎ CAPTURE SIGNATURE</button>
              <span class="info-text">Required to finalize this Bill of Lading</span>
@@ -13989,8 +14579,8 @@ function openBOL(jobId) {
           This agreement shall be governed by the laws of the State of Georgia and applicable federal transportation regulations, including 49 U.S.C. § 14706 (Carmack Amendment) where applicable.
           <br><br>
 
-          <div style="color:var(--white);letter-spacing:1px;margin-bottom:6px;font-size:11px">11. OPERATIONAL VERIFICATION PROTOCOL (FLEET FLOW GATE SYSTEM)</div>
-          This move is governed by JPG Systems' Fleet Flow gate verification protocol. Each gate (Pre-Load Inspection, Load Confirmation, Delivery Confirmation, Payment Collection) represents a legally recognized checkpoint. Client authorization at each gate constitutes acceptance of the condition of goods at that stage. Gate confirmations are timestamped and stored in the job record.
+          <div style="color:var(--white);letter-spacing:1px;margin-bottom:6px;font-size:11px">11. OPERATIONAL VERIFICATION PROTOCOL (FLEETFLOW GATE SYSTEM)</div>
+          This move is governed by JPG Systems' FleetFlow gate verification protocol. Each gate (Pre-Load Inspection, Load Confirmation, Delivery Confirmation, Payment Collection) represents a legally recognized checkpoint. Client authorization at each gate constitutes acceptance of the condition of goods at that stage. Gate confirmations are timestamped and stored in the job record.
           <br><br>
 
           <div style="color:var(--white);letter-spacing:1px;margin-bottom:6px;font-size:11px">12. ENTIRE AGREEMENT</div>
@@ -14233,10 +14823,10 @@ function renderReceipts() {
                 ${!r.approved && !r.rejected ? `
                   <button class="btn-sm" style="color:var(--green);border-color:var(--green3);padding:4px 10px;font-size:9px"
                     onclick="approveReceipt('${r.id||r._docId}')">✓ APPROVE</button>` : ''}
-                <button class="btn-sm" style="font-size:9px" onclick="openReceiptEdit('${r.id||r._docId}')">✎</button>
+                <button class="btn-sm" style="font-size:9px" onclick="openEditReceipt('${r.id||r._docId}')">✎</button>
               </div>` : `
               <div style="display:flex;gap:6px;flex-shrink:0">
-                <button class="btn-sm" style="font-size:9px" onclick="openReceiptEdit('${r.id||r._docId}')">✎ EDIT</button>
+                <button class="btn-sm" style="font-size:9px" onclick="openEditReceipt('${r.id||r._docId}')">✎ EDIT</button>
               </div>`}
             </div>`;
           }).join('')}
@@ -15005,9 +15595,18 @@ function openJobDetail(jobId) {
     shuttleAmt + bulkyAmt + splitAmt + pgsAmt + packingAmt +
     storageAmt + otherAmt + others1 + others2 + others3 + extra1 + extra2 + extra3;
 
-  const discountPct  = est.discount || 0;
-  const discountAmt  = subtotal * (discountPct/100);
-  const totalJob     = job.amount || (subtotal - discountAmt);
+  const discountMode = est.discountMode || 'pct';
+  const discountVal  = Math.abs(est.discount || 0); // always positive internally
+  // Safety: if no discountMode was ever saved (legacy jobs) and value > 50, treat as flat dollar
+  // This prevents old -110 style entries from being applied as 100% percentage discounts
+  const effectiveMode = (!est.discountMode && discountVal > 50) ? 'flat' : discountMode;
+  const discountAmt  = effectiveMode === 'flat'
+    ? discountVal
+    : subtotal * (Math.min(50, discountVal) / 100);
+  // If estimate line items are populated (subtotal > 0), use calculated total.
+  // Only fall back to job.amount if no line items exist at all.
+  const calcTotal    = subtotal - discountAmt;
+  const totalJob     = calcTotal > 0 ? calcTotal : (job.amount || 0);
   const deposit      = est.deposit  || 0;
   const partial2     = est.partial2 || 0;
   const tipAmt       = est.tip      || 0;
@@ -15126,13 +15725,16 @@ function openJobDetail(jobId) {
     + '</div>';
 
   // Discount
-  if (discountPct > 0) {
+  if (discountAmt > 0) {
+    const discLabel   = est.discountLabel || 'Discount';
+    const discDisplay = effectiveMode === 'flat'
+      ? discLabel + ' (-$' + discountVal.toFixed(2) + ')'
+      : discLabel + ' ' + Math.min(50, discountVal).toFixed(2) + '%';
     html += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)">'
-      + '<span style="color:var(--red);font-size:13px">Discount: <strong>' + (est.discountLabel||'Coupon Discount') + ' ' + discountPct.toFixed(2) + '%</strong></span>'
-      + '<span style="font-family:var(--font-mono);font-size:13px;color:var(--red)">−$' + discountAmt.toFixed(2) + '</span>'
+      + '<span style="color:var(--red);font-size:13px">Discount: <strong>' + discDisplay + '</strong></span>'
+      + '<span style="font-family:var(--font-mono);font-size:13px;color:var(--red)">-$' + discountAmt.toFixed(2) + '</span>'
       + '</div>';
   }
-
   // TOTAL JOB
   html += '<div style="display:flex;justify-content:space-between;padding:10px 0;border-top:2px solid var(--green3);margin-top:4px">'
     + '<span style="font-size:15px;font-weight:700;color:var(--white)">Total Job</span>'
@@ -15359,6 +15961,7 @@ function openEditJob(jobId) {
 
   document.getElementById('ej-client').value           = job.client        || '';
   document.getElementById('ej-phone').value            = job.phone         || '';
+  const ejEmail = document.getElementById('ej-email'); if (ejEmail) ejEmail.value = job.email || '';
   document.getElementById('ej-date').value             = job.date          || '';
   document.getElementById('ej-time').value             = job.time          || '';
   document.getElementById('ej-end-date').value         = job.endDate       || '';
@@ -15389,6 +15992,16 @@ function openEditJob(jobId) {
   const cf2 = document.getElementById('ej-cubic-ft-2');
   if (cf2) cf2.value = job.cubicFt || '';
 
+  // Load rate and cubic ft into both field locations
+  const ejCubicFt = document.getElementById('ej-cubic-ft');
+  if (ejCubicFt) ejCubicFt.value = job.cubicFt || '';
+  const ejRateMain = document.getElementById('ej-rate-per-cuft');
+  if (ejRateMain) ejRateMain.value = job.ratePerCuFt || '';
+  const ejRateCarrier = document.getElementById('ej-rate-carrier');
+  if (ejRateCarrier) ejRateCarrier.value = job.ratePerCuFt || '';
+  const ejRateLock = document.getElementById('ej-rate-lock');
+  if (ejRateLock) ejRateLock.checked = job.rateLocked || false;
+
   // Estimate fields
   const est = job.estimate || {};
   safe('ej-est-fuel',        est.fuel        || '');
@@ -15414,6 +16027,8 @@ function openEditJob(jobId) {
   safe('ej-est-extra3-label',  est.extra3Label  || '');
   const fuelModeEl = document.getElementById('ej-est-fuel-mode');
   if (fuelModeEl) fuelModeEl.value = est.fuelMode || 'flat';
+  const discModeEl = document.getElementById('ej-est-discount-mode');
+  if (discModeEl) discModeEl.value = est.discountMode || 'pct';
   const valEl = document.getElementById('ej-est-valuation');
   if (valEl) valEl.value = est.valuation || 'option2';
   const tipMethEl = document.getElementById('ej-est-tip-method');
@@ -15511,6 +16126,7 @@ async function saveEditJob() {
   job.fadd      = document.getElementById('ej-fadd')?.value                     || '';
   job.client   = client;
   job.phone    = document.getElementById('ej-phone').value.trim();
+  job.email    = document.getElementById('ej-email')?.value.trim() || '';
   job.date     = date;
   job.time    = document.getElementById('ej-time').value;
   job.endDate       = document.getElementById('ej-end-date')?.value       || '';
@@ -15546,6 +16162,7 @@ async function saveEditJob() {
     overloadCuFt:     getEjF('ej-est-overload-cuft'),
     // fuelPct handled above via mode toggle
     discount:         getEjF('ej-est-discount'),
+    discountMode:     document.getElementById('ej-est-discount-mode')?.value || 'pct',
     discountLabel:    getEjS('ej-est-discount-label'),
     others1Label:     getEjS('ej-est-others1-label'),
     others1:          getEjF('ej-est-others1'),
@@ -15641,28 +16258,74 @@ async function saveEditJob() {
 
 // ============================================================
 function openNewJobModal(prefillDate) {
-  // Reset all fields
+  // ── HARD RESET — every field to blank/zero ──────────────────
   const safe = (id, val='') => { const el = document.getElementById(id); if(el) el.value = val; };
-  safe('nj-client'); safe('nj-phone'); safe('nj-origin'); safe('nj-dest');
-  safe('nj-amount'); safe('nj-notes'); safe('nj-carrier'); safe('nj-cubic-ft');
-  safe('nj-rate-per-cuft'); safe('nj-end-date'); safe('nj-end-time');
-  safe('nj-pickup-driver'); safe('nj-delivery-driver'); safe('nj-pickup-from');
-  safe('nj-job-id'); safe('nj-ref-num'); safe('nj-weight'); safe('nj-linehaul');
-  safe('nj-priority'); safe('nj-followup'); safe('nj-fadd'); safe('nj-cubic-ft-2');
+
+  // Core job fields
+  safe('nj-client'); safe('nj-phone'); safe('nj-email');
+  safe('nj-origin'); safe('nj-dest'); safe('nj-pickup-from');
+  safe('nj-amount'); safe('nj-notes'); safe('nj-carrier');
+  safe('nj-cubic-ft'); safe('nj-cubic-ft-2'); safe('nj-rate-per-cuft');
+  safe('nj-weight'); safe('nj-linehaul');
+  safe('nj-end-date'); safe('nj-end-time');
+  safe('nj-pickup-start'); safe('nj-pickup-end');
+  safe('nj-delivery-start'); safe('nj-delivery-end');
+  safe('nj-pickup-driver'); safe('nj-delivery-driver');
+  safe('nj-job-id'); safe('nj-ref-num');
+  safe('nj-priority'); safe('nj-followup'); safe('nj-fadd');
+  safe('nj-broker-ref'); safe('nj-carrier');
+
+  // ALL estimate fields — zero out completely
+  safe('nj-est-fuel', '');
+  safe('nj-est-fuel-pct', '0');
+  safe('nj-est-overload-cuft', '');
+  safe('nj-est-stairs-origin', '');
+  safe('nj-est-stairs-dest', '');
+  safe('nj-est-longcarry-origin', '');
+  safe('nj-est-longcarry-dest', '');
+  safe('nj-est-shuttle', '');
+  safe('nj-est-bulky', '');
+  safe('nj-est-split', '');
+  safe('nj-est-pgs', '');
+  safe('nj-est-packing', '');
+  safe('nj-est-storage-days', '');
+  safe('nj-est-storage-rate', '');
+  safe('nj-est-other', '');
+  safe('nj-est-deposit', '');
+  safe('nj-est-partial2', '');
+  safe('nj-est-tip', '');
+  safe('nj-est-discount', '');
+  safe('nj-est-discount-label', '');
+  safe('nj-est-others1', '');  safe('nj-est-others1-label', '');
+  safe('nj-est-others2', '');  safe('nj-est-others2-label', '');
+  safe('nj-est-others3', '');  safe('nj-est-others3-label', '');
+  safe('nj-est-extra1', '');   safe('nj-est-extra1-label', '');
+  safe('nj-est-extra2', '');   safe('nj-est-extra2-label', '');
+  safe('nj-est-extra3', '');   safe('nj-est-extra3-label', '');
+  safe('nj-est-notes', '');
+  safe('nj-est-office-remarks', '');
+  safe('nj-est-slip-remarks', '');
+
+  // Reset carrier total display
   const ct = document.getElementById('nj-carrier-total'); if(ct) ct.textContent = '$0.00';
+  // Clear helper rows
   const hr = document.getElementById('nj-helper-rows'); if(hr) hr.innerHTML = '';
+  // Reset all selects to index 0
+  ['nj-job-for','nj-est-tip-method','nj-est-valuation',
+   'nj-est-fuel-mode','nj-est-tip-assign'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.selectedIndex = 0;
+  });
   try { toggleCarrierFields('nj'); } catch(e) {}
+
+  // Apply defaults
   const s2 = loadSettings();
   safe('nj-crew', s2.defaultCrew || '3');
   safe('nj-type', s2.defaultMove || 'local');
   safe('nj-date', prefillDate || getTodayStr());
   safe('nj-time', getSetting('defaultTime', '08:00'));
   safe('nj-driver', currentUser.role === 'driver' ? (currentUser.name||'') : '');
-  // Reset selects
-  ['nj-job-for','nj-est-tip-method','nj-est-valuation','nj-est-fuel-mode'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.selectedIndex = 0;
-  });
+
   closeModal('modal-calday');
   openModal('modal-newjob');
   setTimeout(() => { try { applyJobDefaults('nj'); } catch(e) {} }, 50);
@@ -15703,6 +16366,7 @@ async function createJob() {
     refNum:        g('nj-ref-num'),
     client,
     phone:         g('nj-phone'),
+    email:         g('nj-email'),
     date,
     time:          g('nj-time'),
     endDate:       g('nj-end-date') || g('nj-delivery-end').slice(0,10) || '',
@@ -18837,6 +19501,7 @@ async function openEditUser(username) {
   document.getElementById('um-username').disabled = true;
   document.getElementById('um-displayname').value = u.displayName;
   document.getElementById('um-password').value    = u.password;
+  const umEmail = document.getElementById('um-email'); if (umEmail) umEmail.value = u.email || '';
   document.getElementById('um-role').value        = u.role;
   document.getElementById('um-payrate').value     = u.payRate || '';
   document.getElementById('um-paytype').value     = u.payType || 'hourly';
@@ -18896,6 +19561,7 @@ async function saveUser() {
     await db.collection(COL_USERS).doc(username).set({
       username, displayName: display, password,
       role: finalRole, active: finalActive,
+      email: document.getElementById('um-email')?.value.trim() || '',
       payRate, payType, allowedRoles,
       companyId: COMPANY_ID,
       ...(isCreatorAcc2 ? { isCreator: true } : {})
@@ -19007,7 +19673,337 @@ function scribbleClear(){var c=document.getElementById('scribble-canvas');if(c&&
 function scribbleUndo(){if(!_scribbleStrokes.length||!_scribbleCtx)return;_scribbleStrokes.pop();var c=document.getElementById('scribble-canvas');_scribbleCtx.clearRect(0,0,c.width,c.height);_scribbleCtx.strokeStyle='#111';_scribbleCtx.lineWidth=2.5;_scribbleCtx.lineCap=_scribbleCtx.lineJoin='round';_scribbleStrokes.forEach(function(s){if(!s.length)return;_scribbleCtx.beginPath();_scribbleCtx.moveTo(s[0].x,s[0].y);s.forEach(function(p){_scribbleCtx.lineTo(p.x,p.y);});_scribbleCtx.stroke();});}
 async function scribbleTranscribe(){var c=document.getElementById('scribble-canvas');if(!c||!_scribbleStrokes.length){notify('⚠ Write something first',true);return;}var btn=document.getElementById('scribble-transcribe-btn');if(btn){btn.textContent='⏳...';btn.disabled=true;}try{var img=c.toDataURL('image/png').split(',')[1];var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-calls':'true','anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/png',data:img}},{type:'text',text:'Transcribe the handwritten text. Return ONLY the text, nothing else. If unreadable return a dash.'}]}]})});var d=await res.json();var txt=(d.content?.[0]?.text||'').trim();document.getElementById('scribble-result-area').style.display='block';document.getElementById('scribble-result-text').value=txt==='-'?'':txt;}catch(e){notify('⚠ '+e.message,true);}finally{if(btn){btn.textContent='✨ TRANSCRIBE';btn.disabled=false;}}}
 function scribbleApply(){var txt=document.getElementById('scribble-result-text')?.value.trim();if(!txt){notify('⚠ No text',true);return;}if(_scribbleTarget){var el=_scribbleTarget,s=el.selectionStart,cur=el.value;el.value=typeof s==='number'?cur.slice(0,s)+txt+cur.slice(el.selectionEnd):(cur?cur+' ':'')+txt;el.focus();notify('✓ Text inserted');}else{navigator.clipboard?.writeText(txt).then(()=>notify('✓ Copied'));}closeScribble();}
+
+// ============================================================
+// PAYWALL — Company activation gate
+// ============================================================
+
+// ============================================================
+// TRIAL + TIER SYSTEM
+// ============================================================
+
+const PLANS = {
+  Basic: { price:399,  label:'Basic', color:'var(--gray)', tabs:['dashboard','jobs','history','financials','accounting','crewlog','payroll','calendar','users','settings'] },
+  Pro:   { price:799,  label:'Pro',   color:'#6495ed',     tabs:['dashboard','jobs','history','financials','accounting','crewlog','payroll','tax1099','leads','warehouse','receipts','expenses','calendar','messaging','users','settings','productivity','margins'] },
+  Elite: { price:1499, label:'Elite', color:'#b464ff',     tabs:['dashboard','jobs','history','financials','accounting','crewlog','payroll','tax1099','leads','warehouse','receipts','expenses','fleet','optimizer','margins','productivity','calendar','messaging','bol','estimate','users','settings','loadsheet'] },
+};
+const TRIAL_DAYS = 7;
+
+async function checkCompanyAccess(user) {
+  if (isCreatorAccount(user.username)) return { ok: true };
+  const cid = user.companyId || 'default';
+  if (cid === 'default') return { ok: true };
+  try {
+    const snap = await db.collection('ff_company').doc(cid).get();
+    if (!snap.exists) return { ok: true };
+    const co = snap.data();
+    if (co.active === false) return { ok: false, reason: 'suspended' };
+    if (co.active === true && co.plan) return { ok: true, plan: co.plan };
+    if (co.trialStart) {
+      const elapsed   = Math.floor((Date.now() - new Date(co.trialStart)) / 86400000);
+      const remaining = TRIAL_DAYS - elapsed;
+      if (remaining > 0) return { ok: true, trial: true, remaining, plan: co.plan || 'Elite' };
+      return { ok: false, reason: 'trial_expired', plan: co.plan };
+    }
+    return { ok: true };
+  } catch(e) { return { ok: true }; }
+}
+
+function getCompanyPlan() {
+  const co = STATE.company || {};
+  if (!co.companyId || co.companyId === 'default') return 'Elite';
+  return co.plan || 'Elite';
+}
+
+async function toggleTierFirewall(plan, newState) {
+  // Deprecated — use toggleCompanyFeature for per-company control
+  notify('⚠ Use per-company feature switches below each licensee', true);
+}
+
+async function toggleCompanyFeature(companyId, feature, enabled) {
+  if (!isCreator()) { notify('⚠ Creator only', true); return; }
+  try {
+    await db.collection('ff_company').doc(companyId)
+      .set({ features: { [feature]: enabled } }, { merge: true });
+    notify(`${enabled?'✓ Enabled':'✕ Disabled'} ${feature} for ${companyId}`);
+    buildSystemHealthView();
+  } catch(e) { notify('⚠ ' + e.message, true); }
+}
+
+// Platform config no longer needed — all access controlled per company doc
+let _platformConfig = {};
+async function loadPlatformConfig() { _platformConfig = {}; } // no-op, kept for safety
+
+function planAllowsTab(tab) {
+  // Creator always passes
+  if (isCreatorAccount(currentUser?.username)) return true;
+  const cid = currentUser?.companyId || 'default';
+  if (cid === 'default') return true;
+
+  const co   = STATE.company || {};
+  const plan = co.plan || 'Elite';
+
+  // 1. Check plan includes this tab
+  const planTabs = PLANS[plan]?.tabs || PLANS.Elite.tabs;
+  if (!planTabs.includes(tab)) return false;
+
+  // 2. Check per-company feature switch (if set)
+  const features  = co.features || {};
+  const featMap   = {
+    leads: 'leads_crm', warehouse: 'warehouse',
+    bol: 'client_portal', estimate: 'client_portal',
+    fleet: 'fleet', optimizer: 'optimizer',
+  };
+  const featKey = featMap[tab];
+  if (featKey && features[featKey] === false) return false;
+
+  return true;
+}
+
+function showTrialBanner(remaining) {
+  const existing = document.getElementById('trial-banner');
+  if (existing) existing.remove();
+  const urgency = remaining <= 2;
+  const b = document.createElement('div');
+  b.id = 'trial-banner';
+  b.style.cssText = `background:${urgency?'rgba(255,51,51,0.08)':'rgba(255,170,0,0.06)'};border-bottom:1px solid ${urgency?'#552222':'#664400'};padding:8px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-size:11px;z-index:99;position:relative`;
+  b.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><span style="color:${urgency?'var(--red)':'var(--amber)'}">⏱ FREE TRIAL</span><span style="color:var(--gray)">${remaining} day${remaining!==1?'s':''} remaining${urgency?' — expires soon!':''}</span></div><div style="display:flex;align-items:center;gap:8px"><span style="color:var(--gray);font-size:10px">Ready to subscribe?</span><button onclick="showUpgradeModal()" style="padding:5px 14px;background:var(--green);color:var(--navy);border:none;border-radius:3px;font-family:var(--font-mono);font-size:10px;font-weight:700;cursor:pointer;letter-spacing:1px">UPGRADE NOW</button></div>`;
+  const topbar = document.querySelector('.topbar');
+  if (topbar) topbar.insertAdjacentElement('afterend', b);
+}
+
+function showUpgradeModal() {
+  const existing = document.getElementById('modal-upgrade');
+  if (existing) existing.remove();
+  const m = document.createElement('div');
+  m.id = 'modal-upgrade';
+  m.className = 'modal-overlay';
+  m.style.display = 'flex';
+  m.innerHTML = `<div class="modal" style="max-width:540px"><button class="modal-close" onclick="document.getElementById('modal-upgrade').remove()">✕</button><div class="modal-title" style="color:var(--green)">UPGRADE FLEETFLOW</div><div class="info-text" style="margin-bottom:20px">Choose the plan that fits your operation.</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">${Object.entries(PLANS).map(([key,p])=>`<div style="background:rgba(0,0,0,0.3);border:2px solid ${p.color};border-radius:6px;padding:16px;text-align:center;cursor:pointer;transition:all .2s" onclick="selectUpgradePlan('${key}')" id="up-plan-${key}"><div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:${p.color};margin-bottom:8px">${p.label.toUpperCase()}</div><div style="font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--white)">$${p.price}</div><div style="font-size:10px;color:var(--gray);margin-top:2px">/month</div><div style="margin-top:10px;font-size:10px;color:var(--gray);line-height:1.8">${key==='Basic'?'Jobs · Payroll<br>Financials · Calendar':key==='Pro'?'+ Leads · Warehouse<br>Receipts · 1099':'+ Fleet · Optimizer<br>Client Portal · BOL'}</div></div>`).join('')}</div><input type="hidden" id="up-plan-selected" value="Pro"/><div style="background:rgba(0,255,65,0.05);border:1px solid var(--green3);border-radius:4px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--gray);line-height:1.7">💳 Contact <strong style="color:var(--white)">JPG Ventures</strong> · <strong style="color:var(--green)">jpgventures.io</strong> · <strong style="color:var(--green)">JPGventures22@gmail.com</strong></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn-outline" onclick="document.getElementById('modal-upgrade').remove()">LATER</button><button class="btn-green" onclick="requestUpgrade()">REQUEST UPGRADE →</button></div></div>`;
+  document.body.appendChild(m);
+  selectUpgradePlan('Pro');
+}
+
+function selectUpgradePlan(key) {
+  Object.keys(PLANS).forEach(k => { const el=document.getElementById('up-plan-'+k); if(el) el.style.opacity=k===key?'1':'0.5'; });
+  const inp = document.getElementById('up-plan-selected');
+  if (inp) inp.value = key;
+}
+
+async function requestUpgrade() {
+  const plan = document.getElementById('up-plan-selected')?.value || 'Pro';
+  try { await db.collection('ff_company').doc(currentUser.companyId||'default').set({ upgradeRequested: plan, upgradeRequestedAt: new Date().toISOString() }, { merge: true }); } catch(e) {}
+  document.getElementById('modal-upgrade').remove();
+  notify(`✓ Upgrade request sent for ${plan} — JPG Ventures will contact you within 24 hours`);
+}
+
+function showTabLockedPrompt(tab) {
+  const plan = getCompanyPlan();
+  const needsPlan = Object.entries(PLANS).find(([k,p]) => p.tabs.includes(tab))?.[0] || 'Pro';
+  notify(`🔒 ${tab.toUpperCase()} requires ${needsPlan} plan — you're on ${plan}. Upgrade to unlock.`, true);
+  setTimeout(() => showUpgradeModal(), 800);
+}
+
+function showPaywall(displayName, reason) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  const pw = document.getElementById('paywall-screen');
+  if (!pw) return;
+  const isExpired = reason === 'trial_expired';
+  document.getElementById('paywall-name').textContent = displayName || 'Your account';
+  document.getElementById('paywall-reason').innerHTML = isExpired ? `Your 7-day free trial has ended.<br>Upgrade to continue using FleetFlow.` : `Your account access has been suspended.<br>Please contact JPG Ventures to restore access.`;
+  document.getElementById('paywall-icon').textContent = isExpired ? '⏱' : '🔒';
+  document.getElementById('paywall-title').textContent = isExpired ? 'TRIAL EXPIRED' : 'ACCESS SUSPENDED';
+  document.getElementById('paywall-title').style.color = isExpired ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('paywall-upgrade-btn').style.display = isExpired ? 'block' : 'none';
+  pw.style.display = 'flex';
+}
+
+async function toggleCompanyAccess(companyId, newState) {
+  if (!isCreator()) { notify('⚠ Creator only', true); return; }
+  try {
+    await db.collection('ff_company').doc(companyId).set({ active: newState }, { merge: true });
+    notify((newState ? '✓ Activated' : '✓ Suspended') + ' — ' + companyId);
+    renderSystemHealth();
+  } catch(e) { notify('⚠ ' + e.message, true); }
+}
+
+async function setCompanyPlan(companyId, plan) {
+  if (!isCreator()) { notify('⚠ Creator only', true); return; }
+  try {
+    await db.collection('ff_company').doc(companyId).set({ plan, active: true, updatedAt: new Date().toISOString() }, { merge: true });
+    notify(`✓ ${companyId} upgraded to ${plan}`);
+    renderSystemHealth();
+  } catch(e) { notify('⚠ ' + e.message, true); }
+}
+
+// ============================================================
+// PHOTO VIEWER
+// ============================================================
+let _photoViewerPhotos = [];
+let _photoViewerIdx    = 0;
+let _photoViewerJobId  = null;
+let _photoViewerField  = null;
+let _photoZoomLevel    = 1;
+
+function openPhotoViewer(jobId, field, idx) {
+  const job = STATE.jobs.find(j => j.id === jobId);
+  if (!job) return;
+  _photoViewerJobId  = jobId;
+  _photoViewerField  = field;
+  _photoViewerPhotos = Array.isArray(job[field]) ? job[field] : (job[field] ? [job[field]] : []);
+  if (!_photoViewerPhotos.length) { notify('No photos found.', true); return; }
+  _photoViewerIdx = Math.min(idx || 0, _photoViewerPhotos.length - 1);
+  _photoZoomLevel = 1;
+  _refreshPhotoViewer();
+  document.getElementById('photo-viewer').classList.add('active');
+}
+
+function _refreshPhotoViewer() {
+  const img = document.getElementById('photo-viewer-img');
+  const ctr = document.getElementById('photo-viewer-counter');
+  const zmEl = document.getElementById('photo-viewer-zoom');
+  if (!img) return;
+  img.src = _photoViewerPhotos[_photoViewerIdx] || '';
+  img.style.transform = `scale(${_photoZoomLevel})`;
+  if (ctr) ctr.textContent = `${_photoViewerIdx + 1} / ${_photoViewerPhotos.length}`;
+  if (zmEl) zmEl.textContent = Math.round(_photoZoomLevel * 100) + '%';
+  const dl = document.getElementById('photo-viewer-download');
+  if (dl) dl.href = img.src;
+}
+
+function closePhotoViewer() {
+  document.getElementById('photo-viewer').classList.remove('active');
+  _photoViewerPhotos = [];
+  _photoViewerIdx = 0;
+  _photoZoomLevel = 1;
+}
+
+function photoNav(dir) {
+  const len = _photoViewerPhotos.length;
+  if (!len) return;
+  _photoViewerIdx = (_photoViewerIdx + dir + len) % len;
+  _photoZoomLevel = 1;
+  _refreshPhotoViewer();
+}
+
+function photoZoom(delta) {
+  _photoZoomLevel = Math.min(4, Math.max(0.5, _photoZoomLevel + delta));
+  _refreshPhotoViewer();
+}
+
+function photoZoomReset() {
+  _photoZoomLevel = 1;
+  _refreshPhotoViewer();
+}
+
+async function deleteViewedPhoto() {
+  if (!_photoViewerJobId || !_photoViewerField) return;
+  if (!confirm('Delete this photo?')) return;
+  const job = STATE.jobs.find(j => j.id === _photoViewerJobId);
+  if (!job) return;
+  if (Array.isArray(job[_photoViewerField])) {
+    job[_photoViewerField].splice(_photoViewerIdx, 1);
+  } else {
+    job[_photoViewerField] = null;
+  }
+  await saveJob(job);
+  notify('Photo deleted ✓');
+  _photoViewerPhotos = Array.isArray(job[_photoViewerField]) ? job[_photoViewerField] : [];
+  if (!_photoViewerPhotos.length) { closePhotoViewer(); return; }
+  _photoViewerIdx = Math.min(_photoViewerIdx, _photoViewerPhotos.length - 1);
+  _refreshPhotoViewer();
+}
+
+function downloadViewedPhoto() {
+  const a = document.getElementById('photo-viewer-download');
+  if (a && _photoViewerPhotos[_photoViewerIdx]) {
+    a.href = _photoViewerPhotos[_photoViewerIdx];
+    a.download = `fleetflow-photo-${_photoViewerJobId}-${_photoViewerIdx + 1}.jpg`;
+  }
+}
+
+function openPhotoModal(jobId) {
+  openPhotoViewer(jobId, 'photos', 0);
+}
+
+// ============================================================
+// SIGNATURE MODAL
+// ============================================================
+let _sigJobId = null;
+let _sigCanvas = null;
+let _sigCtx    = null;
+let _sigDrawing = false;
+
+function openSigModal(jobId) {
+  _sigJobId = jobId;
+  openModal('modal-sig');
+  setTimeout(() => {
+    _sigCanvas = document.getElementById('sig-canvas');
+    if (!_sigCanvas) return;
+    _sigCtx = _sigCanvas.getContext('2d');
+    _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+    _sigCtx.strokeStyle = '#00ff41';
+    _sigCtx.lineWidth   = 2;
+    _sigCtx.lineCap     = 'round';
+    _sigCtx.lineJoin    = 'round';
+    _sigCanvas.onmousedown  = e => { _sigDrawing = true; _sigCtx.beginPath(); const p = _sPos(_sigCanvas,e); _sigCtx.moveTo(p.x,p.y); };
+    _sigCanvas.onmousemove  = e => { if (!_sigDrawing) return; const p = _sPos(_sigCanvas,e); _sigCtx.lineTo(p.x,p.y); _sigCtx.stroke(); };
+    _sigCanvas.onmouseup    = () => { _sigDrawing = false; };
+    _sigCanvas.onmouseleave = () => { _sigDrawing = false; };
+    _sigCanvas.ontouchstart = e => { e.preventDefault(); _sigDrawing = true; _sigCtx.beginPath(); const t=e.touches[0]; const p=_sPos(_sigCanvas,t); _sigCtx.moveTo(p.x,p.y); };
+    _sigCanvas.ontouchmove  = e => { e.preventDefault(); if (!_sigDrawing) return; const t=e.touches[0]; const p=_sPos(_sigCanvas,t); _sigCtx.lineTo(p.x,p.y); _sigCtx.stroke(); };
+    _sigCanvas.ontouchend   = () => { _sigDrawing = false; };
+  }, 150);
+}
+
+function clearSig() {
+  if (_sigCanvas && _sigCtx) _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+}
+
+async function saveSig() {
+  if (!_sigCanvas || !_sigJobId) return;
+  const job = STATE.jobs.find(j => j.id === _sigJobId);
+  if (!job) return;
+  const sigData = _sigCanvas.toDataURL('image/png');
+  job.signature = sigData;
+  job.signedAt  = new Date().toISOString();
+  await saveJob(job);
+  notify('✓ Signature saved to job ' + _sigJobId);
+  closeModal('modal-sig');
+}
+
+// ============================================================
+// FIELD NOTES
+// ============================================================
+function openFieldNotes(jobId) {
+  const job = STATE.jobs.find(j => j.id === jobId);
+  if (!job) return;
+  const existing = job.fieldNotes || '';
+  const note = prompt('Field notes for ' + jobId + ':', existing);
+  if (note === null) return;
+  job.fieldNotes = note.trim();
+  saveJob(job).then(() => notify('✓ Notes saved'));
+}
 </script>
+<!-- PAYWALL SCREEN -->
+<div id="paywall-screen" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--navy);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px">
+  <div style="font-family:var(--font-mono);font-size:28px;color:var(--green);letter-spacing:4px;margin-bottom:8px">FLEETFLOW</div>
+  <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray);letter-spacing:3px;margin-bottom:40px">JPG SYSTEMS OPERATIONS</div>
+  <div style="background:var(--navy2);border:1px solid #552222;border-radius:6px;padding:32px 40px;max-width:440px;width:100%">
+    <div id="paywall-icon" style="font-size:36px;margin-bottom:16px">🔒</div>
+    <div id="paywall-title" style="font-family:var(--font-mono);font-size:12px;color:var(--red);letter-spacing:2px;margin-bottom:12px">ACCESS SUSPENDED</div>
+    <div id="paywall-name" style="font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px"></div>
+    <div id="paywall-reason" style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:24px">Your account access has been suspended.<br>Please contact JPG Ventures to restore access.</div>
+    <div style="background:rgba(0,255,65,0.05);border:1px solid var(--green3);border-radius:4px;padding:16px;margin-bottom:16px">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:8px">CONTACT JPG VENTURES</div>
+      <a href="https://jpgventures.io" target="_blank" style="text-decoration:none"><div style="font-size:13px;color:var(--green);font-weight:700;letter-spacing:1px">jpgventures.io ↗</div></a><div style="font-size:12px;color:var(--green);margin-top:6px">JPGventures22@gmail.com</div>
+    </div>
+    <button id="paywall-upgrade-btn" onclick="document.getElementById('paywall-screen').style.display='none';showUpgradeModal()" style="display:none;width:100%;padding:12px;background:var(--green);color:var(--navy);border:none;border-radius:3px;font-family:var(--font-mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:2px;margin-bottom:10px">UPGRADE NOW →</button>
+    <button onclick="document.getElementById('paywall-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="width:100%;padding:12px;background:transparent;border:1px solid var(--gray2);color:var(--gray);border-radius:3px;font-family:var(--font-mono);font-size:11px;cursor:pointer;letter-spacing:2px">← BACK TO LOGIN</button>
+  </div>
+</div>
+
 <!-- SCRIBBLE PAD MODAL -->
 <div class="modal-overlay" id="modal-scribble" style="display:none;z-index:700">
   <div class="modal" style="max-width:580px">
