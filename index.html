@@ -544,6 +544,32 @@ Timestamp:             2026-04-13T02:37:42Z
     background:rgba(0,0,0,0.2);border-radius:4px;margin-bottom:12px }
   .legend-item { display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9px;color:var(--gray);white-space:nowrap }
 
+
+  /* ── GROUPED DROPDOWN NAV (v50 style) ── */
+  .nav-bar { display:flex; align-items:center; gap:4px; padding:0 16px; background:var(--navy2);
+    border-bottom:1px solid rgba(0,255,65,0.1); overflow-x:auto; overflow-y:visible;
+    -webkit-overflow-scrolling:touch; position:relative; }
+  .nav-group { position:static; flex-shrink:0; }
+  .nav-group-btn { display:flex; align-items:center; gap:5px; padding:12px 14px;
+    background:transparent; border:none; border-bottom:2px solid transparent;
+    color:var(--gray); font-family:var(--font-mono);
+    font-size:11px; cursor:pointer; letter-spacing:1px; white-space:nowrap;
+    transition:all 0.15s; }
+  .nav-group-btn:hover { color:var(--green); }
+  .nav-group-btn.active { color:var(--green); border-bottom-color:var(--green); }
+  .nav-group-btn .arrow { font-size:8px; opacity:0.6; transition:transform 0.2s; }
+  .nav-group-btn.open .arrow { transform:rotate(180deg); }
+  .nav-dropdown { display:none; position:fixed; top:auto; left:auto; z-index:500;
+    min-width:200px; background:var(--navy2); border:1px solid var(--green3);
+    border-radius:6px; box-shadow:0 8px 32px rgba(0,0,0,0.5); padding:4px 0; }
+  .nav-dropdown.open { display:block; }
+  .nav-dropdown a { display:block; padding:10px 18px; font-family:var(--font-mono); font-size:11px;
+    color:var(--gray); cursor:pointer; white-space:nowrap; transition:background 0.1s; }
+  .nav-dropdown a:hover { color:var(--green); background:rgba(0,255,65,0.06); }
+  .nav-dropdown a.active { color:var(--green); font-weight:700;
+    border-left:2px solid var(--green); padding-left:16px; }
+  .nav-divider { height:1px; background:rgba(255,255,255,0.06); margin:4px 0; }
+  .nav-pinned { display:flex; align-items:center; gap:4px; margin-left:auto; flex-shrink:0; padding-left:8px; }
 </style>
   <!-- Stripe.js — payment processing -->
   <script src="https://js.stripe.com/v3/"></script>
@@ -674,6 +700,32 @@ Timestamp:             2026-04-13T02:37:42Z
           style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;user-select:none;opacity:0.6">👁</span>
       </div>
       <button class="btn-primary" onclick="doLogin()" id="login-btn">ENTER SYSTEM</button>
+      <div style="text-align:center;margin-top:14px">
+        <span onclick="openPasswordRecovery()" style="font-family:var(--font-mono);font-size:10px;color:var(--gray);letter-spacing:1px;cursor:pointer;opacity:0.7;text-decoration:underline">Forgot password?</span>
+      </div>
+    </div>
+
+    <!-- PASSWORD RECOVERY PANEL -->
+    <div id="recovery-panel" style="display:none">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:16px">🔑 PASSWORD RECOVERY</div>
+      <div id="recovery-error" style="display:none;background:rgba(255,51,51,0.1);border:1px solid #552222;border-radius:3px;padding:10px;margin-bottom:14px;font-family:var(--font-mono);font-size:11px;color:var(--red)"></div>
+      <div id="recovery-success" style="display:none;background:rgba(0,255,65,0.06);border:1px solid var(--green3);border-radius:3px;padding:10px;margin-bottom:14px;font-family:var(--font-mono);font-size:11px;color:var(--green)"></div>
+      <label>Username</label>
+      <input type="text" id="recovery-username" placeholder="Enter username" onkeypress="if(event.key==='Enter')doPasswordRecovery()" />
+      <label style="margin-top:12px">New Password</label>
+      <div style="position:relative">
+        <input type="password" id="recovery-newpass" placeholder="New password (min 6 chars)" style="width:100%;padding-right:40px" onkeypress="if(event.key==='Enter')doPasswordRecovery()" />
+        <span onclick="const p=document.getElementById('recovery-newpass');p.type=p.type==='password'?'text':'password';this.textContent=p.type==='password'?'👁':'🙈'" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;opacity:0.6">👁</span>
+      </div>
+      <label style="margin-top:12px">Confirm New Password</label>
+      <input type="password" id="recovery-confirm" placeholder="Re-enter new password" onkeypress="if(event.key==='Enter')doPasswordRecovery()" />
+      <label style="margin-top:12px">Recovery Code</label>
+      <input type="password" id="recovery-code" placeholder="Enter recovery code" onkeypress="if(event.key==='Enter')doPasswordRecovery()" />
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--gray);margin-top:4px">Contact your administrator for the recovery code.</div>
+      <button class="btn-primary" onclick="doPasswordRecovery()" id="recovery-btn" style="margin-top:16px">RESET PASSWORD</button>
+      <div style="text-align:center;margin-top:14px">
+        <span onclick="closePasswordRecovery()" style="font-family:var(--font-mono);font-size:10px;color:var(--gray);cursor:pointer;opacity:0.7;text-decoration:underline">← Back to login</span>
+      </div>
     </div>
 
     <!-- CHECKING STATE -->
@@ -6392,6 +6444,68 @@ function doLogout() {
   document.getElementById('login-panel').style.display = 'block';
 }
 
+
+// ── PASSWORD RECOVERY ─────────────────────────────────────────
+const RECOVERY_CODE = 'JPGrecover99!';
+
+function openPasswordRecovery() {
+  document.getElementById('login-panel').style.display = 'none';
+  document.getElementById('recovery-panel').style.display = 'block';
+  document.getElementById('recovery-error').style.display = 'none';
+  document.getElementById('recovery-success').style.display = 'none';
+  ['recovery-username','recovery-newpass','recovery-confirm','recovery-code'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  setTimeout(function(){ document.getElementById('recovery-username').focus(); }, 100);
+}
+
+function closePasswordRecovery() {
+  document.getElementById('recovery-panel').style.display = 'none';
+  document.getElementById('login-panel').style.display = 'block';
+}
+
+async function doPasswordRecovery() {
+  var username = document.getElementById('recovery-username').value.trim().toLowerCase();
+  var newpass  = document.getElementById('recovery-newpass').value;
+  var confirm  = document.getElementById('recovery-confirm').value;
+  var code     = document.getElementById('recovery-code').value;
+  var errEl    = document.getElementById('recovery-error');
+  var okEl     = document.getElementById('recovery-success');
+  var btn      = document.getElementById('recovery-btn');
+
+  function showErr(msg) { errEl.textContent = '⚠ '+msg; errEl.style.display='block'; okEl.style.display='none'; }
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  if (!username)        { showErr('Username is required.'); return; }
+  if (!newpass)         { showErr('New password is required.'); return; }
+  if (newpass.length<6) { showErr('Password must be at least 6 characters.'); return; }
+  if (newpass!==confirm){ showErr('Passwords do not match.'); return; }
+  if (!code)            { showErr('Recovery code is required.'); return; }
+  if (code!==RECOVERY_CODE) { showErr('Invalid recovery code.'); return; }
+
+  if (window.location.protocol === 'file:') {
+    okEl.textContent = '✓ Verified (local mode). Deploy to Netlify to apply password change.';
+    okEl.style.display = 'block';
+    btn.disabled = false;
+    return;
+  }
+
+  btn.textContent = 'RESETTING...'; btn.disabled = true;
+  try {
+    var snap = await db.collection(COL_USERS).doc(username).get();
+    if (!snap.exists) { showErr('Username not found.'); btn.textContent='RESET PASSWORD'; btn.disabled=false; return; }
+    await db.collection(COL_USERS).doc(username).update({ password: newpass });
+    okEl.textContent = '✓ Password updated for '+username+'. Returning to login...';
+    okEl.style.display = 'block';
+    btn.textContent = 'RESET PASSWORD'; btn.disabled = false;
+    setTimeout(function(){ document.getElementById('login-name').value=username; closePasswordRecovery(); }, 2500);
+  } catch(e) {
+    showErr('Error: '+e.message); btn.textContent='RESET PASSWORD'; btn.disabled=false;
+  }
+}
+// ── END PASSWORD RECOVERY ─────────────────────────────────────
+
+
 // ============================================================
 // TABS
 // ============================================================
@@ -6418,11 +6532,84 @@ const TAB_LABELS = {
 
 let activeTab = 'dashboard'; // default to dashboard
 
+const NAV_GROUPS = [
+  { id:'command', label:'◈ COMMAND', icon:'◈',
+    tabs:['dashboard','calendar','schedule'] },
+  { id:'jobs',    label:'▶ JOBS',    icon:'▶',
+    tabs:['jobs','leads','history','estimate','bol','loadsheet','warehouse'] },
+  { id:'money',   label:'$ MONEY',   icon:'$',
+    tabs:['financials','accounting','margins','payroll','tax1099','receipts','expenses'] },
+  { id:'team',    label:'⊕ TEAM',    icon:'⊕',
+    tabs:['crewlog','users','messaging','productivity','mypay'] },
+  { id:'system',  label:'⚙ SYSTEM',  icon:'⚙',
+    tabs:['optimizer','fleet','syshealth','network','settings'] },
+];
+
 function buildTabs() {
-  const tabs = ROLE_TABS[currentUser.role] || ['dashboard'];
-  document.getElementById('tabs-container').innerHTML = tabs.map(t =>
-    `<div class="tab${t === activeTab ? ' active' : ''}" onclick="switchTab('${t}')">${TAB_LABELS[t] || t}</div>`
-  ).join('');
+  const allowed = new Set(ROLE_TABS[currentUser.role] || ['dashboard']);
+  const container = document.getElementById('tabs-container');
+  if (!container) return;
+
+  let html = '<nav class="nav-bar" id="nav-bar">';
+
+  NAV_GROUPS.forEach(group => {
+    const groupTabs = group.tabs.filter(t => allowed.has(t));
+    if (!groupTabs.length) return;
+    const isGroupActive = groupTabs.includes(activeTab);
+    html += `<div class="nav-group" id="navg-${group.id}">
+      <button class="nav-group-btn${isGroupActive ? ' active' : ''}" onclick="toggleNavGroup('${group.id}')">
+        ${group.label} <span class="arrow">▾</span>
+      </button>
+      <div class="nav-dropdown" id="navd-${group.id}">
+        ${groupTabs.map(t => `<a class="${t === activeTab ? 'active' : ''}" onclick="switchTab('${t}');closeAllNavGroups()">${TAB_LABELS[t] || t}</a>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  // Pinned: Users + Settings always accessible
+  const pinned = ['users','settings'].filter(t => allowed.has(t) &&
+    !NAV_GROUPS.some(g => g.tabs.includes(t)));
+  if (pinned.length) {
+    html += '<div class="nav-pinned">';
+    pinned.forEach(t => {
+      html += `<button onclick="switchTab('${t}')" style="padding:8px 12px;background:transparent;
+        border:1px solid ${t === activeTab ? 'var(--green)' : 'var(--gray2)'};
+        color:${t === activeTab ? 'var(--green)' : 'var(--gray)'};border-radius:4px;
+        font-family:var(--font-mono);font-size:10px;cursor:pointer">${TAB_LABELS[t] || t}</button>`;
+    });
+    html += '</div>';
+  }
+
+  html += '</nav>';
+  container.innerHTML = html;
+}
+
+function toggleNavGroup(id) {
+  const btn = document.querySelector('#navg-' + id + ' .nav-group-btn');
+  const dd  = document.getElementById('navd-' + id);
+  if (!dd) return;
+  const isOpen = dd.classList.contains('open');
+  closeAllNavGroups();
+  if (!isOpen) {
+    const rect = btn.getBoundingClientRect();
+    dd.style.top  = (rect.bottom + window.scrollY) + 'px';
+    dd.style.left = (rect.left  + window.scrollX) + 'px';
+    dd.classList.add('open');
+    if (btn) btn.classList.add('open');
+    setTimeout(() => {
+      document.addEventListener('click', function handler(e) {
+        if (!e.target.closest('#navg-' + id)) {
+          closeAllNavGroups();
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 50);
+  }
+}
+
+function closeAllNavGroups() {
+  document.querySelectorAll('.nav-dropdown.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.nav-group-btn.open').forEach(b => b.classList.remove('open'));
 }
 
 function switchTab(tab) {
@@ -6589,16 +6776,107 @@ async function renderNetwork() {
   }
 }
 
-// ============================================================
-// FleetFlow — renderDashboard() REPLACEMENT
-// Matches the screenshot design exactly.
-// INSTRUCTIONS:
-//   1. Open your index.html
-//   2. Find:  function renderDashboard() {
-//   3. Delete that entire function (everything to its closing })
-//   4. Paste this entire block in its place
-//   5. Save as index.html → drag-drop to Netlify
-// ============================================================
+
+
+// ── COMPACT PIPELINE (gate status + blockers/risks/info) ────
+function buildCompactPipeline(activeJobs, allJobs, isAdminFn, userRole) {
+  var html = '';
+  var attn = [];
+
+  if (isAdminFn()) {
+    var awaitPay = activeJobs.filter(function(j){ return j.gates && j.gates.delivered && !j.gates.payment; });
+    if (awaitPay.length) attn.push({ icon:'💰', tier:'blocker',
+      text: awaitPay.length+' job'+(awaitPay.length>1?'s':'')+' DELIVERED — PAYMENT NOT COLLECTED',
+      action:"switchTab('jobs')", jobs: awaitPay.map(function(j){return j.client;}).join(', ') });
+
+    var unpaid = allJobs.filter(function(j){
+      if (j.status !== 'complete') return false;
+      var est = j.estimate||{}; return j.amount>0 && ((est.deposit||0)+(est.partial2||0)) < j.amount;
+    });
+    if (unpaid.length) attn.push({ icon:'⚠', tier:'blocker',
+      text: unpaid.length+' completed job'+(unpaid.length>1?'s':'')+' — OUTSTANDING BALANCE',
+      action:"switchTab('financials')",
+      jobs: unpaid.slice(0,3).map(function(j){ return j.client+' ($'+((j.amount||0)-((j.estimate&&j.estimate.deposit||0)+(j.estimate&&j.estimate.partial2||0))).toFixed(0)+')'; }).join(', ') });
+
+    var noPreload = activeJobs.filter(function(j){ return !j.gates || !j.gates.preload; });
+    if (noPreload.length) attn.push({ icon:'🔍', tier:'risk',
+      text: noPreload.length+' job'+(noPreload.length>1?'s':'')+' not yet pre-load inspected',
+      action:"switchTab('jobs')", jobs: noPreload.map(function(j){return j.client;}).join(', ') });
+
+    var noPay = allJobs.filter(function(j){
+      return j.status==='complete' && !(j.payroll&&j.payroll.driver>0) && !(j.payroll&&j.payroll.helpers&&j.payroll.helpers.some(function(h){return h.rate>0;}));
+    });
+    if (noPay.length) attn.push({ icon:'💵', tier:'info',
+      text: noPay.length+' completed job'+(noPay.length>1?'s':'')+' — payroll not entered',
+      action:"switchTab('payroll')" });
+  }
+
+  var blockers = attn.filter(function(a){return a.tier==='blocker';});
+  var risks    = attn.filter(function(a){return a.tier==='risk';});
+  var info     = attn.filter(function(a){return a.tier==='info';});
+
+  function rowHtml(a) {
+    var col = a.tier==='blocker'?'var(--red)':a.tier==='risk'?'var(--amber)':'#6495ed';
+    return '<div onclick="'+a.action+'" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer">'
+      +'<span style="font-size:14px;flex-shrink:0">'+a.icon+'</span>'
+      +'<div style="flex:1"><div style="font-size:12px;color:'+col+';font-weight:'+(a.tier==='blocker'?'700':'normal')+'">'+a.text+'</div>'
+      +(a.jobs?'<div style="font-size:10px;color:var(--gray);margin-top:2px">'+a.jobs+'</div>':'')
+      +'</div><span style="font-family:var(--font-mono);font-size:9px;color:var(--gray);flex-shrink:0">→</span></div>';
+  }
+
+  if (attn.length) {
+    html += '<div style="border-radius:6px;margin-bottom:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">';
+    if (blockers.length) html += '<div style="background:rgba(255,30,30,0.08);padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06)"><div style="font-family:var(--font-mono);font-size:10px;color:var(--red);letter-spacing:2px;font-weight:700;margin-bottom:5px">🔴 BLOCKERS — STOPS REVENUE ('+blockers.length+')</div>'+blockers.map(rowHtml).join('')+'</div>';
+    if (risks.length)    html += '<div style="background:rgba(255,170,0,0.06);padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06)"><div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);letter-spacing:2px;font-weight:700;margin-bottom:5px">🟡 RISKS — WILL BECOME BLOCKERS ('+risks.length+')</div>'+risks.map(rowHtml).join('')+'</div>';
+    if (info.length)     html += '<div style="background:rgba(100,149,237,0.05);padding:10px 14px"><div style="font-family:var(--font-mono);font-size:10px;color:#6495ed;letter-spacing:2px;font-weight:700;margin-bottom:5px">🔵 INFO — AWARENESS ONLY ('+info.length+')</div>'+info.map(rowHtml).join('')+'</div>';
+    html += '</div>';
+  }
+
+  if (activeJobs.length && (isAdminFn() || userRole === 'driver')) {
+    var GL = { preload:'Pre-Load Check', loaded:'Truck Loaded', delivered:'Delivered', payment:'Payment' };
+    var GI = { preload:'🔍', loaded:'🚛', delivered:'📦', payment:'💰' };
+    var GA = { preload:'✓ INSPECTED', loaded:'✓ TRUCK LOADED', delivered:'✓ DELIVERED', payment:'✓ VERIFY PAYMENT' };
+    var gk = ['preload','loaded','delivered','payment'];
+
+    html += '<div style="margin-bottom:12px"><div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><span>🚦 JOB PIPELINE — GATE STATUS</span><span style="color:var(--gray);font-size:9px">'+activeJobs.length+' active job'+(activeJobs.length>1?'s':'')+'</span></div>';
+
+    activeJobs.forEach(function(j) {
+      var passed = gk.filter(function(k){return j.gates&&j.gates[k];}).length;
+      var next   = gk.find(function(k){return !j.gates||!j.gates[k];});
+      var pct    = Math.round(passed/gk.length*100);
+      var amtStr = j.amount ? '$'+j.amount.toLocaleString() : '';
+      var bdr    = passed===gk.length?'var(--green3)':next==='payment'?'rgba(0,255,65,0.4)':'var(--gray2)';
+      var barCol = pct===100?'var(--green)':pct>=75?'#6495ed':'var(--amber)';
+
+      html += '<div style="background:var(--navy2);border:1px solid '+bdr+';border-radius:6px;padding:12px;margin-bottom:8px;cursor:pointer" onclick="openJobDetail(\"'+j.id+'\")">'; 
+      html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:6px">';
+      html += '<div><div style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--white)">'+j.client+'</div>';
+      html += '<div style="font-size:10px;color:var(--gray);margin-top:2px">'+(j.refNum||j.id)+(j.driver?' · '+j.driver:'')+(j.date?' · '+j.date:'')+'</div></div>';
+      html += '<div style="text-align:right"><div style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:'+(passed===gk.length?'var(--green)':'var(--white)')+'">'+amtStr+'</div>';
+      html += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--gray)">'+passed+'/'+gk.length+' gates · '+pct+'%</div></div></div>';
+      html += '<div style="height:3px;background:var(--navy);border-radius:2px;margin-bottom:10px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+barCol+';border-radius:2px"></div></div>';
+      html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">';
+
+      gk.forEach(function(k) {
+        var done   = j.gates&&j.gates[k];
+        var isNext = k===next;
+        var col = done?'var(--green)':isNext?'var(--amber)':'var(--gray2)';
+        var bg  = done?'rgba(0,255,65,0.1)':isNext?'rgba(255,170,0,0.1)':'rgba(0,0,0,0.2)';
+        html += '<div style="background:'+bg+';border:1px solid '+col+';border-radius:4px;padding:6px 4px;text-align:center">';
+        html += '<div style="font-size:14px;margin-bottom:2px">'+(done?'✅':isNext?GI[k]:'⬜')+'</div>';
+        html += '<div style="font-family:var(--font-mono);font-size:8px;color:'+col+';font-weight:'+(isNext?'700':'normal')+'">'+GL[k]+'</div>';
+        if (isNext && (isAdminFn() || userRole==='driver')) {
+          html += '<button onclick="event.stopPropagation();advanceGate(\"'+j.id+'\",\"'+k+'\")" style="margin-top:5px;width:100%;padding:4px 3px;font-family:var(--font-mono);font-size:8px;background:'+(k==='payment'?'var(--green)':'transparent')+';border:1px solid '+(k==='payment'?'var(--green)':'var(--amber)')+';color:'+(k==='payment'?'var(--navy)':'var(--amber)')+';border-radius:3px;cursor:pointer;font-weight:700">'+GA[k]+'</button>';
+        }
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+  return html;
+}
+
 
 function renderDashboard() {
   // Keep existing unpaid payroll alert
@@ -7081,6 +7359,8 @@ function renderDashboard() {
     <button class="urgent-btn" onclick="switchTab('jobs')">Resolve Now →</button>
   </div>` : `
   <div class="all-clear"><span>✅</span><span>ALL CLEAR — No immediate action required</span></div>`}
+
+  ${buildCompactPipeline(activeJobs, allJobs, isAdmin, role)}
 
   <!-- MONEY IN / NET CASH / MONEY OUT -->
   <div class="mid3">
