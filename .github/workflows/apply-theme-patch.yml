@@ -1,0 +1,39 @@
+name: Apply Theme Toggle Patch
+on:
+  workflow_dispatch:
+
+jobs:
+  apply-patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/fleetflow-migration-audit-SR9zz
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply patch
+        run: |
+          git apply .github/patches/theme_toggle.patch
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add Dark/Light/System theme toggle to FleetFlow header
+
+- CSS variable token system for light/dark themes
+- 3-way toggle in header beside role badge, before Logout
+- Hardcoded dark background/text colors swept to CSS variables
+- Theme persists in localStorage, respects prefers-color-scheme
+- No Firebase, job, money, receipt, or crew logic touched
+
+https://claude.ai/code/session_01KucBQZHAdsRE3Qh1oJvuz3"
+          git push
+      - name: Clean up patch file from feature branch
+        run: |
+          git rm .github/patches/theme_toggle.patch
+          git rm .github/workflows/apply-theme-patch.yml || true
+          git commit -m "Remove patch workflow artifacts"
+          git push
