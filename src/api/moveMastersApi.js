@@ -6,11 +6,39 @@
 import { createJob, JobStatus } from '../shared/jobSchema';
 import {
   doc, getDoc, setDoc, updateDoc, onSnapshot,
-  serverTimestamp, collection, query, where, getDocs
+  serverTimestamp, collection, query, where, getDocs, addDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
-const JOBS = 'jobs';
+const JOBS      = 'jobs';
+const FF_EVENTS = 'ff_events';
+
+/* ================= FLEETFLOW → PACER EVENT BRIDGE ================= */
+// Writes structured events to /ff_events for PACER to normalize and ingest.
+// Fire-and-forget — FleetFlow job logic never blocks on PACER ingest.
+
+async function writeFFEvent(eventType, job, extraPayload = {}) {
+  try {
+    await addDoc(collection(db, FF_EVENTS), {
+      eventType,
+      jobId:      job.id,
+      occurredAt: Date.now(),
+      payload: {
+        billedTotal:     job.billing?.approvedTotal     ?? null,
+        paymentReceived: job.billing?.paymentReceived   ?? false,
+        estimatedCF:     job.inventoryTotals?.estimatedCubicFeet ?? 0,
+        finalCF:         job.inventoryTotals?.finalCubicFeet     ?? 0,
+        clientSigned:    job.clientSigned  ?? false,
+        driverSigned:    job.driverSigned  ?? false,
+        laborCount:      job.labor?.length ?? 0,
+        ...extraPayload,
+      },
+    });
+  } catch (e) {
+    // Non-fatal — FleetFlow continues if PACER ingest is unavailable
+    console.warn('[fleetflow→pacer] ff_events write failed:', e.message);
+  }
+}
 
 /* ================= HELPERS ================= */
 
@@ -226,7 +254,9 @@ export const MoveMastersAPI = {
     job = calculatePricingBreakdown(job);
     job.status = JobStatus.AWAITING_SIGNATURE;
     job.permissions.clientCanSign = true;
-    return saveJob(job);
+    const saved = await saveJob(job);
+    writeFFEvent('ff:estimate_approved', saved);
+    return saved;
   },
 
   async signByClient(jobId) {
@@ -234,7 +264,9 @@ export const MoveMastersAPI = {
     job.clientSigned   = true;
     job.clientSignedAt = new Date().toISOString();
     job.permissions.clientCanSign = false;
-    return saveJob(job);
+    const saved = await saveJob(job);
+    writeFFEvent('ff:client_signed', saved);
+    return saved;
   },
 
   async authorizeLoading(jobId) {
@@ -249,7 +281,9 @@ export const MoveMastersAPI = {
     const job = await fetchJob(jobId);
     job.loadingEvidence = evidence;
     job.status          = JobStatus.AWAITING_DISPATCH;
-    return saveJob(job);
+    const saved = await saveJob(job);
+    writeFFEvent('ff:loading_complete', saved);
+    return saved;
   },
 
   /* ---------- ROUTING ---------- */
@@ -304,7 +338,9 @@ export const MoveMastersAPI = {
   },
 
   async confirmPayment(jobId) {
-    return patchJob(jobId, { 'billing.paymentReceived': true, status: JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION });
+    const saved = await patchJob(jobId, { 'billing.paymentReceived': true, status: JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION });
+    writeFFEvent('ff:payment_confirmed', saved, { amount: saved.billing?.approvedTotal });
+    return saved;
   },
 
   async recordPayment(jobId, payment) {
@@ -345,11 +381,13 @@ export const MoveMastersAPI = {
 
   /* ---------- CLIENT UNLOAD AUTH ---------- */
   async confirmDeliveryByClient(jobId) {
-    return patchJob(jobId, {
+    const saved = await patchJob(jobId, {
       deliveryConfirmedByClient: true,
       deliveryConfirmedAt:       new Date().toISOString(),
       status:                    JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE
     });
+    writeFFEvent('ff:delivery_confirmed', saved);
+    return saved;
   },
 
   /* ---------- DRIVER CLOSEOUT ---------- */
@@ -362,7 +400,29 @@ export const MoveMastersAPI = {
     job.driverSigned   = true;
     job.driverSignedAt = new Date().toISOString();
     job.status         = JobStatus.COMPLETED;
-    return saveJob(job);
+    const saved = await saveJob(job);
+
+    writeFFEvent('ff:driver_signed', saved);
+    writeFFEvent('ff:job_completed', saved);
+
+    // Risk signals — emitted alongside completion, not instead of it
+    const estCF   = saved.inventoryTotals?.estimatedCubicFeet ?? 0;
+    const finalCF = saved.inventoryTotals?.finalCubicFeet     ?? 0;
+    if (estCF > 0 && Math.abs(finalCF - estCF) / estCF > 0.10) {
+      writeFFEvent('ff:estimate_variance', saved, {
+        variancePct: Math.round(Math.abs(finalCF - estCF) / estCF * 100),
+      });
+    }
+    if (!saved.clientSigned || !saved.driverSigned) {
+      writeFFEvent('ff:missing_signature', saved, {
+        missing: !saved.clientSigned ? 'client signature' : 'driver signature',
+      });
+    }
+    if (!saved.billing?.paymentReceived) {
+      writeFFEvent('ff:payment_delay', saved);
+    }
+
+    return saved;
   },
 
   /* ---------- LABOR ---------- */
