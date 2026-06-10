@@ -95,23 +95,87 @@ Timestamp:             2026-04-13T02:37:42Z
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Theme restore — runs before body renders to prevent flash -->
+<script>
+(function(){
+  var saved = localStorage.getItem('fleetflow-theme') || 'dark';
+  var effective = saved;
+  if (saved === 'system') {
+    effective = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  document.documentElement.setAttribute('data-theme', effective);
+  // Store resolved for system preference listener
+  window._ffThemePref = saved;
+})();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap');
 
+  /* ── THEME TOKEN SYSTEM ──────────────────────────────────────────────
+     :root = light theme defaults
+     [data-theme="dark"] on <html> = dark theme
+     Tokens map to semantic roles; existing --navy/--white vars are aliased
+     so all downstream CSS continues to work without changes.
+  ─────────────────────────────────────────────────────────────────────── */
   :root {
-    --navy: #0a1628;
-    --navy2: #0d1f3c;
-    --navy3: #112244;
-    --green: #00ff41;
-    --green2: #00cc33;
-    --green3: #008822;
-    --amber: #ffaa00;
-    --red: #ff3333;
-    --white: #e8f4e8;
-    --gray: #4a6080;
-    --gray2: #2a3a50;
+    /* Semantic theme tokens */
+    --bg-primary:    #f0f4f8;
+    --bg-secondary:  #dce6f0;
+    --bg-surface:    #e4edf6;
+    --text-primary:  #0d1f3c;
+    --text-secondary:#3a5070;
+    --border-color:  #b0c4d8;
+    --accent-color:  #008822;
+    --input-bg:      #f8fbff;
+    --card-bg:       #e8f0f8;
+    --modal-bg:      #dce6f0;
+
+    /* Alias existing vars to tokens so all downstream CSS still works */
+    --navy:  var(--bg-primary);
+    --navy2: var(--bg-secondary);
+    --navy3: var(--bg-surface);
+    --white: var(--text-primary);
+    --gray:  var(--text-secondary);
+    --gray2: var(--border-color);
+    --green3: var(--accent-color);
+
+    /* Semantic colors — unchanged across themes */
+    --green: #00cc33;
+    --green2: #00aa22;
+    --amber: #cc8800;
+    --red: #dd2222;
+
     --font-main: 'Exo 2', sans-serif;
     --font-mono: 'Share Tech Mono', monospace;
+  }
+
+  [data-theme="dark"] {
+    /* Semantic theme tokens — original dark palette */
+    --bg-primary:    #0a1628;
+    --bg-secondary:  #0d1f3c;
+    --bg-surface:    #112244;
+    --text-primary:  #e8f4e8;
+    --text-secondary:#4a6080;
+    --border-color:  #2a3a50;
+    --accent-color:  #008822;
+    --input-bg:      #0a1628;
+    --card-bg:       #0d1f3c;
+    --modal-bg:      #0d1f3c;
+
+    /* Alias existing vars — dark values */
+    --navy:  #0a1628;
+    --navy2: #0d1f3c;
+    --navy3: #112244;
+    --white: #e8f4e8;
+    --gray:  #4a6080;
+    --gray2: #2a3a50;
+    --green3: #008822;
+
+    /* Semantic colors — brighter in dark mode */
+    --green: #00ff41;
+    --green2: #00cc33;
+    --amber: #ffaa00;
+    --red: #ff3333;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -149,6 +213,13 @@ Timestamp:             2026-04-13T02:37:42Z
   .role-helper    { background: rgba(100,149,237,0.15); border: 1px solid #334488; color: #6495ed; }
   .role-client    { background: rgba(200,200,255,0.1); border: 1px solid #334; color: #aabbff; }
   .role-warehouse { background: rgba(255,100,100,0.1); border: 1px solid #552222; color: #ff8888; }
+
+  /* THEME TOGGLE */
+  .theme-toggle { display: flex; align-items: center; gap: 0; border: 1px solid var(--gray2); border-radius: 3px; overflow: hidden; }
+  .theme-btn { background: transparent; border: none; color: var(--gray); padding: 5px 9px; font-family: var(--font-mono); font-size: 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .theme-btn:hover { background: rgba(0,255,65,0.08); color: var(--green); }
+  .theme-btn.active { background: var(--green3); color: var(--navy); }
+  .theme-btn + .theme-btn { border-left: 1px solid var(--gray2); }
 
   /* BUTTONS */
   .btn-sm { background: transparent; border: 1px solid var(--gray2); color: var(--gray); padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; cursor: pointer; border-radius: 2px; letter-spacing: 1px; transition: all 0.2s; }
@@ -755,6 +826,11 @@ Timestamp:             2026-04-13T02:37:42Z
       <span id="topbar-name" style="font-family:var(--font-mono);font-size:13px;color:var(--white)"></span>
       <span id="topbar-badge" class="role-badge"></span>
         <span id="online-indicator" title="Online" style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-left:4px;vertical-align:middle;transition:background 0.3s"></span>
+      <div class="theme-toggle" id="theme-toggle" title="Toggle theme">
+        <button class="theme-btn" id="theme-btn-dark"   onclick="setTheme('dark')"  >🌙</button>
+        <button class="theme-btn" id="theme-btn-light"  onclick="setTheme('light')" >☀️</button>
+        <button class="theme-btn" id="theme-btn-system" onclick="setTheme('system')">💻</button>
+      </div>
       <button class="btn-sm" onclick="doLogout()">LOGOUT</button>
     </div>
   </div>
@@ -20265,6 +20341,44 @@ function openFieldNotes(jobId) {
   job.fieldNotes = note.trim();
   saveJob(job).then(() => notify('✓ Notes saved'));
 }
+
+// ============================================================
+// THEME TOGGLE
+// ============================================================
+function setTheme(pref) {
+  localStorage.setItem('fleetflow-theme', pref);
+  window._ffThemePref = pref;
+  var effective = pref;
+  if (pref === 'system') {
+    effective = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  document.documentElement.setAttribute('data-theme', effective);
+  _updateThemeBtns(pref);
+}
+
+function _updateThemeBtns(pref) {
+  ['dark','light','system'].forEach(function(t) {
+    var btn = document.getElementById('theme-btn-' + t);
+    if (btn) btn.classList.toggle('active', t === pref);
+  });
+}
+
+// Apply active state once DOM is ready
+(function() {
+  var pref = window._ffThemePref || localStorage.getItem('fleetflow-theme') || 'dark';
+  // Wait for DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { _updateThemeBtns(pref); });
+  } else {
+    _updateThemeBtns(pref);
+  }
+  // Listen for system preference changes when in 'system' mode
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+    if (window._ffThemePref === 'system') {
+      document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+    }
+  });
+})();
 </script>
 <!-- PAYWALL SCREEN -->
 <div id="paywall-screen" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--navy);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px">
