@@ -1,11 +1,10 @@
 name: Apply Theme Toggle Patch
 on:
-  workflow_dispatch:
-    inputs:
-      commit_msg:
-        description: 'Commit message'
-        required: false
-        default: 'Apply theme toggle patch'
+  push:
+    branches:
+      - claude/fleetflow-migration-audit-SR9zz
+    paths:
+      - .github/patches/theme_toggle.patch
 
 jobs:
   apply-patch:
@@ -16,6 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: claude/fleetflow-migration-audit-SR9zz
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Apply patch
         run: |
@@ -35,9 +35,9 @@ jobs:
 
 https://claude.ai/code/session_01KucBQZHAdsRE3Qh1oJvuz3"
           git push
-      - name: Clean up patch file
+      - name: Clean up
         run: |
           git rm .github/patches/theme_toggle.patch
           git rm .github/workflows/apply-theme-patch.yml
-          git commit -m "Remove patch workflow files"
+          git commit -m "Remove patch workflow artifacts"
           git push
