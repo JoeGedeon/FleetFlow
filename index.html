@@ -95,23 +95,88 @@ Timestamp:             2026-04-13T02:37:42Z
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Theme restore — runs before body renders to prevent flash -->
+<script>
+(function(){
+  var saved = localStorage.getItem('fleetflow-theme') || 'dark';
+  var effective = saved;
+  if (saved === 'system') {
+    effective = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  document.documentElement.setAttribute('data-theme', effective);
+  // Store resolved for system preference listener
+  window._ffThemePref = saved;
+})();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap');
 
+  /* ── THEME TOKEN SYSTEM ──────────────────────────────────────────────
+     :root = light theme defaults
+     [data-theme="dark"] on <html> = dark theme
+     Tokens map to semantic roles; existing --navy/--white vars are aliased
+     so all downstream CSS continues to work without changes.
+  ─────────────────────────────────────────────────────────────────────── */
+
   :root {
-    --navy: #0a1628;
-    --navy2: #0d1f3c;
-    --navy3: #112244;
-    --green: #00ff41;
-    --green2: #00cc33;
-    --green3: #008822;
-    --amber: #ffaa00;
-    --red: #ff3333;
-    --white: #e8f4e8;
-    --gray: #4a6080;
-    --gray2: #2a3a50;
+    /* Semantic theme tokens */
+    --bg-primary:    #f0f4f8;
+    --bg-secondary:  #dce6f0;
+    --bg-surface:    #e4edf6;
+    --text-primary:  #0d1f3c;
+    --text-secondary:#3a5070;
+    --border-color:  #b0c4d8;
+    --accent-color:  #008822;
+    --input-bg:      #f8fbff;
+    --card-bg:       #e8f0f8;
+    --modal-bg:      #dce6f0;
+
+    /* Alias existing vars to tokens so all downstream CSS still works */
+    --navy:  var(--bg-primary);
+    --navy2: var(--bg-secondary);
+    --navy3: var(--bg-surface);
+    --white: var(--text-primary);
+    --gray:  var(--text-secondary);
+    --gray2: var(--border-color);
+    --green3: var(--accent-color);
+
+    /* Semantic colors — unchanged across themes */
+    --green: #00cc33;
+    --green2: #00aa22;
+    --amber: #cc8800;
+    --red: #dd2222;
+
     --font-main: 'Exo 2', sans-serif;
     --font-mono: 'Share Tech Mono', monospace;
+  }
+
+  [data-theme="dark"] {
+    /* Semantic theme tokens — original dark palette */
+    --bg-primary:    #0a1628;
+    --bg-secondary:  #0d1f3c;
+    --bg-surface:    #112244;
+    --text-primary:  #e8f4e8;
+    --text-secondary:#4a6080;
+    --border-color:  #2a3a50;
+    --accent-color:  #008822;
+    --input-bg:      #0a1628;
+    --card-bg:       #0d1f3c;
+    --modal-bg:      #0d1f3c;
+
+    /* Alias existing vars — dark values */
+    --navy:  #0a1628;
+    --navy2: #0d1f3c;
+    --navy3: #112244;
+    --white: #e8f4e8;
+    --gray:  #4a6080;
+    --gray2: #2a3a50;
+    --green3: #008822;
+
+    /* Semantic colors — brighter in dark mode */
+    --green: #00ff41;
+    --green2: #00cc33;
+    --amber: #ffaa00;
+    --red: #ff3333;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -173,6 +238,18 @@ Timestamp:             2026-04-13T02:37:42Z
   .role-client    { background: rgba(200,200,255,0.1); border: 1px solid #334; color: #aabbff; }
 
   .role-warehouse { background: rgba(255,100,100,0.1); border: 1px solid #552222; color: #ff8888; }
+
+  /* THEME TOGGLE */
+
+  .theme-toggle { display: flex; align-items: center; gap: 0; border: 1px solid var(--gray2); border-radius: 3px; overflow: hidden; }
+
+  .theme-btn { background: transparent; border: none; color: var(--gray); padding: 5px 9px; font-family: var(--font-mono); font-size: 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+
+  .theme-btn:hover { background: rgba(0,255,65,0.08); color: var(--green); }
+
+  .theme-btn.active { background: var(--green3); color: var(--navy); }
+
+  .theme-btn + .theme-btn { border-left: 1px solid var(--gray2); }
 
   /* BUTTONS */
 
@@ -776,6 +853,12 @@ Timestamp:             2026-04-13T02:37:42Z
   .nav-divider { height:1px; background:rgba(255,255,255,0.06); margin:4px 0; }
 
   .nav-pinned { display:flex; align-items:center; gap:4px; margin-left:auto; flex-shrink:0; padding-left:8px; }
+
+  #ff-demo-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#b34700,#d96000);color:#fff;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-align:center;padding:6px 16px;box-shadow:0 2px 8px rgba(180,80,0,0.5);}
+
+  body.demo-active .topbar{top:28px!important;}
+
+  body.demo-active{padding-top:28px;}
 </style>
   <!-- Stripe.js — payment processing -->
   <script src="https://js.stripe.com/v3/"></script>
@@ -787,6 +870,7 @@ Timestamp:             2026-04-13T02:37:42Z
 </script>
 </head>
 <body>
+<div id="ff-demo-banner">FLEETFLOW DEMO -- Sample data only. No production data is affected.</div>
 
 <!-- PWA SPLASH SCREEN -->
 
@@ -961,6 +1045,11 @@ Timestamp:             2026-04-13T02:37:42Z
       <span id="topbar-name" style="font-family:var(--font-mono);font-size:13px;color:var(--white)"></span>
       <span id="topbar-badge" class="role-badge"></span>
         <span id="online-indicator" title="Online" style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-left:4px;vertical-align:middle;transition:background 0.3s"></span>
+      <div class="theme-toggle" id="theme-toggle" title="Toggle theme">
+        <button class="theme-btn" id="theme-btn-dark"   onclick="setTheme('dark')"  >🌙</button>
+        <button class="theme-btn" id="theme-btn-light"  onclick="setTheme('light')" >☀️</button>
+        <button class="theme-btn" id="theme-btn-system" onclick="setTheme('system')">💻</button>
+      </div>
       <button class="btn-sm" onclick="doLogout()">LOGOUT</button>
     </div>
   </div>
@@ -2061,7 +2150,13 @@ Timestamp:             2026-04-13T02:37:42Z
 // FIREBASE INIT
 // ============================================================
 
-const firebaseConfig = {
+const DEMO_MODE = (
+  window.location.hostname === 'demo.fleetflow.app' ||
+  window.location.hostname.includes('fleetflow-demo') ||
+  new URLSearchParams(window.location.search).get('demo') === '1'
+);
+
+const PROD_FIREBASE_CONFIG = {
   apiKey: "AIzaSyA0f42Pv4N7MDKWYixg5a-D3MrjldU--Pw",
   authDomain: "movemastersos.firebaseapp.com",
   projectId: "movemastersos",
@@ -2070,7 +2165,24 @@ const firebaseConfig = {
   appId: "1:422211525514:web:e94d355b1720d816eec673"
 };
 
+const DEMO_FIREBASE_CONFIG = {
+  apiKey: "REPLACE_DEMO_API_KEY",
+  authDomain: "fleetflow-demo.firebaseapp.com",
+  projectId: "fleetflow-demo",
+  storageBucket: "fleetflow-demo.appspot.com",
+  messagingSenderId: "REPLACE_DEMO_SENDER_ID",
+  appId: "REPLACE_DEMO_APP_ID"
+};
+
+const firebaseConfig = DEMO_MODE ? DEMO_FIREBASE_CONFIG : PROD_FIREBASE_CONFIG;
 firebase.initializeApp(firebaseConfig);
+if (DEMO_MODE) {
+  document.addEventListener('DOMContentLoaded', function() {
+    const b = document.getElementById('ff-demo-banner');
+    if (b) b.style.display = 'block';
+    document.body.classList.add('demo-active');
+  });
+}
 const db      = firebase.firestore();
 const storage = firebase.storage();
 
@@ -16335,6 +16447,7 @@ async function saveEstimateFieldDirect(jobId, field, value) {
 }
 
 async function deleteJob(jobId) {
+  if (DEMO_MODE) { notify('Job deletion is disabled in demo mode.', true); return; }
   const job = STATE.jobs.find(j => j.id === jobId);
   if (!job) return;
   if (!confirm(`Delete job ${jobId} — ${job.client}?\n\nThis permanently removes the job and all associated data. Cannot be undone.`)) return;
@@ -16431,6 +16544,9 @@ async function changeJobStatus(jobId, status) {
 function openEditJob(jobId) {
   const job = STATE.jobs.find(j => j.id === jobId);
   if (!job) return;
+  if (DEMO_MODE && job.demoCloned) {
+    notify('Historical demo jobs are read-only. Create a new job to experiment.', true); return;
+  }
 
   // Close ALL open modals before opening edit
   ['modal-calday','modal-jobdetail','modal-newjob','modal-bol',
@@ -16879,6 +16995,7 @@ async function createJob() {
     type:          g('nj-type') || 'local',
     notes:         g('nj-notes'),
     companyId:     COMPANY_ID,
+    demoCreated:   DEMO_MODE,
     status:        'pending',
     gates:         { preload:false, loaded:false, delivered:false, payment:false },
     messages:      { crew:[], client:[] },
@@ -16886,6 +17003,11 @@ async function createJob() {
     signatures:    [],
     payroll:       { driver:0, helpers }
   };
+
+  if (DEMO_MODE) {
+    const demoCap = (STATE.jobs || []).filter(j => j.demoCreated === true).length;
+    if (demoCap >= 5) { notify('Demo limit: 5 sample jobs max.', true); return; }
+  }
 
   try {
     await db.collection(COL_JOBS).doc(newJob.id).set(newJob);
@@ -19644,6 +19766,7 @@ async function saveTwilioConfig() {
 }
 
 async function saveCompanySettings() {
+  if (DEMO_MODE) { notify('Company settings are locked in demo mode.', true); return; }
   const data = {
     name:    document.getElementById('co-name')?.value.trim(),
     tagline: document.getElementById('co-tagline')?.value.trim(),
@@ -20074,6 +20197,7 @@ async function toggleUserActive(username, role, newState) {
 }
 
 async function deleteUser(username, role) {
+  if (DEMO_MODE) { notify('User management is disabled in demo mode.', true); return; }
   if (!canDeleteUser(username, role)) {
     notify('⚠ Insufficient permissions to delete this account.', true); return;
   }
@@ -20471,6 +20595,44 @@ function openFieldNotes(jobId) {
   job.fieldNotes = note.trim();
   saveJob(job).then(() => notify('✓ Notes saved'));
 }
+
+// ============================================================
+// THEME TOGGLE
+// ============================================================
+function setTheme(pref) {
+  localStorage.setItem('fleetflow-theme', pref);
+  window._ffThemePref = pref;
+  var effective = pref;
+  if (pref === 'system') {
+    effective = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  document.documentElement.setAttribute('data-theme', effective);
+  _updateThemeBtns(pref);
+}
+
+function _updateThemeBtns(pref) {
+  ['dark','light','system'].forEach(function(t) {
+    var btn = document.getElementById('theme-btn-' + t);
+    if (btn) btn.classList.toggle('active', t === pref);
+  });
+}
+
+// Apply active state once DOM is ready
+(function() {
+  var pref = window._ffThemePref || localStorage.getItem('fleetflow-theme') || 'dark';
+  // Wait for DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { _updateThemeBtns(pref); });
+  } else {
+    _updateThemeBtns(pref);
+  }
+  // Listen for system preference changes when in 'system' mode
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+    if (window._ffThemePref === 'system') {
+      document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+    }
+  });
+})();
 </script>
 <!-- PAYWALL SCREEN -->
 <div id="paywall-screen" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--navy);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px">
