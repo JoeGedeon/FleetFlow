@@ -92,10 +92,16 @@ function JobCommunications({ job, role, onSend }) {
 export default function App() {
   const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('ff_theme') !== 'light');
 
   useEffect(() => {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('ff_theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   if (!job) return <div style={{ padding: 20 }}>Connecting…</div>;
 
@@ -103,7 +109,13 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <h1>FleetFLOW</h1>
+
+      <div className="app-header">
+        <h1>FleetFLOW</h1>
+        <button className="theme-toggle" onClick={() => setIsDark(d => !d)}>
+          {isDark ? '☀️ Light' : '🌙 Dark'}
+        </button>
+      </div>
 
       <div className="role-switcher">
         {['driver', 'helper', 'office', 'warehouse', 'client'].map(r => (
@@ -124,117 +136,115 @@ export default function App() {
       </div>
 
       <ProgressTracker currentStatus={job.status} />
-<PricingSummary job={job} role={role} />
+      <PricingSummary job={job} role={role} />
 
-      {/* ROLE PANELS CONTINUE UNCHANGED */}
+      {/* ================= DRIVER ================= */}
+      {role === 'driver' && (
+        <>
+          {job.status === JobStatus.SURVEY && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
+              }
+            >
+              Submit Survey to Office
+            </button>
+          )}
 
-    {/* ================= DRIVER ================= */}
-{role === 'driver' && (
-  <>
-    {job.status === JobStatus.SURVEY && (
-      <button
-        onClick={() =>
-          MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(setJob)
-        }
-      >
-        Submit Survey to Office
-      </button>
-    )}
+          <InventoryPanel
+            role="driver"
+            inventory={job.inventory}
+            canEdit={job.status === JobStatus.SURVEY}
+            addItem={
+              job.status === JobStatus.SURVEY
+                ? item =>
+                    MoveMastersAPI
+                      .addInventoryItem(job.id, item)
+                      .then(() => MoveMastersAPI.updateInventoryTotals(job.id))
+                      .then(setJob)
+                : null
+            }
+          />
 
-    {/* INVENTORY ALWAYS VISIBLE TO DRIVER */}
-    <InventoryPanel
-      role="driver"
-      inventory={job.inventory}
-      canEdit={job.status === JobStatus.SURVEY}
-      addItem={
-        job.status === JobStatus.SURVEY
-          ? item =>
-              MoveMastersAPI
-                .addInventoryItem(job.id, item)
-                .then(() => MoveMastersAPI.updateInventoryTotals(job.id))
-                .then(setJob)
-          : null
-      }
-    />
-  
-    {job.status === JobStatus.LOADING && (
-      <>
-        <div className="auth-box">✔ LOAD AUTHORIZED</div>
-        <button
-          onClick={() =>
-            MoveMastersAPI.submitLoadingEvidence(job.id, {
-              loadedTruckPhotos: ['loaded.jpg'],
-              emptyOriginPhotos: ['empty.jpg']
-            }).then(setJob)
-          }
-        >
-          Submit Load Complete
-        </button>
-      </>
-    )}
-{job.status === JobStatus.EN_ROUTE_TO_WAREHOUSE && (
-  <button
-    onClick={() =>
-      MoveMastersAPI.driverArrivesAtWarehouse(job.id).then(setJob)
-    }
-  >
-    Arrived at Warehouse
-  </button>
-)}
-    {job.status === JobStatus.OUT_FOR_DELIVERY && (
-      <button
-        onClick={() =>
-          MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
-        }
-      >
-        Truck Arrived
-      </button>
-    )}
+          {job.status === JobStatus.LOADING && (
+            <>
+              <div className="auth-box">✔ LOAD AUTHORIZED</div>
+              <button
+                onClick={() =>
+                  MoveMastersAPI.submitLoadingEvidence(job.id, {
+                    loadedTruckPhotos: ['loaded.jpg'],
+                    emptyOriginPhotos: ['empty.jpg']
+                  }).then(setJob)
+                }
+              >
+                Submit Load Complete
+              </button>
+            </>
+          )}
 
-    {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
-      <>
-        <div className="auth-box">📸 DELIVERY IN PROGRESS</div>
+          {job.status === JobStatus.EN_ROUTE_TO_WAREHOUSE && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.driverArrivesAtWarehouse(job.id).then(setJob)
+              }
+            >
+              Arrived at Warehouse
+            </button>
+          )}
 
-        <button
-          onClick={() =>
-            MoveMastersAPI.submitDeliveryEvidence(job.id, {
-              inPlacePhotos: ['placed.jpg'],
-              assembledPhotos: ['assembled.jpg'],
-              emptyTruckPhotos: ['empty_truck.jpg']
-            }).then(setJob)
-          }
-        >
-          Submit Delivery Evidence
-        </button>
+          {job.status === JobStatus.OUT_FOR_DELIVERY && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
+              }
+            >
+              Truck Arrived
+            </button>
+          )}
 
-        <button
-          onClick={() =>
-            MoveMastersAPI.signOffByDriver(job.id).then(setJob)
-          }
-        >
-          Driver Sign & Close
-        </button>
-      </>
-    )}
+          {job.status === JobStatus.DELIVERY_AWAITING_DRIVER_EVIDENCE && (
+            <>
+              <div className="auth-box">📸 DELIVERY IN PROGRESS</div>
 
-    <DriverEarningsPanel job={job} />
+              <button
+                onClick={() =>
+                  MoveMastersAPI.submitDeliveryEvidence(job.id, {
+                    inPlacePhotos: ['placed.jpg'],
+                    assembledPhotos: ['assembled.jpg'],
+                    emptyTruckPhotos: ['empty_truck.jpg']
+                  }).then(setJob)
+                }
+              >
+                Submit Delivery Evidence
+              </button>
 
-    <JobCommunications
-      job={job}
-      role="driver"
-      onSend={text =>
-        MoveMastersAPI.addJobMessage(job.id, {
-          fromRole: 'driver',
-          toRole: 'office',
-          text
-        }).then(setJob)
-      }
-    />
-  </>
-)}
+              <button
+                onClick={() =>
+                  MoveMastersAPI.signOffByDriver(job.id).then(setJob)
+                }
+              >
+                Driver Sign &amp; Close
+              </button>
+            </>
+          )}
+
+          <DriverEarningsPanel job={job} />
+
+          <JobCommunications
+            job={job}
+            role="driver"
+            onSend={text =>
+              MoveMastersAPI.addJobMessage(job.id, {
+                fromRole: 'driver',
+                toRole: 'office',
+                text
+              }).then(setJob)
+            }
+          />
+        </>
+      )}
 
       {/* ================= HELPER ================= */}
-
       {role === 'helper' && (
         <>
           <p><strong>Your Pay:</strong> ${helper?.payout || 0}</p>
@@ -256,153 +266,121 @@ export default function App() {
         </>
       )}
 
-{/* ================= OFFICE ================= */}
+      {/* ================= OFFICE ================= */}
+      {role === 'office' && (
+        <>
+          {job.status === JobStatus.PENDING_APPROVAL && (
+            <button
+              onClick={() =>
+                MoveMastersAPI
+                  .updateInventoryTotals(job.id)
+                  .then(() => MoveMastersAPI.approvePricing(job.id))
+                  .then(setJob)
+              }
+            >
+              Approve Pricing &amp; Send to Client
+            </button>
+          )}
 
-{role === 'office' && (
-  <>
-    {job.status === JobStatus.PENDING_APPROVAL && (
-      <button
-        onClick={() =>
-          MoveMastersAPI
-            .updateInventoryTotals(job.id)
-            .then(() => MoveMastersAPI.approvePricing(job.id))
-            .then(setJob)
-        }
-      >
-        Approve Pricing & Send to Client
-      </button>
-    )}
+          <div className="pricing-box">
+            <h3>Current Pricing</h3>
+            <p>
+              <strong>Estimated Total:</strong>{' '}
+              {job.billing.approvedTotal !== null
+                ? `$${job.billing.approvedTotal.toLocaleString()}`
+                : 'Calculating…'}
+            </p>
+            {job.inventoryTotals?.estimatedCubicFeet !==
+              job.inventoryTotals?.finalCubicFeet && (
+              <p><em>Price reflects revised inventory</em></p>
+            )}
+          </div>
 
-    <div className="pricing-box">
-      <h3>Current Pricing</h3>
+          <InventoryPanel
+            role="office"
+            inventory={job.inventory}
+            updateItem={(itemId, updates) =>
+              MoveMastersAPI
+                .updateInventoryItem(job.id, itemId, updates)
+                .then(setJob)
+            }
+          />
 
-      <p>
-        <strong>Estimated Total:</strong>{' '}
-        {job.billing.approvedTotal !== null
-          ? `$${job.billing.approvedTotal.toLocaleString()}`
-          : 'Calculating…'}
-      </p>
+          {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
+            <button
+              onClick={() =>
+                MoveMastersAPI.authorizeLoading(job.id).then(setJob)
+              }
+            >
+              Authorize Loading
+            </button>
+          )}
 
-      {job.inventoryTotals?.estimatedCubicFeet !==
-        job.inventoryTotals?.finalCubicFeet && (
-        <p>
-          <em>Price reflects revised inventory</em>
-        </p>
+          {job.status === JobStatus.AWAITING_DISPATCH && (
+            <>
+              <button onClick={() => MoveMastersAPI.routeToWarehouse(job.id).then(setJob)}>
+                Route to Warehouse
+              </button>
+              <button onClick={() => MoveMastersAPI.routeToDelivery(job.id).then(setJob)}>
+                Route to Direct Delivery
+              </button>
+            </>
+          )}
+
+          {job.status === JobStatus.AWAITING_WAREHOUSE_DISPATCH && (
+            <button onClick={() => MoveMastersAPI.dispatchFromWarehouse(job.id).then(setJob)}>
+              Dispatch Load From Warehouse
+            </button>
+          )}
+
+          {job.status === JobStatus.PAYMENT_PENDING && (
+            <button onClick={() => MoveMastersAPI.confirmPayment(job.id).then(setJob)}>
+              Confirm Payment
+            </button>
+          )}
+
+          {job.billing.pricingBreakdown && (
+            <div className="pricing-breakdown">
+              <h4>Pricing Breakdown</h4>
+              <p>
+                <strong>Base:</strong>{' '}
+                {job.billing.pricingBreakdown.base.cubicFeet} CF × $
+                {job.billing.pricingBreakdown.base.ratePerCubicFoot}
+                {' = $'}
+                {job.billing.pricingBreakdown.base.amount.toLocaleString()}
+              </p>
+              {job.billing.pricingBreakdown.accessorials.length > 0 && (
+                <>
+                  <h5>Accessorials</h5>
+                  <ul>
+                    {job.billing.pricingBreakdown.accessorials.map((a, idx) => (
+                      <li key={idx}>
+                        {a.type.replace('_', ' ')} — ${a.amount.toLocaleString()}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              <p><strong>Subtotal:</strong> ${job.billing.pricingBreakdown.subtotal.toLocaleString()}</p>
+              <p><strong>Final Total:</strong> ${job.billing.pricingBreakdown.finalTotal.toLocaleString()}</p>
+            </div>
+          )}
+
+          <JobCommunications
+            job={job}
+            role="office"
+            onSend={text =>
+              MoveMastersAPI.addJobMessage(job.id, {
+                fromRole: 'office',
+                toRole: 'driver',
+                text
+              }).then(setJob)
+            }
+          />
+        </>
       )}
-    </div>
 
-    <InventoryPanel
-      role="office"
-      inventory={job.inventory}
-      updateItem={(itemId, updates) =>
-        MoveMastersAPI
-          .updateInventoryItem(job.id, itemId, updates)
-          .then(setJob)
-      }
-    />
-
-    {job.status === JobStatus.AWAITING_SIGNATURE && job.clientSigned && (
-      <button
-        onClick={() =>
-          MoveMastersAPI.authorizeLoading(job.id).then(setJob)
-        }
-      >
-        Authorize Loading
-      </button>
-    )}
-
-    {job.status === JobStatus.AWAITING_DISPATCH && (
-      <>
-        <button
-          onClick={() =>
-            MoveMastersAPI.routeToWarehouse(job.id).then(setJob)
-          }
-        >
-          Route to Warehouse
-        </button>
-
-        <button
-          onClick={() =>
-            MoveMastersAPI.routeToDelivery(job.id).then(setJob)
-          }
-        >
-          Route to Direct Delivery
-        </button>
-      </>
-    )}
-
-    {job.status === JobStatus.AWAITING_WAREHOUSE_DISPATCH && (
-      <button
-        onClick={() =>
-          MoveMastersAPI.dispatchFromWarehouse(job.id).then(setJob)
-        }
-      >
-        Dispatch Load From Warehouse
-      </button>
-    )}
-
-    {job.status === JobStatus.PAYMENT_PENDING && (
-      <button
-        onClick={() =>
-          MoveMastersAPI.confirmPayment(job.id).then(setJob)
-        }
-      >
-        Confirm Payment
-      </button>
-    )}
-
-    {job.billing.pricingBreakdown && (
-      <div className="pricing-breakdown">
-        <h4>Pricing Breakdown</h4>
-
-        <p>
-          <strong>Base:</strong>{' '}
-          {job.billing.pricingBreakdown.base.cubicFeet} CF × $
-          {job.billing.pricingBreakdown.base.ratePerCubicFoot}
-          {' = $'}
-          {job.billing.pricingBreakdown.base.amount.toLocaleString()}
-        </p>
-
-        {job.billing.pricingBreakdown.accessorials.length > 0 && (
-          <>
-            <h5>Accessorials</h5>
-            <ul>
-              {job.billing.pricingBreakdown.accessorials.map((a, idx) => (
-                <li key={idx}>
-                  {a.type.replace('_', ' ')} — ${a.amount.toLocaleString()}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        <p>
-          <strong>Subtotal:</strong>{' '}
-          ${job.billing.pricingBreakdown.subtotal.toLocaleString()}
-        </p>
-
-        <p>
-          <strong>Final Total:</strong>{' '}
-          ${job.billing.pricingBreakdown.finalTotal.toLocaleString()}
-        </p>
-      </div>
-    )}
-
-    <JobCommunications
-      job={job}
-      role="office"
-      onSend={text =>
-        MoveMastersAPI.addJobMessage(job.id, {
-          fromRole: 'office',
-          toRole: 'driver',
-          text
-        }).then(setJob)
-      }
-    />
-  </>
-)}
       {/* ================= WAREHOUSE ================= */}
-
       {role === 'warehouse' && (
         <>
           {job.status === JobStatus.IN_WAREHOUSE && (
@@ -418,10 +396,7 @@ export default function App() {
             </button>
           )}
 
-          <InventoryPanel
-  role="warehouse"
-  inventory={job.inventory}
-/>
+          <InventoryPanel role="warehouse" inventory={job.inventory} />
 
           {job.status === JobStatus.AWAITING_OUTTAKE && (
             <button onClick={() =>
@@ -449,45 +424,28 @@ export default function App() {
       )}
 
       {/* ================= CLIENT ================= */}
-
       {role === 'client' && (
         <>
           {job.status === JobStatus.AWAITING_SIGNATURE && !job.clientSigned && (
-            <button onClick={() =>
-              MoveMastersAPI.signByClient(job.id).then(setJob)
-            }>
-              Sign & Accept Price
+            <button onClick={() => MoveMastersAPI.signByClient(job.id).then(setJob)}>
+              Sign &amp; Accept Price
             </button>
           )}
 
-          <InventoryPanel
-  role="client"
-  inventory={job.inventory}
-/>
+          <InventoryPanel role="client" inventory={job.inventory} />
 
           {job.status === JobStatus.OUT_FOR_DELIVERY && (
-            <button onClick={() =>
-              MoveMastersAPI.arriveAtDestination(job.id).then(setJob)
-            }>
+            <button onClick={() => MoveMastersAPI.arriveAtDestination(job.id).then(setJob)}>
               Truck Arrived
             </button>
           )}
 
-          {job.status === JobStatus.UNLOAD_AUTHORIZED && (
-            <button onClick={() =>
-              MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
-            }>
+          {job.status === JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION && (
+            <button onClick={() => MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)}>
               Sign Delivery Completion
             </button>
           )}
-             {/* CLIENT DELIVERY SIGNATURE — FINAL HANDSHAKE */}
-{job.status === JobStatus.DELIVERY_AWAITING_CLIENT_CONFIRMATION && (
-  <button onClick={() =>
-    MoveMastersAPI.confirmDeliveryByClient(job.id).then(setJob)
-  }>
-    Sign Delivery Completion
-  </button>
-)}
+
           {job.status === JobStatus.COMPLETED && (
             <p>Move complete. Thank you.</p>
           )}
@@ -505,7 +463,7 @@ export default function App() {
           />
         </>
       )}
-    </div> 
+
+    </div>
   );
 }
-
