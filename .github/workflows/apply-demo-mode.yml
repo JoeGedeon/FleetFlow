@@ -1,0 +1,40 @@
+name: Apply Demo Mode Patch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: claude/fleetflow-migration-audit-SR9zz
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run demo mode patch
+        run: python3 scripts/apply-demo-mode.py index.html
+
+      - name: Commit patched index.html
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --stat
+          git commit -m "Add demo sandbox mode to index.html
+
+          - DEMO_MODE detection via hostname / ?demo=1 param
+          - Dual Firebase config: prod (movemastersos) + demo (fleetflow-demo placeholder)
+          - Demo banner: orange fixed bar at top of page
+          - createJob: 5-job cap (demoCreated jobs only)
+          - deleteJob: blocked in demo mode
+          - openEditJob: demoCloned (historical) jobs are read-only
+          - saveCompanySettings: blocked in demo mode
+          - deleteUser: blocked in demo mode"
+
+      - name: Push changes
+        run: git push origin claude/fleetflow-migration-audit-SR9zz
