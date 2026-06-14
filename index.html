@@ -853,12 +853,6 @@ Timestamp:             2026-04-13T02:37:42Z
   .nav-divider { height:1px; background:rgba(255,255,255,0.06); margin:4px 0; }
 
   .nav-pinned { display:flex; align-items:center; gap:4px; margin-left:auto; flex-shrink:0; padding-left:8px; }
-
-  #ff-demo-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#b34700,#d96000);color:#fff;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-align:center;padding:6px 16px;box-shadow:0 2px 8px rgba(180,80,0,0.5);}
-
-  body.demo-active .topbar{top:28px!important;}
-
-  body.demo-active{padding-top:28px;}
 </style>
   <!-- Stripe.js — payment processing -->
   <script src="https://js.stripe.com/v3/"></script>
@@ -870,7 +864,6 @@ Timestamp:             2026-04-13T02:37:42Z
 </script>
 </head>
 <body>
-<div id="ff-demo-banner">FLEETFLOW DEMO -- Sample data only. No production data is affected.</div>
 
 <!-- PWA SPLASH SCREEN -->
 
@@ -2150,13 +2143,7 @@ Timestamp:             2026-04-13T02:37:42Z
 // FIREBASE INIT
 // ============================================================
 
-const DEMO_MODE = (
-  window.location.hostname === 'demo.fleetflow.app' ||
-  window.location.hostname.includes('fleetflow-demo') ||
-  new URLSearchParams(window.location.search).get('demo') === '1'
-);
-
-const PROD_FIREBASE_CONFIG = {
+const firebaseConfig = {
   apiKey: "AIzaSyA0f42Pv4N7MDKWYixg5a-D3MrjldU--Pw",
   authDomain: "movemastersos.firebaseapp.com",
   projectId: "movemastersos",
@@ -2165,24 +2152,7 @@ const PROD_FIREBASE_CONFIG = {
   appId: "1:422211525514:web:e94d355b1720d816eec673"
 };
 
-const DEMO_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDs9Juo7DhtwlQdPDWpd00HxeLPXp9jpCE",
-  authDomain: "fleetflow-demo.firebaseapp.com",
-  projectId: "fleetflow-demo",
-  storageBucket: "fleetflow-demo.firebasestorage.app",
-  messagingSenderId: "856236886417",
-  appId: "1:856236886417:web:d5e1f7a9f2bda2de43f230"
-};
-
-const firebaseConfig = DEMO_MODE ? DEMO_FIREBASE_CONFIG : PROD_FIREBASE_CONFIG;
 firebase.initializeApp(firebaseConfig);
-if (DEMO_MODE) {
-  document.addEventListener('DOMContentLoaded', function() {
-    const b = document.getElementById('ff-demo-banner');
-    if (b) b.style.display = 'block';
-    document.body.classList.add('demo-active');
-  });
-}
 const db      = firebase.firestore();
 const storage = firebase.storage();
 
@@ -16447,7 +16417,6 @@ async function saveEstimateFieldDirect(jobId, field, value) {
 }
 
 async function deleteJob(jobId) {
-  if (DEMO_MODE) { notify('Job deletion is disabled in demo mode.', true); return; }
   const job = STATE.jobs.find(j => j.id === jobId);
   if (!job) return;
   if (!confirm(`Delete job ${jobId} — ${job.client}?\n\nThis permanently removes the job and all associated data. Cannot be undone.`)) return;
@@ -16544,9 +16513,6 @@ async function changeJobStatus(jobId, status) {
 function openEditJob(jobId) {
   const job = STATE.jobs.find(j => j.id === jobId);
   if (!job) return;
-  if (DEMO_MODE && job.demoCloned) {
-    notify('Historical demo jobs are read-only. Create a new job to experiment.', true); return;
-  }
 
   // Close ALL open modals before opening edit
   ['modal-calday','modal-jobdetail','modal-newjob','modal-bol',
@@ -16995,7 +16961,6 @@ async function createJob() {
     type:          g('nj-type') || 'local',
     notes:         g('nj-notes'),
     companyId:     COMPANY_ID,
-    demoCreated:   DEMO_MODE,
     status:        'pending',
     gates:         { preload:false, loaded:false, delivered:false, payment:false },
     messages:      { crew:[], client:[] },
@@ -17003,11 +16968,6 @@ async function createJob() {
     signatures:    [],
     payroll:       { driver:0, helpers }
   };
-
-  if (DEMO_MODE) {
-    const demoCap = (STATE.jobs || []).filter(j => j.demoCreated === true).length;
-    if (demoCap >= 5) { notify('Demo limit: 5 sample jobs max.', true); return; }
-  }
 
   try {
     await db.collection(COL_JOBS).doc(newJob.id).set(newJob);
@@ -19766,7 +19726,6 @@ async function saveTwilioConfig() {
 }
 
 async function saveCompanySettings() {
-  if (DEMO_MODE) { notify('Company settings are locked in demo mode.', true); return; }
   const data = {
     name:    document.getElementById('co-name')?.value.trim(),
     tagline: document.getElementById('co-tagline')?.value.trim(),
@@ -20197,7 +20156,6 @@ async function toggleUserActive(username, role, newState) {
 }
 
 async function deleteUser(username, role) {
-  if (DEMO_MODE) { notify('User management is disabled in demo mode.', true); return; }
   if (!canDeleteUser(username, role)) {
     notify('⚠ Insufficient permissions to delete this account.', true); return;
   }
