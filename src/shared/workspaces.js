@@ -1,3 +1,20 @@
+export const WorkspaceType = Object.freeze({
+  OPERATING_COMPANY: 'operating_company',
+  FUTURE_COMPANY: 'future_company'
+});
+
+export const WorkspaceStatus = Object.freeze({
+  ACTIVE: 'active',
+  RESERVED: 'reserved'
+});
+
+export const WorkspaceIds = Object.freeze({
+  GOOD_FRIENDS: 'good-friends',
+  ERSA: 'ersa',
+  FUTURE_COMPANY: 'future-company'
+});
+
+const workspaceRegistry = Object.assign(Object.create(null), {
 export const WorkspaceType = {
   OPERATING_COMPANY: 'operating_company',
   FUTURE_COMPANY: 'future_company'
@@ -41,6 +58,10 @@ export const Workspaces = Object.freeze({
   })
 });
 
+export const Workspaces = Object.freeze(workspaceRegistry);
+
+export function getWorkspace(workspaceId) {
+  return Object.hasOwn(Workspaces, workspaceId) ? Workspaces[workspaceId] : null;
 export const DefaultWorkspaceId = WorkspaceIds.GOOD_FRIENDS;
 
 export function getWorkspace(workspaceId) {
@@ -51,11 +72,28 @@ export function getActiveWorkspaces() {
   return Object.values(Workspaces).filter(workspace => workspace.status === WorkspaceStatus.ACTIVE);
 }
 
+export function createWorkspaceScopedRecord(record, workspaceId) {
+  if (record === null || typeof record !== 'object' || Array.isArray(record)) {
+    throw new TypeError('Record must be a non-null, non-array object');
+  }
+
+  if (Object.hasOwn(record, 'workspaceId')) {
+    throw new Error('Record already has workspace ownership');
+  }
+
+  if (workspaceId === undefined || workspaceId === null || workspaceId === '') {
+    throw new Error('Workspace ID is required');
+  }
+
 export function createWorkspaceScopedRecord(record, workspaceId = DefaultWorkspaceId) {
   const workspace = getWorkspace(workspaceId);
 
   if (!workspace) {
     throw new Error(`Unknown workspace: ${workspaceId}`);
+  }
+
+  if (workspace.status !== WorkspaceStatus.ACTIVE) {
+    throw new Error(`Inactive workspace: ${workspaceId}`);
   }
 
   return {
