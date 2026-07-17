@@ -15,23 +15,6 @@ export const WorkspaceIds = Object.freeze({
 });
 
 const workspaceRegistry = Object.assign(Object.create(null), {
-export const WorkspaceType = {
-  OPERATING_COMPANY: 'operating_company',
-  FUTURE_COMPANY: 'future_company'
-};
-
-export const WorkspaceStatus = {
-  ACTIVE: 'active',
-  RESERVED: 'reserved'
-};
-
-export const WorkspaceIds = {
-  GOOD_FRIENDS: 'good-friends',
-  ERSA: 'ersa',
-  FUTURE_COMPANY: 'future-company'
-};
-
-export const Workspaces = Object.freeze({
   [WorkspaceIds.GOOD_FRIENDS]: Object.freeze({
     id: WorkspaceIds.GOOD_FRIENDS,
     name: 'Good Friends Moving',
@@ -62,10 +45,6 @@ export const Workspaces = Object.freeze(workspaceRegistry);
 
 export function getWorkspace(workspaceId) {
   return Object.hasOwn(Workspaces, workspaceId) ? Workspaces[workspaceId] : null;
-export const DefaultWorkspaceId = WorkspaceIds.GOOD_FRIENDS;
-
-export function getWorkspace(workspaceId) {
-  return Workspaces[workspaceId] ?? null;
 }
 
 export function getActiveWorkspaces() {
@@ -85,7 +64,6 @@ export function createWorkspaceScopedRecord(record, workspaceId) {
     throw new Error('Workspace ID is required');
   }
 
-export function createWorkspaceScopedRecord(record, workspaceId = DefaultWorkspaceId) {
   const workspace = getWorkspace(workspaceId);
 
   if (!workspace) {
