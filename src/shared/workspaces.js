@@ -14,7 +14,7 @@ export const WorkspaceIds = Object.freeze({
   FUTURE_COMPANY: 'future-company'
 });
 
-export const Workspaces = Object.freeze({
+const workspaceRegistry = Object.assign(Object.create(null), {
   [WorkspaceIds.GOOD_FRIENDS]: Object.freeze({
     id: WorkspaceIds.GOOD_FRIENDS,
     name: 'Good Friends Moving',
@@ -41,10 +41,10 @@ export const Workspaces = Object.freeze({
   })
 });
 
-export const DefaultWorkspaceId = WorkspaceIds.GOOD_FRIENDS;
+export const Workspaces = Object.freeze(workspaceRegistry);
 
 export function getWorkspace(workspaceId) {
-  return Workspaces[workspaceId] ?? null;
+  return Object.hasOwn(Workspaces, workspaceId) ? Workspaces[workspaceId] : null;
 }
 
 export function getActiveWorkspaces() {
@@ -52,10 +52,26 @@ export function getActiveWorkspaces() {
 }
 
 export function createWorkspaceScopedRecord(record, workspaceId) {
+  if (record === null || typeof record !== 'object' || Array.isArray(record)) {
+    throw new TypeError('Record must be a non-null, non-array object');
+  }
+
+  if (Object.hasOwn(record, 'workspaceId')) {
+    throw new Error('Record already has workspace ownership');
+  }
+
+  if (workspaceId === undefined || workspaceId === null || workspaceId === '') {
+    throw new Error('Workspace ID is required');
+  }
+
   const workspace = getWorkspace(workspaceId);
 
   if (!workspace) {
     throw new Error(`Unknown workspace: ${workspaceId}`);
+  }
+
+  if (workspace.status !== WorkspaceStatus.ACTIVE) {
+    throw new Error(`Inactive workspace: ${workspaceId}`);
   }
 
   return {
