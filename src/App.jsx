@@ -5,6 +5,8 @@ import { JobStatus } from './shared/jobSchema';
 import DriverEarningsPanel from './components/DriverEarningsPanel';
 import InventoryPanel from './components/InventoryPanel';
 import PricingSummary from './components/PricingSummary';
+import { WorkspaceProvider, useWorkspace } from './workspaces/WorkspaceContext.jsx';
+import WorkspaceSelector from './workspaces/WorkspaceSelector.jsx';
 
 /* ================= STATUS FLOW ================= */
 const STATUS_FLOW = [
@@ -89,10 +91,11 @@ function JobCommunications({ job, role, onSend }) {
 
 /* ================= MAIN APP ================= */
 
-export default function App() {
+function FleetFlowWorkspaceApp() {
   const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
   const [isDark, setIsDark] = useState(() => localStorage.getItem('ff_theme') !== 'light');
+  const { hasWorkspaceSelection, selectedWorkspace } = useWorkspace();
 
   useEffect(() => {
     MoveMastersAPI.getJob('FLEETFLOW-001').then(setJob);
@@ -106,6 +109,7 @@ export default function App() {
   if (!job) return <div style={{ padding: 20 }}>Connecting…</div>;
 
   const helper = job.labor.find(w => w.role === 'helper');
+  const canSelectWorkspace = role === 'office';
 
   return (
     <div className="app-container">
@@ -116,6 +120,8 @@ export default function App() {
           {isDark ? '☀️ Light' : '🌙 Dark'}
         </button>
       </div>
+
+      <WorkspaceSelector canSelect={canSelectWorkspace} />
 
       <div className="role-switcher">
         {['driver', 'helper', 'office', 'warehouse', 'client'].map(r => (
@@ -133,10 +139,23 @@ export default function App() {
         <span className="status-chip">
           {job.status === JobStatus.COMPLETED ? 'Delivered' : job.status}
         </span>
+        {selectedWorkspace && (
+          <span className="status-chip workspace-status-chip">
+            Workspace: {selectedWorkspace.name}
+          </span>
+        )}
       </div>
 
-      <ProgressTracker currentStatus={job.status} />
-      <PricingSummary job={job} role={role} />
+      {!hasWorkspaceSelection ? (
+        <div className="workspace-required panel" role="status">
+          <h4>Workspace Required</h4>
+          <p>Select an active workspace before using workspace-dependent FleetFlow actions.</p>
+          <p>No workspace is selected by default.</p>
+        </div>
+      ) : (
+        <>
+          <ProgressTracker currentStatus={job.status} />
+          <PricingSummary job={job} role={role} />
 
       {/* ================= DRIVER ================= */}
       {role === 'driver' && (
@@ -464,6 +483,16 @@ export default function App() {
         </>
       )}
 
+        </>
+      )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <WorkspaceProvider>
+      <FleetFlowWorkspaceApp />
+    </WorkspaceProvider>
   );
 }
