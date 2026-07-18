@@ -21,7 +21,6 @@ test('keeps the future-company workspace reserved', () => {
 });
 
 test('returns a workspace by id and null for unknown or inherited ids', () => {
-test('returns only canonical workspace entries', () => {
   assert.equal(getWorkspace(WorkspaceIds.ERSA), Workspaces[WorkspaceIds.ERSA]);
   assert.equal(getWorkspace('unknown'), null);
   assert.equal(getWorkspace('__proto__'), null);

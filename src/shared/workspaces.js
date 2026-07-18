@@ -62,15 +62,6 @@ export function createWorkspaceScopedRecord(record, workspaceId) {
 
   if (!workspaceId) {
     throw new Error('Workspace id is required');
-    throw new TypeError('Record must be a non-null, non-array object');
-  }
-
-  if (Object.hasOwn(record, 'workspaceId')) {
-    throw new Error('Record already has workspace ownership');
-  }
-
-  if (workspaceId === undefined || workspaceId === null || workspaceId === '') {
-    throw new Error('Workspace ID is required');
   }
 
   const workspace = getWorkspace(workspaceId);
