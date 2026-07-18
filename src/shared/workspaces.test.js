@@ -20,6 +20,7 @@ test('keeps the future-company workspace reserved', () => {
   assert.ok(!getActiveWorkspaces().includes(Workspaces[WorkspaceIds.FUTURE_COMPANY]));
 });
 
+test('returns a workspace by id and null for unknown or inherited ids', () => {
 test('returns only canonical workspace entries', () => {
   assert.equal(getWorkspace(WorkspaceIds.ERSA), Workspaces[WorkspaceIds.ERSA]);
   assert.equal(getWorkspace('unknown'), null);
@@ -49,6 +50,30 @@ test('scopes a new record without mutating the source record', () => {
   assert.deepEqual(source, { id: 'JOB-001' });
 });
 
+test('refuses to overwrite existing workspace ownership', () => {
+  const source = { id: 'JOB-001', workspaceId: WorkspaceIds.GOOD_FRIENDS };
+
+  assert.throws(
+    () => createWorkspaceScopedRecord(source, WorkspaceIds.ERSA),
+    { message: 'Record already has a workspace id' }
+  );
+  assert.deepEqual(source, { id: 'JOB-001', workspaceId: WorkspaceIds.GOOD_FRIENDS });
+});
+
+test('requires a record object before assigning workspace ownership', () => {
+  for (const record of [null, undefined, 'JOB-001', 1, []]) {
+    assert.throws(
+      () => createWorkspaceScopedRecord(record, WorkspaceIds.GOOD_FRIENDS),
+      { name: 'TypeError', message: 'Record must be an object' }
+    );
+  }
+});
+
+test('requires an explicit, recognized workspace for new records', () => {
+  assert.throws(
+    () => createWorkspaceScopedRecord({ id: 'JOB-001' }),
+    { message: 'Workspace id is required' }
+  );
 test('requires an explicit workspace for new records', () => {
   assert.throws(
     () => createWorkspaceScopedRecord({ id: 'JOB-001' }),
@@ -68,6 +93,13 @@ test('rejects unknown, inherited, and inactive workspace identities', () => {
   assert.throws(
     () => createWorkspaceScopedRecord({ id: 'JOB-001' }, '__proto__'),
     { message: 'Unknown workspace: __proto__' }
+  );
+});
+
+test('prevents records from being assigned to a reserved workspace', () => {
+  assert.throws(
+    () => createWorkspaceScopedRecord({ id: 'JOB-001' }, WorkspaceIds.FUTURE_COMPANY),
+    { message: `Workspace is not active: ${WorkspaceIds.FUTURE_COMPANY}` }
   );
   assert.throws(
     () => createWorkspaceScopedRecord({ id: 'JOB-001' }, WorkspaceIds.FUTURE_COMPANY),

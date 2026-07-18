@@ -53,6 +53,15 @@ export function getActiveWorkspaces() {
 
 export function createWorkspaceScopedRecord(record, workspaceId) {
   if (record === null || typeof record !== 'object' || Array.isArray(record)) {
+    throw new TypeError('Record must be an object');
+  }
+
+  if (Object.hasOwn(record, 'workspaceId')) {
+    throw new Error('Record already has a workspace id');
+  }
+
+  if (!workspaceId) {
+    throw new Error('Workspace id is required');
     throw new TypeError('Record must be a non-null, non-array object');
   }
 
@@ -71,6 +80,7 @@ export function createWorkspaceScopedRecord(record, workspaceId) {
   }
 
   if (workspace.status !== WorkspaceStatus.ACTIVE) {
+    throw new Error(`Workspace is not active: ${workspaceId}`);
     throw new Error(`Inactive workspace: ${workspaceId}`);
   }
 
