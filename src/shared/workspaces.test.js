@@ -73,6 +73,18 @@ test('requires an explicit, recognized workspace for new records', () => {
     () => createWorkspaceScopedRecord({ id: 'JOB-001' }),
     { message: 'Workspace id is required' }
   );
+test('requires an explicit workspace for new records', () => {
+  assert.throws(
+    () => createWorkspaceScopedRecord({ id: 'JOB-001' }),
+    { message: 'Workspace ID is required' }
+  );
+  assert.throws(
+    () => createWorkspaceScopedRecord({ id: 'JOB-001' }, null),
+    { message: 'Workspace ID is required' }
+  );
+});
+
+test('rejects unknown, inherited, and inactive workspace identities', () => {
   assert.throws(
     () => createWorkspaceScopedRecord({ id: 'JOB-001' }, 'unknown'),
     { message: 'Unknown workspace: unknown' }
@@ -88,4 +100,27 @@ test('prevents records from being assigned to a reserved workspace', () => {
     () => createWorkspaceScopedRecord({ id: 'JOB-001' }, WorkspaceIds.FUTURE_COMPANY),
     { message: `Workspace is not active: ${WorkspaceIds.FUTURE_COMPANY}` }
   );
+  assert.throws(
+    () => createWorkspaceScopedRecord({ id: 'JOB-001' }, WorkspaceIds.FUTURE_COMPANY),
+    { message: `Inactive workspace: ${WorkspaceIds.FUTURE_COMPANY}` }
+  );
+});
+
+test('rejects invalid record inputs', () => {
+  for (const record of [null, undefined, 42, 'record', true, []]) {
+    assert.throws(
+      () => createWorkspaceScopedRecord(record, WorkspaceIds.ERSA),
+      { message: 'Record must be a non-null, non-array object' }
+    );
+  }
+});
+
+test('prevents workspace ownership reassignment without mutating the source', () => {
+  const source = { id: 'JOB-001', workspaceId: WorkspaceIds.GOOD_FRIENDS };
+
+  assert.throws(
+    () => createWorkspaceScopedRecord(source, WorkspaceIds.ERSA),
+    { message: 'Record already has workspace ownership' }
+  );
+  assert.deepEqual(source, { id: 'JOB-001', workspaceId: WorkspaceIds.GOOD_FRIENDS });
 });
