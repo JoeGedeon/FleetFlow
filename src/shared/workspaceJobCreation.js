@@ -64,10 +64,13 @@ export function createWorkspaceJob(jobInput, workspaceId) {
     }
   }
 
-  const baseJob = createJob(jobInput.id);
+  const documentId = getWorkspaceJobDocumentId(jobInput.id, workspaceId);
+  const baseJob = createJob(documentId);
+  const { id: jobNumber, ...creationFields } = jobInput;
 
   return createWorkspaceScopedRecord({
     ...baseJob,
-    ...jobInput
+    ...creationFields,
+    jobNumber
   }, workspaceId);
 }
