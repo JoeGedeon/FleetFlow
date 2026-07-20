@@ -4,8 +4,9 @@
 // see the same data in real time.
 
 import { createJob, JobStatus } from '../shared/jobSchema';
+import { createWorkspaceJob as createWorkspaceScopedJob } from '../shared/workspaceJobCreation.js';
 import {
-  doc, getDoc, setDoc, updateDoc, onSnapshot,
+  doc, getDoc, setDoc, updateDoc, onSnapshot, runTransaction,
   serverTimestamp, collection, query, where, getDocs, addDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -186,6 +187,25 @@ const patchJob = async (jobId, patch) => {
 export const MoveMastersAPI = {
 
   /* ---------- CORE ---------- */
+  async createWorkspaceJob(jobInput, workspaceId) {
+    const newJob = createWorkspaceScopedJob(jobInput, workspaceId);
+    const ref = doc(db, JOBS, newJob.id);
+    await runTransaction(db, async transaction => {
+      const existing = await transaction.get(ref);
+
+      if (existing.exists()) {
+        throw new Error(`Job already exists: ${newJob.id}`);
+      }
+
+      transaction.set(ref, clean({
+        ...newJob,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }));
+    });
+    return normalizeJob(newJob);
+  },
+
   async getJob(jobId) {
     return fetchJob(jobId);
   },
