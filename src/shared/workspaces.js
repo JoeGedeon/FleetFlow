@@ -72,6 +72,7 @@ export function createWorkspaceScopedRecord(record, workspaceId) {
 
   if (workspace.status !== WorkspaceStatus.ACTIVE) {
     throw new Error(`Workspace is not active: ${workspaceId}`);
+    throw new Error(`Inactive workspace: ${workspaceId}`);
   }
 
   return {
