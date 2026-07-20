@@ -4,6 +4,7 @@
 // see the same data in real time.
 
 import { createJob, JobStatus } from '../shared/jobSchema';
+import { createWorkspaceJob as createWorkspaceScopedJob } from '../shared/workspaceJobCreation.js';
 import {
   doc, getDoc, setDoc, updateDoc, onSnapshot,
   serverTimestamp, collection, query, where, getDocs, addDoc
@@ -186,6 +187,19 @@ const patchJob = async (jobId, patch) => {
 export const MoveMastersAPI = {
 
   /* ---------- CORE ---------- */
+  async createWorkspaceJob(jobInput, workspaceId) {
+    const newJob = createWorkspaceScopedJob(jobInput, workspaceId);
+    const ref = doc(db, JOBS, newJob.id);
+    const existing = await getDoc(ref);
+
+    if (existing.exists()) {
+      throw new Error(`Job already exists: ${newJob.id}`);
+    }
+
+    await setDoc(ref, clean({ ...newJob, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }));
+    return normalizeJob(newJob);
+  },
+
   async getJob(jobId) {
     return fetchJob(jobId);
   },
