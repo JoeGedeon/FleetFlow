@@ -6,6 +6,8 @@
 import { createJob, JobStatus } from '../shared/jobSchema';
 import { createWorkspaceJob as createWorkspaceScopedJob } from '../shared/workspaceJobCreation.js';
 import {
+  doc, getDoc, setDoc, updateDoc, onSnapshot,
+  serverTimestamp, collection, query, where, getDocs, addDoc, runTransaction
   doc, getDoc, setDoc, updateDoc, onSnapshot, runTransaction,
   serverTimestamp, collection, query, where, getDocs, addDoc
 } from 'firebase/firestore';
@@ -190,6 +192,7 @@ export const MoveMastersAPI = {
   async createWorkspaceJob(jobInput, workspaceId) {
     const newJob = createWorkspaceScopedJob(jobInput, workspaceId);
     const ref = doc(db, JOBS, newJob.id);
+
     await runTransaction(db, async transaction => {
       const existing = await transaction.get(ref);
 
@@ -203,6 +206,7 @@ export const MoveMastersAPI = {
         updatedAt: serverTimestamp()
       }));
     });
+
     return normalizeJob(newJob);
   },
 
