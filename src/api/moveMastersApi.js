@@ -7,7 +7,7 @@ import { createJob, JobStatus } from '../shared/jobSchema';
 import { createWorkspaceJob as createWorkspaceScopedJob } from '../shared/workspaceJobCreation.js';
 import {
   doc, getDoc, setDoc, updateDoc, onSnapshot,
-  serverTimestamp, collection, query, where, getDocs, addDoc
+  serverTimestamp, collection, query, where, getDocs, addDoc, runTransaction
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -190,13 +190,21 @@ export const MoveMastersAPI = {
   async createWorkspaceJob(jobInput, workspaceId) {
     const newJob = createWorkspaceScopedJob(jobInput, workspaceId);
     const ref = doc(db, JOBS, newJob.id);
-    const existing = await getDoc(ref);
 
-    if (existing.exists()) {
-      throw new Error(`Job already exists: ${newJob.id}`);
-    }
+    await runTransaction(db, async transaction => {
+      const existing = await transaction.get(ref);
 
-    await setDoc(ref, clean({ ...newJob, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }));
+      if (existing.exists()) {
+        throw new Error(`Job already exists: ${newJob.id}`);
+      }
+
+      transaction.set(ref, clean({
+        ...newJob,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }));
+    });
+
     return normalizeJob(newJob);
   },
 
