@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { JobStatus } from './jobSchema.js';
 import { WorkspaceIds } from './workspaces.js';
 import { createWorkspaceJob, getWorkspaceJobDocumentId } from './workspaceJobCreation.js';
+import { createWorkspaceJob } from './workspaceJobCreation.js';
 
 test('rejects job creation without a selected workspace', () => {
   assert.throws(
@@ -17,6 +18,10 @@ test('attaches the active workspace and namespaces the stored job id', () => {
 
   assert.equal(job.id, 'ersa__JOB-001');
   assert.equal(job.jobNumber, 'JOB-001');
+test('attaches the active selected workspace to a new job automatically', () => {
+  const job = createWorkspaceJob({ id: 'JOB-001', client: 'Acme Move' }, WorkspaceIds.ERSA);
+
+  assert.equal(job.id, 'JOB-001');
   assert.equal(job.client, 'Acme Move');
   assert.equal(job.status, JobStatus.SURVEY);
   assert.equal(job.workspaceId, WorkspaceIds.ERSA);
