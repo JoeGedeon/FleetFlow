@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import InventoryPanel from './components/InventoryPanel';
 import DriverEarningsPanel from './components/DriverEarningsPanel';
+import OperationalIntakeWorkspace from './components/OperationalIntakeWorkspace';
 import { MoveMastersAPI } from './api/moveMastersApi';
 
 /* ==========================================================================
@@ -122,6 +123,7 @@ export default function App() {
   const [job, setJob] = useState(null);
   const [role, setRole] = useState('driver');
   const [loading, setLoading] = useState(true);
+  const [officeView, setOfficeView] = useState('jobs');
 
   useEffect(() => {
     const loadJob = async () => {
@@ -181,49 +183,77 @@ export default function App() {
           ))}
         </div>
 
-        <BatonDisplay currentStatus={job.status} role={role} />
-        <ProgressTracker currentStatus={job.status} />
-        <PricingSummary job={job} />
+        {role === 'office' && (
+          <nav className="mb-8 flex gap-2 rounded-xl border border-stone-200 bg-white p-2" aria-label="Office navigation">
+            {[
+              { id: 'jobs', label: 'Jobs' },
+              { id: 'operational-intake', label: 'Operational Intake' }
+            ].map(item => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setOfficeView(item.id)}
+                className={`flex-1 rounded-lg px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${
+                  officeView === item.id
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-stone-500 hover:bg-stone-100'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        )}
 
-        <main className="mt-8">
-          {role === 'driver' && (
-            <div className="space-y-6">
-              {job.status === JobStatus.SURVEY && (
-                <div className="space-y-4">
-                  <InventoryPanel role="driver" inventory={job.inventory || []} canEdit={true} />
-                  <button
-                    className="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest italic hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-100"
-                    onClick={() => MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(data => setJob(prev => ({...prev, status: data.status})))}
-                  >
-                    📸 Submit Survey to Office
-                  </button>
+        {role === 'office' && officeView === 'operational-intake' ? (
+          <OperationalIntakeWorkspace />
+        ) : (
+          <>
+            <BatonDisplay currentStatus={job.status} role={role} />
+            <ProgressTracker currentStatus={job.status} />
+            <PricingSummary job={job} />
+
+            <main className="mt-8">
+              {role === 'driver' && (
+                <div className="space-y-6">
+                  {job.status === JobStatus.SURVEY && (
+                    <div className="space-y-4">
+                      <InventoryPanel role="driver" inventory={job.inventory || []} canEdit={true} />
+                      <button
+                        className="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest italic hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-100"
+                        onClick={() => MoveMastersAPI.submitFieldUpdate(job.id, { cfDelta: 120 }).then(data => setJob(prev => ({...prev, status: data.status})))}
+                      >
+                        📸 Submit Survey to Office
+                      </button>
+                    </div>
+                  )}
+                  <DriverEarningsPanel job={job} />
                 </div>
               )}
-              <DriverEarningsPanel job={job} />
-            </div>
-          )}
-          {role === 'office' && (
-            <div className="space-y-6">
-              {job.status === JobStatus.PENDING_APPROVAL && (
-                <div className="p-6 bg-white border border-stone-200 rounded-xl text-center">
-                  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Final Margin Audit Required</p>
-                  <button
-                    className="w-full bg-green-600 text-white py-4 rounded-xl font-black uppercase tracking-widest italic hover:bg-green-700 shadow-xl shadow-green-100 transition-all"
-                    onClick={() => MoveMastersAPI.approvePricing(job.id).then(data => setJob(prev => ({...prev, status: data.status})))}
-                  >
-                    ✓ Approve & Send to Client
-                  </button>
+              {role === 'office' && (
+                <div className="space-y-6">
+                  {job.status === JobStatus.PENDING_APPROVAL && (
+                    <div className="p-6 bg-white border border-stone-200 rounded-xl text-center">
+                      <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Final Margin Audit Required</p>
+                      <button
+                        className="w-full bg-green-600 text-white py-4 rounded-xl font-black uppercase tracking-widest italic hover:bg-green-700 shadow-xl shadow-green-100 transition-all"
+                        onClick={() => MoveMastersAPI.approvePricing(job.id).then(data => setJob(prev => ({...prev, status: data.status})))}
+                      >
+                        ✓ Approve & Send to Client
+                      </button>
+                    </div>
+                  )}
+                  <InventoryPanel role="office" inventory={job.inventory || []} />
                 </div>
               )}
-              <InventoryPanel role="office" inventory={job.inventory || []} />
-            </div>
-          )}
-          {!['driver', 'office'].includes(role) && (
-            <div className="text-center py-12 text-stone-300 font-black uppercase tracking-widest italic text-xs">
-              Waiting for Actor Input
-            </div>
-          )}
-        </main>
+              {!['driver', 'office'].includes(role) && (
+                <div className="text-center py-12 text-stone-300 font-black uppercase tracking-widest italic text-xs">
+                  Waiting for Actor Input
+                </div>
+              )}
+            </main>
+          </>
+        )}
 
         <footer className="mt-20 border-t border-stone-200 pt-8 flex justify-between items-center opacity-40 grayscale">
           <div className="text-[10px] font-black uppercase tracking-[0.3em]">JPG Systems</div>
