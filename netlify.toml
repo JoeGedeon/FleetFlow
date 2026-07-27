@@ -1,4 +1,5 @@
 [build]
+  command = "node scripts/apply-tablet-nav-hotfix.mjs"
   publish = "."
 
 [[redirects]]
