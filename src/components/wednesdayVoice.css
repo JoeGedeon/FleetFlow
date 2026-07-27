@@ -1,0 +1,111 @@
+.ff-wednesday-launcher {
+  position: fixed;
+  right: 18px;
+  bottom: 48px;
+  z-index: 95;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 13px 16px;
+  border: 1px solid rgba(245, 158, 11, 0.65);
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #111827;
+  font-weight: 900;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.ff-wednesday-launcher:hover {
+  transform: translateY(-1px);
+}
+
+.ff-wednesday-launcher.listening {
+  animation: ff-pulse 1.15s infinite;
+}
+
+.ff-wednesday-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 108px;
+  z-index: 100;
+  width: min(390px, calc(100vw - 24px));
+  padding: 18px;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.98);
+  color: #e5e7eb;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(18px);
+}
+
+.ff-wednesday-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ff-wednesday-panel-header small {
+  color: #f59e0b;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+
+.ff-wednesday-panel-header h2 {
+  margin: 4px 0 0;
+}
+
+.ff-wednesday-panel-header button {
+  margin: 0;
+  padding: 6px 10px;
+  background: transparent;
+  color: #cbd5e1;
+  box-shadow: none;
+}
+
+.ff-wednesday-status {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.ff-wednesday-panel textarea {
+  min-height: 110px;
+  background: rgba(2, 6, 23, 0.7);
+}
+
+.ff-wednesday-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ff-wednesday-actions button {
+  margin-top: 12px;
+}
+
+.ff-wednesday-actions button:first-child {
+  background: #f59e0b;
+}
+
+.ff-wednesday-actions button.active {
+  background: #ef4444;
+}
+
+@keyframes ff-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45), 0 16px 40px rgba(0, 0, 0, 0.35); }
+  50% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0), 0 16px 40px rgba(0, 0, 0, 0.35); }
+}
+
+@media (max-width: 600px) {
+  .ff-wednesday-launcher {
+    right: 12px;
+    bottom: 46px;
+  }
+
+  .ff-wednesday-panel {
+    right: 12px;
+    bottom: 104px;
+  }
+}
