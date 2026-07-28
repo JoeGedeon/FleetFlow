@@ -6526,7 +6526,7 @@ function showLoginError(msg) {
 function doLogout() {
   clearSession(); // Clear saved session — will require login next time
   stopListeners();
-  STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [] };
+  STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [], documents: [] };
   currentUser = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
@@ -20386,6 +20386,17 @@ const DOCUMENT_CATEGORIES = [
 const DOCUMENT_MAX_BYTES   = 25 * 1024 * 1024; // 25MB per file
 const DOCUMENT_ALLOWED_EXT = ['pdf','jpg','jpeg','png','heic','csv','xlsx','xls','doc','docx'];
 
+// Document metadata (filenames, notes, job IDs) is user-supplied and gets
+// interpolated into innerHTML below — escape it, same as any other
+// attacker-reachable text rendered into the DOM.
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function isSafeDocumentUrl(url) {
+  try { return /^https?:$/.test(new URL(url, window.location.href).protocol); } catch { return false; }
+}
+
 function sanitizeFilename(name) {
   const dot = name.lastIndexOf('.');
   const base = dot > 0 ? name.slice(0, dot) : name;
@@ -20412,9 +20423,14 @@ function validateDocumentFile(file) {
 }
 
 async function uploadDocument(file, { jobId, category, notes }, onProgress) {
+  // Capture companyId once — COMPANY_ID is a mutable global, and if it changes
+  // mid-upload (e.g. an admin switches companies before this finishes) reading
+  // it again after the async work below would tag the Firestore record with
+  // the wrong tenant while the file itself already landed under this one.
+  const companyId   = COMPANY_ID;
   const documentId  = 'DOC-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
   const safeName    = sanitizeFilename(file.name);
-  const storagePath = `companies/${COMPANY_ID}/documents/${documentId}/${safeName}`;
+  const storagePath = `companies/${companyId}/documents/${documentId}/${safeName}`;
   const ref  = storage.ref(storagePath);
   const task = ref.put(file, { contentType: file.type || undefined });
 
@@ -20428,7 +20444,8 @@ async function uploadDocument(file, { jobId, category, notes }, onProgress) {
 
   const downloadUrl = await task.snapshot.ref.getDownloadURL();
 
-  const data = withCompanyId({
+  const data = {
+    companyId, // captured above, not the live global — see note at the top of this function
     jobId:        jobId || null,
     category:     category || 'other',
     originalName: file.name,
@@ -20440,7 +20457,7 @@ async function uploadDocument(file, { jobId, category, notes }, onProgress) {
     uploadedBy:   currentUser.username || currentUser.name || '',
     uploadedAt:   new Date().toISOString(),
     source:       'manual_upload',
-  });
+  };
 
   await safeFirestoreSet(COL_DOCUMENTS, documentId, data);
   return { documentId, ...data };
@@ -20448,10 +20465,12 @@ async function uploadDocument(file, { jobId, category, notes }, onProgress) {
 
 let _docModalJobId  = null;
 let _docPendingFiles = [];
+let _docSessionId    = 0; // bumped on every open — lets a slow upload detect it's no longer the active modal session
 
 function openDocumentsModal(jobId) {
   _docModalJobId = jobId || null;
   _docPendingFiles = [];
+  _docSessionId++;
   renderDocumentsModal();
   openModal('modal-documents');
 }
@@ -20475,7 +20494,7 @@ function renderDocumentsModal() {
 
   el.innerHTML = `
     <div class="form-group">
-      <label>${job ? `Files for job ${job.id}` : 'Select files to upload'}</label>
+      <label>${job ? `Files for job ${escapeHtml(job.id)}` : 'Select files to upload'}</label>
       <div id="doc-dropzone" style="border:2px dashed var(--gray2);border-radius:4px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer" onclick="document.getElementById('doc-file-input').click()">
         <div style="font-size:32px">📎</div>
         <p class="info-text">Tap to choose files — PDF, JPG, PNG, HEIC, CSV, XLSX, DOC, DOCX (25MB max each)</p>
@@ -20498,7 +20517,7 @@ function renderDocumentsModal() {
       <label>Connect to a job (optional)</label>
       <select id="doc-job-link">
         <option value="">— No job —</option>
-        ${STATE.jobs.map(j => `<option value="${j.id}">${j.id} — ${j.client||''}</option>`).join('')}
+        ${STATE.jobs.map(j => `<option value="${escapeHtml(j.id)}">${escapeHtml(j.id)} — ${escapeHtml(j.client||'')}</option>`).join('')}
       </select>
     </div>` : ''}
 
@@ -20522,13 +20541,15 @@ function renderDocumentsModal() {
         <div class="receipt-card">
           <div class="receipt-header">
             <div>
-              <div style="font-family:var(--font-mono);font-size:12px;color:var(--white)">${d.originalName}</div>
+              <div style="font-family:var(--font-mono);font-size:12px;color:var(--white)">${escapeHtml(d.originalName)}</div>
               <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray)">
-                ${documentCategoryLabel(d.category)} · ${((d.size||0)/1024).toFixed(0)}KB · ${(d.uploadedAt||'').slice(0,10)}${d.jobId ? ' · Job ' + d.jobId : ''}
+                ${documentCategoryLabel(d.category)} · ${((d.size||0)/1024).toFixed(0)}KB · ${escapeHtml((d.uploadedAt||'').slice(0,10))}${d.jobId ? ' · Job ' + escapeHtml(d.jobId) : ''}
               </div>
-              ${d.notes ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--gray);margin-top:4px">${d.notes}</div>` : ''}
+              ${d.notes ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--gray);margin-top:4px">${escapeHtml(d.notes)}</div>` : ''}
             </div>
-            <a href="${d.downloadUrl}" target="_blank" rel="noopener" class="btn-outline" style="padding:6px 12px;font-size:10px;text-decoration:none">⬇ OPEN</a>
+            ${isSafeDocumentUrl(d.downloadUrl)
+              ? `<a href="${escapeHtml(d.downloadUrl)}" target="_blank" rel="noopener" class="btn-outline" style="padding:6px 12px;font-size:10px;text-decoration:none">⬇ OPEN</a>`
+              : `<span class="btn-outline" style="padding:6px 12px;font-size:10px;opacity:0.5">⚠ invalid link</span>`}
           </div>
         </div>
       `).join('') : `<div style="text-align:center;padding:20px;color:var(--gray);font-family:var(--font-mono);font-size:11px">No documents uploaded yet</div>`}
@@ -20549,8 +20570,8 @@ function handleDocumentFilesSelected(input) {
   const listEl = document.getElementById('doc-selected-files');
   if (listEl) {
     listEl.innerHTML = [
-      ..._docPendingFiles.map(f => `<div style="font-family:var(--font-mono);font-size:11px;color:var(--green)">✓ ${f.name} (${(f.size/1024).toFixed(0)}KB)</div>`),
-      ...errors.map(e => `<div style="font-family:var(--font-mono);font-size:11px;color:var(--red)">⚠ ${e}</div>`),
+      ..._docPendingFiles.map(f => `<div style="font-family:var(--font-mono);font-size:11px;color:var(--green)">✓ ${escapeHtml(f.name)} (${(f.size/1024).toFixed(0)}KB)</div>`),
+      ...errors.map(e => `<div style="font-family:var(--font-mono);font-size:11px;color:var(--red)">⚠ ${escapeHtml(e)}</div>`),
     ].join('');
   }
   input.value = ''; // allow re-selecting after fixing an error
@@ -20560,6 +20581,11 @@ async function submitDocumentUploads() {
   if (!_docPendingFiles.length) { notify('Choose at least one file first', true); return; }
   if (!isOnline()) { notify('⚠ You are offline — file uploads need an internet connection', true); return; }
 
+  // Snapshot which modal session this upload belongs to. If the user closes
+  // this modal and reopens it (same job or a different one) before this
+  // finishes, _docSessionId advances — everything below then knows to leave
+  // the now-current session's DOM/state alone instead of clobbering it.
+  const mySession = _docSessionId;
   const btn      = document.getElementById('doc-upload-btn');
   const statusEl = document.getElementById('doc-upload-status');
   const category = document.getElementById('doc-category')?.value || 'other';
@@ -20573,10 +20599,10 @@ async function submitDocumentUploads() {
   let done = 0, failed = 0;
 
   for (const file of files) {
-    if (statusEl) statusEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">Uploading ${file.name} (${done+1}/${files.length})...</div>`;
+    if (mySession === _docSessionId && statusEl) statusEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">Uploading ${escapeHtml(file.name)} (${done+1}/${files.length})...</div>`;
     try {
       await uploadDocument(file, { jobId, category, notes }, (pct) => {
-        if (statusEl) statusEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">Uploading ${file.name} — ${Math.round(pct*100)}%</div>`;
+        if (mySession === _docSessionId && statusEl) statusEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">Uploading ${escapeHtml(file.name)} — ${Math.round(pct*100)}%</div>`;
       });
       done++;
     } catch (e) {
@@ -20585,14 +20611,16 @@ async function submitDocumentUploads() {
     }
   }
 
-  if (btn) { btn.disabled = false; btn.textContent = 'UPLOAD'; }
-  if (statusEl) statusEl.innerHTML = '';
-  _docPendingFiles = [];
-  const selEl = document.getElementById('doc-selected-files');
-  if (selEl) selEl.innerHTML = '';
+  if (mySession === _docSessionId) {
+    if (btn) { btn.disabled = false; btn.textContent = 'UPLOAD'; }
+    if (statusEl) statusEl.innerHTML = '';
+    _docPendingFiles = [];
+    const selEl = document.getElementById('doc-selected-files');
+    if (selEl) selEl.innerHTML = '';
+    renderDocumentsModal();
+  }
 
   if (done) notify(`✓ ${done} file(s) uploaded`);
-  renderDocumentsModal();
 }
 
 // ============================================================
