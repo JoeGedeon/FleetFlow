@@ -743,6 +743,230 @@ Sample (first 15, by file line):
 | 792 | onkeypress | other-expression | doPasswordRecovery | no (static HTML) |
 | 794 | onkeypress | other-expression | doPasswordRecovery | no (static HTML) |
 
+## Unparsed handler dependencies
+
+These inline handlers did not parse as standalone JavaScript — almost always because
+the attribute value is assembled by string concatenation, so the captured text is a
+fragment rather than an expression. **Their references are not credited to any binding.**
+That makes them the specific reason a zero-reference result below is a *candidate* and
+not a verdict: a function reachable only through one of these looks unreferenced.
+
+Count: 60 of 808 handlers.
+
+| Line | Event | Captured fragment |
+|---|---|---|
+| 2508 | onclick | `document.getElementById(\'legend-panel\')?.remove()` |
+| 2593 | onclick | `setOnboardingStatus(\'completed\');document.getElementById(\'onboarding-reminder\')?.remove()` |
+| 2634 | onclick | `launchFJStep(${_fjStep})` |
+| 3629 | onclick | `toggleJobLoaded('${docId}',${i})` |
+| 5027 | onclick | `toggleCompanyAccess('${co.cid}',${!isActive})` |
+| 5057 | onclick | `${locked?'':''}` |
+| 5063 | onclick | `toggleCompanyFeature(\''+co.cid+'\',\''+featKey+'\','+(!on)+')` |
+| 6927 | onclick | `openJobDetail(\` |
+| 6945 | onclick | `event.stopPropagation();advanceGate(\` |
+| 7491 | onclick | `${a.action}` |
+| 7506 | onclick | `${a.action}` |
+| 7510 | onclick | `event.stopPropagation();${a.action}` |
+| 7896 | onchange | `updateDriverPayType(\'' + jid + '\',this.value)` |
+| 8097 | onchange | `updateHelper('${j.id}',${i},'${pt==='daily'?'days':'hours'}',this.value)` |
+| 8104 | onchange | `updateHelper('${j.id}',${i},'rate',this.value)` |
+| 8112 | onchange | `updateHelper('${j.id}',${i},'name',this.value)` |
+| 8118 | onchange | `updateHelper('${j.id}',${i},'payType',this.value);renderCrewLog()` |
+| 8136 | onchange | `updateHelper('${j.id}',${i},'commission',this.value)` |
+| 8140 | onchange | `updateHelper('${j.id}',${i},'workerType',this.value)` |
+| 8146 | onclick | `removeHelper('${j.id}',${i})` |
+| 8985 | onclick | `export1099CSV(${selYear})` |
+| 8986 | onclick | `generate1099PDF(${selYear})` |
+| 10107 | onclick | `processStripePayment(${amountCents})` |
+| 10963 | onclick | `saveRefNum(this.dataset.jid,\'\')` |
+| 13156 | onclick | `handleNotifTap('${n._docId}','${n.type}',${JSON.stringify(n.meta\|\|{}).replace(/` |
+| 13159 | onmouseleave | `this.style.background='${n.read ? 'transparent' : 'rgba(0,255,65,0.04)'}'` |
+| 13938 | onclick | `openCalDay(\'' + ds + '\')` |
+| 13955 | onclick | `openCalDay(\'' + ds + '\')` |
+| 13967 | onclick | `event.stopPropagation();openJobDetail(\'' + j.id + '\')` |
+| 14660 | onchange | `STATE.inventory[${realIdx}].location=this.value;saveInventoryItem(STATE.inventory[${realIdx}],${realIdx})` |
+| 14663 | onclick | `adjustQty(${realIdx}, -1)` |
+| 14665 | onclick | `adjustQty(${realIdx}, 1)` |
+| 16144 | onclick | `advanceGate(\'' + job.id + '\',\'' + k + '\')` |
+| 16160 | onchange | `saveEstimateFieldDirect(this.dataset.jobid,\'officeRemarks\',this.value)` |
+| 16164 | onchange | `saveEstimateFieldDirect(this.dataset.jobid,\'slipRemarks\',this.value)` |
+| 16174 | onclick | `openBOL(\'' + job.id + '\')` |
+| 16175 | onclick | `openSigModal(\'' + job.id + '\')` |
+| 16176 | onclick | `openPhotoModal(\'' + job.id + '\')` |
+| 16180 | onclick | `openClaimsDefensePanel(\'' + job.id + '\')` |
+| 16183 | onclick | `openFieldNotes(\'' + job.id + '\')` |
+| 16185 | onclick | `openEditJob(\'' + job.id + '\')` |
+| 16186 | onclick | `changeJobStatus(\'' + job.id + '\',\'active\')` |
+| 16187 | onclick | `changeJobStatus(\'' + job.id + '\',\'complete\')` |
+| 16188 | onclick | `changeJobStatus(\'' + job.id + '\',\'cancelled\')` |
+| 16189 | onclick | `deleteJob(\'' + job.id + '\')` |
+| 17334 | onclick | `saveVehicle('${vehicleId\|\|''}')` |
+| 18298 | onclick | `event.stopPropagation();openMarkPaidModal('${p.name}',${p.balance.toFixed(2)},'${p.role}','${p.username\|\|''}')` |
+| 18603 | onclick | `processPayment('${crewName}','${role}','${username}',${balance})` |
+| 18826 | onclick | `closeModal('modal-jobdetail');openMarkPaidModal('${crewName}',${p.balance},'${p.role}','${p.username}')` |
+| 18881 | onclick | `toggleSetting('${key}',${!val})` |
+| 19405 | onchange | `saveCompanyProfile({${JSON.stringify(key).slice(1,-1)}:this.value})` |
+| 19736 | onclick | `openEditHandle('${u.username}','${u.empId\|\|''}','${u.handle\|\|''}')` |
+| 19739 | onclick | `toggleUserActive('${u.username}','${u.role}',${!u.active})` |
+| 19766 | onclick | `closeModal(\'modal-jobdetail\')` |
+| 19774 | onfocus | `this.style.borderColor=\'var(--green)\'` |
+| 19774 | onblur | `this.style.borderColor=\'var(--gray2)\'` |
+| 19781 | onfocus | `this.style.borderColor=\'var(--green)\'` |
+| 19781 | onblur | `this.style.borderColor=\'var(--gray2)\'` |
+| 19790 | onclick | `closeModal(\'modal-jobdetail\')` |
+| 19791 | onclick | `saveEmployeeId(\'' + username + '\')` |
+
+## Reference summary
+
+Every global binding falls into exactly one of three buckets. The first is the healthy
+majority and is not re-listed here — the **Global bindings** table above already carries
+each one with its read/write counts and handler status. The other two are enumerated below.
+
+| Bucket | Count | What this proves |
+|---|---|---|
+| Inbound-referenced bindings | 398 | At least one inbound reference exists — something reads it, or a parseable inline handler names it. |
+| Handler-linked candidates | 23 | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |
+| Zero-reference candidates | 37 | No inbound reference found by any check this tool performs. Needs a human verdict. |
+| **Total** | **458** | |
+
+> **These are reference counts, not reachability.** "Inbound-referenced" means something
+> points at the binding — it does **not** prove the application can reach it. Local reference
+> counting cannot see orphan *islands*: three functions that only call each other, with no
+> path in from any entry point, each show an inbound reference and land in the first bucket.
+> This analysis reliably finds orphan **leaves** only. Treat the first number as an upper
+> bound on live code, not a count of it.
+>
+> Closing that gap needs mark-and-sweep from real roots (inline handlers, top-level
+> statements, `addEventListener` registrations), which would replace these buckets with
+> *reachable from application roots* / *unreachable islands* / *zero-reference leaves*.
+> Not implemented here.
+
+## Likely reachable via unparsed handler (auto-cleared, not orphans)
+
+These have no credited reference, but their name appears as a call inside one of the
+unparsed handler fragments above — so they *are* reachable and the reference graph simply
+could not see it. Listed separately rather than deleted from the queue, because the match
+is textual: confirm the call site before relying on it.
+
+| Binding | Line | Type | Called from handler at line(s) |
+|---|---|---|---|
+| `launchFJStep` | 2641 | function | 2634 |
+| `toggleJobLoaded` | 3652 | function | 3629 |
+| `export1099CSV` | 9240 | function | 8985 |
+| `generate1099PDF` | 9291 | function | 8986 |
+| `processStripePayment` | 10144 | function | 10107 |
+| `openClaimsDefensePanel` | 10777 | function | 16180 |
+| `handleNotifTap` | 13179 | function | 13156 |
+| `updateDriverPayType` | 13341 | function | 7896 |
+| `updateHelper` | 13408 | function | 8097, 8104, 8112, 8118, 8136, 8140 |
+| `removeHelper` | 13475 | function | 8146 |
+| `adjustQty` | 14710 | function | 14663, 14665 |
+| `saveEstimateFieldDirect` | 16199 | function | 16160, 16164 |
+| `changeJobStatus` | 16287 | function | 16186, 16187, 16188 |
+| `saveVehicle` | 17339 | function | 17334 |
+| `openMarkPaidModal` | 18557 | function | 18298, 18826 |
+| `processPayment` | 18610 | function | 18603 |
+| `toggleSetting` | 19443 | function | 18881 |
+| `openEditHandle` | 19764 | function | 19736 |
+| `saveEmployeeId` | 19796 | function | 19791 |
+| `toggleUserActive` | 19931 | function | 19739 |
+| `toggleCompanyFeature` | 20079 | function | 5063 |
+| `toggleCompanyAccess` | 20178 | function | 5027 |
+| `openFieldNotes` | 20335 | function | 16183 |
+
+## Zero-reference bindings (candidates — verification required)
+
+Bindings that nothing reads in JavaScript, that no *parseable* inline handler names, and
+that no unparsed handler fragment appears to call.
+**This is a review queue, not a delete list.** Confirm each before acting.
+
+Dynamic-dispatch scan (the remaining way a binding could be reached invisibly): `window[...]` 0, `eval(` 0, `new Function(` 0. **All zero** — no runtime-assembled call sites in the main script, so the list below is not hiding that class of reference.
+
+Still unchecked by this tool: references from the other `<script>` blocks, and code that
+is deliberately dormant rather than dead.
+
+Verdicts are recorded by hand in `docs/legacy-orphan-review.json` (keyed by binding name,
+`status` one of `unreviewed` / `false positive` / `confirmed orphan`, optional `note`), so
+they survive regeneration of this document. Nothing in this repository deletes a candidate.
+
+Candidates: **37** · reviewed so far: 0 · inbound-referenced elsewhere: 398
+
+| Binding | Line | Type | Section | Reads | Writes | Handler refs | Verification |
+|---|---|---|---|---|---|---|---|
+| `linkTravelToJob` | 2431 | function | TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created | 0 | 0 | 0 | unreviewed |
+| `getMyTravelBlocks` | 2439 | function | TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created | 0 | 0 | 0 | unreviewed |
+| `toggleLegendPanel` | 2495 | function | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore | 0 | 0 | 0 | unreviewed |
+| `routeOnboarding` | 2555 | function | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore | 0 | 0 | 0 | unreviewed |
+| `dismissBetaWelcome` | 2844 | function | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore | 0 | 0 | 0 | unreviewed |
+| `getJobStatusBadge` | 3933 | function | TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order | 0 | 0 | 0 | unreviewed |
+| `populateStatusDetails` | 3970 | function | TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order | 0 | 0 | 0 | unreviewed |
+| `openGasPriceEdit` | 4369 | function | ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard | 0 | 0 | 0 | unreviewed |
+| `saveGasPrice` | 4382 | function | ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard | 0 | 0 | 0 | unreviewed |
+| `runClaimsDefenseScan` | 4614 | function | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims. | 0 | 0 | 0 | unreviewed |
+| `showClaimsDefenseResult` | 4693 | function | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims. | 0 | 0 | 0 | unreviewed |
+| `COL_LICENSEES` | 4810 | constant | SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts | 0 | 1 | 0 | unreviewed |
+| `withCompanyId` | 5308 | function | FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill | 0 | 0 | 0 | unreviewed |
+| `deleteDisbursement` | 5707 | function | STATE & STORAGE | 0 | 0 | 0 | unreviewed |
+| `saveState` | 5716 | function | STATE & STORAGE | 0 | 0 | 0 | unreviewed |
+| `currentJobForModal` | 5839 | variable | STATE & STORAGE | 0 | 2 | 0 | unreviewed |
+| `enableFirestoreOffline` | 6247 | function | OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online | 0 | 0 | 0 | unreviewed |
+| `smsDriver` | 9979 | function | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | unreviewed |
+| `smsClient` | 9989 | function | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | unreviewed |
+| `renderPaymentGateButton` | 10242 | function | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | unreviewed |
+| `createJobFromLead` | 10856 | function | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | unreviewed |
+| `jobDispId` | 10917 | function | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 0 | 0 | 0 | unreviewed |
+| `getEmployeeDisplay` | 10991 | function | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | unreviewed |
+| `assignEmpId` | 10997 | function | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | unreviewed |
+| `autoInviteClient` | 11876 | function | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 0 | 0 | 0 | unreviewed |
+| `checkUnpaidCrew` | 12764 | function | PAY SCHEDULE & UNPAID CREW CHECKER | 0 | 0 | 0 | unreviewed |
+| `requestPushPermission` | 12859 | function | NOTIFICATION ENGINE | 0 | 0 | 0 | unreviewed |
+| `toggleNotifPanel` | 13110 | function | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | unreviewed |
+| `updateDriverPay` | 13334 | function | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | unreviewed |
+| `updateDriverWorkerType` | 13377 | function | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | unreviewed |
+| `openAddPhoto` | 15794 | function | RECEIPTS | 0 | 0 | 0 | unreviewed |
+| `renderExportBar` | 17548 | function | EXPORT — CSV and financial reporting | 0 | 0 | 0 | unreviewed |
+| `voidPayrollEntry` | 18074 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
+| `restorePayrollEntry` | 18079 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
+| `checkForDuplicatesOnLoad` | 18185 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
+| `toggleTierFirewall` | 20074 | function | TRIAL + TIER SYSTEM | 0 | 0 | 0 | unreviewed |
+| `_platformConfig` | 20090 | variable | TRIAL + TIER SYSTEM | 0 | 2 | 0 | unreviewed |
+
+## Firestore collections
+
+Every `.collection(...)` call site in the main script. `COL_*` constants are resolved to
+their literal value; anything not statically resolvable is reported as-is rather than guessed.
+
+| Collection | Referenced via | Call sites | First line |
+|---|---|---|---|
+| `(dynamic: op.collection)` | dynamic expression | 3 | 6163 |
+| `(unresolved: col)` | col | 1 | 9485 |
+| `(unresolved: collection)` | collection | 2 | 6219 |
+| `ff_company` | COL_COMPANY, literal 'ff_company' | 15 | 4847 |
+| `ff_disbursements` | COL_DISBURSEMENTS | 8 | 5432 |
+| `ff_feedback` | literal 'ff_feedback' | 3 | 2862 |
+| `ff_fleet` | COL_FLEET | 5 | 5463 |
+| `ff_inventory` | COL_INVENTORY | 4 | 5404 |
+| `ff_jobs` | COL_JOBS, literal 'ff_jobs' | 11 | 4864 |
+| `ff_leads` | COL_LEADS, literal 'ff_leads' | 9 | 4866 |
+| `ff_load_sheets` | COL_LOAD_SHEETS | 6 | 3544 |
+| `ff_notifications` | COL_NOTIFICATIONS, literal 'ff_notifications' | 7 | 5443 |
+| `ff_payroll_ledger` | COL_PAYROLL_LEDGER | 5 | 5479 |
+| `ff_receipts` | COL_RECEIPTS | 7 | 5417 |
+| `ff_travel` | COL_TRAVEL | 7 | 2187 |
+| `ff_users` | COL_USERS, literal 'ff_users' | 42 | 2568 |
+| `ff_warehouse_log` | COL_WAREHOUSE_LOG | 3 | 3137 |
+
+## Firebase Storage paths
+
+Every `storage.ref(...)` / `storage.refFromURL(...)` call site, with the path argument
+reproduced verbatim from source — these are template literals or locals built at the call,
+so the literal expression is more honest than an interpolated guess.
+
+| Line | Method | Path argument (source) | Resolved from |
+|---|---|---|---|
+| 5638 | `ref` | `` `ff_receipts/${receiptId}.${ext}` `` | path assigned at line 5637 |
+| 15782 | `refFromURL` | `r.photo` | — |
+
 ## Phase 2 `fleetflow:ready` candidate dispatch points
 
 Findings only — **no runtime code is added in Phase 0.** These are the identifiers most
