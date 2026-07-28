@@ -3,7 +3,12 @@ import fs from 'node:fs';
 const sourcePath = new URL('../index.html', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
+const wednesdayCssSource = new URL('../assets/wednesday-observer.css', import.meta.url);
+const wednesdayJsSource = new URL('../assets/wednesday-observer.js', import.meta.url);
+const wednesdayCssDist = new URL('../dist/wednesday-observer.css', import.meta.url);
+const wednesdayJsDist = new URL('../dist/wednesday-observer.js', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
+const wednesdayMarker = 'fleetflow-wednesday-observer-v1';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
 
@@ -79,7 +84,27 @@ if (!html.includes(marker)) {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
+if (!html.includes(wednesdayMarker)) {
+  if (!html.includes('</head>') || !html.includes('</body>')) {
+    throw new Error('index.html is missing required closing tags; refusing to attach Wednesday.');
+  }
+
+  html = html.replace(
+    '</head>',
+    `<link rel="stylesheet" href="/wednesday-observer.css" data-feature="${wednesdayMarker}">\n</head>`
+  );
+  html = html.replace(
+    '</body>',
+    `<script src="/wednesday-observer.js" defer data-feature="${wednesdayMarker}"></script>\n</body>`
+  );
+  console.log('Attached isolated Wednesday observer assets.');
+} else {
+  console.log('Wednesday observer assets already attached.');
+}
+
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
-console.log('Staged patched legacy FleetFlow index.html in dist/.');
+fs.copyFileSync(wednesdayCssSource, wednesdayCssDist);
+fs.copyFileSync(wednesdayJsSource, wednesdayJsDist);
+console.log('Staged patched legacy FleetFlow and Wednesday observer assets in dist/.');
