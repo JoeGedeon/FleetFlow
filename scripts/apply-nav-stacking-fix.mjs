@@ -1,15 +1,14 @@
 import fs from 'node:fs';
 
-const path = new URL('../index.html', import.meta.url);
-let html = fs.readFileSync(path, 'utf8');
+const sourcePath = new URL('../index.html', import.meta.url);
+const distDir = new URL('../dist/', import.meta.url);
+const distIndexPath = new URL('../dist/index.html', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
 
-if (html.includes(marker)) {
-  console.log('Original navigation coordinate-system fix already present.');
-  process.exit(0);
-}
+let html = fs.readFileSync(sourcePath, 'utf8');
 
-const patch = `
+if (!html.includes(marker)) {
+  const patch = `
 <!-- ${marker} -->
 <style id="${marker}">
   /*
@@ -26,7 +25,6 @@ const patch = `
   .tabs,
   #tabs-container,
   .nav-bar {
-    position: relative;
     z-index: 4500 !important;
     overflow: visible !important;
   }
@@ -71,10 +69,17 @@ const patch = `
 </style>
 `;
 
-if (!html.includes('</head>')) {
-  throw new Error('index.html is missing </head>; refusing to patch.');
+  if (!html.includes('</head>')) {
+    throw new Error('index.html is missing </head>; refusing to patch.');
+  }
+
+  html = html.replace('</head>', `${patch}\n</head>`);
+  console.log('Injected original navigation coordinate-system fix.');
+} else {
+  console.log('Original navigation coordinate-system fix already present.');
 }
 
-html = html.replace('</head>', `${patch}\n</head>`);
-fs.writeFileSync(path, html);
-console.log('Injected original navigation coordinate-system fix.');
+fs.rmSync(distDir, { recursive: true, force: true });
+fs.mkdirSync(distDir, { recursive: true });
+fs.writeFileSync(distIndexPath, html);
+console.log('Staged patched legacy FleetFlow index.html in dist/.');
