@@ -11,9 +11,12 @@ const wednesdayJsDist = new URL('../dist/wednesday-observer.js', import.meta.url
 const startupWatchdogDist = new URL('../dist/startup-watchdog.js', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
 const wednesdayMarker = 'fleetflow-wednesday-observer-v1';
-const startupWatchdogMarker = 'fleetflow-startup-watchdog-v2';
+const startupWatchdogMarker = 'fleetflow-startup-watchdog-v3-inline';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
+const startupWatchdogCode = fs
+  .readFileSync(startupWatchdogSource, 'utf8')
+  .replaceAll('</script>', '<\\/script>');
 
 if (!html.includes(marker)) {
   const patch = `
@@ -94,11 +97,11 @@ if (!html.includes(startupWatchdogMarker)) {
 
   html = html.replace(
     '</body>',
-    `<script src="/startup-watchdog.js?v=2" defer data-feature="${startupWatchdogMarker}"></script>\n</body>`
+    `<script data-feature="${startupWatchdogMarker}">\n${startupWatchdogCode}\n</script>\n</body>`
   );
-  console.log('Attached isolated startup splash watchdog.');
+  console.log('Inlined startup splash watchdog into deployed HTML.');
 } else {
-  console.log('Startup splash watchdog already attached.');
+  console.log('Inline startup splash watchdog already attached.');
 }
 
 if (!html.includes(wednesdayMarker)) {
@@ -125,4 +128,4 @@ fs.writeFileSync(distIndexPath, html);
 fs.copyFileSync(wednesdayCssSource, wednesdayCssDist);
 fs.copyFileSync(wednesdayJsSource, wednesdayJsDist);
 fs.copyFileSync(startupWatchdogSource, startupWatchdogDist);
-console.log('Staged patched legacy FleetFlow, startup watchdog, and Wednesday observer assets in dist/.');
+console.log('Staged patched legacy FleetFlow with inline startup recovery and Wednesday observer assets in dist/.');
