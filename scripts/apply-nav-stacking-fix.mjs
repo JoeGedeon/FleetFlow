@@ -18,6 +18,26 @@ const startupWatchdogCode = fs
   .readFileSync(startupWatchdogSource, 'utf8')
   .replaceAll('</script>', '<\\/script>');
 
+const brokenLoadSheetRowsPattern = /\$\{jobs\.map\(\(j,i\)=>`[\s\S]*?<\/tr>`\)\.join\(''\)\}/;
+const fixedLoadSheetRows = `\${jobs.map((j,i)=>[
+  '<tr>',
+  '<td>' + (i + 1) + '</td>',
+  '<td><strong>' + (j.jobId || j.refNum || '—') + '</strong></td>',
+  '<td>' + (j.client || '—') + '</td>',
+  '<td>' + (j.origin || '—') + '</td>',
+  '<td>' + (j.dest || '—') + '</td>',
+  '<td style="text-align:right">' + (j.cubicFt || '—') + '</td>',
+  '<td style="text-align:right">' + (j.weight || '—') + '</td>',
+  '<td style="text-align:center">' + (j.loaded ? '✓' : '') + '</td>',
+  '</tr>'
+].join('')).join('')}`;
+
+if (!brokenLoadSheetRowsPattern.test(html)) {
+  throw new Error('Broken load-sheet row template was not found; refusing to stage an unverified syntax repair.');
+}
+html = html.replace(brokenLoadSheetRowsPattern, fixedLoadSheetRows);
+console.log('Repaired nested load-sheet template literal in deployed HTML.');
+
 if (!html.includes(marker)) {
   const patch = `
 <!-- ${marker} -->
@@ -128,4 +148,4 @@ fs.writeFileSync(distIndexPath, html);
 fs.copyFileSync(wednesdayCssSource, wednesdayCssDist);
 fs.copyFileSync(wednesdayJsSource, wednesdayJsDist);
 fs.copyFileSync(startupWatchdogSource, startupWatchdogDist);
-console.log('Staged patched legacy FleetFlow with inline startup recovery and Wednesday observer assets in dist/.');
+console.log('Staged patched legacy FleetFlow with syntax repair, inline startup recovery, and Wednesday observer assets in dist/.');
