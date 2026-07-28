@@ -1886,6 +1886,15 @@ Timestamp:             2026-04-13T02:37:42Z
   </div>
 </div>
 
+<!-- DOCUMENT UPLOAD MODAL -->
+<div class="modal-overlay" id="modal-documents" style="display:none">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('modal-documents')">✕</button>
+    <div class="modal-title">📎 DOCUMENTS</div>
+    <div id="documents-modal-body"></div>
+  </div>
+</div>
+
 <!-- CALENDAR DAY MODAL -->
 <div class="modal-overlay" id="modal-calday" style="display:none">
   <div class="modal" style="max-width:680px">
@@ -1998,6 +2007,7 @@ const COL_LOAD_SHEETS    = 'ff_load_sheets';
 const COL_WAREHOUSE_LOG  = 'ff_warehouse_log';
 const COL_COMPANY        = 'ff_company';
 const COL_PAYROLL_LEDGER = 'ff_payroll_ledger'; // Running pay cycles per crew member
+const COL_DOCUMENTS      = 'ff_documents'; // ERSA operational file uploads (see DOCUMENT UPLOAD section)
 
 // ============================================================
 // TRAVEL BLOCKS — Pre-job drive time scheduling
@@ -5315,7 +5325,7 @@ function withCompanyId(data) {
 // ============================================================
 
 // In-memory state — Firestore is source of truth
-let STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [] };
+let STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [], documents: [] };
 let DB_LOADED = false;
 let unsubscribers = []; // Firestore listeners to clean up on logout
 
@@ -5508,7 +5518,16 @@ async function initFirestore() {
       scheduleRender('warehouse');
     }, err => { console.warn('Warehouse log error:', err.message); });
 
-    unsubscribers = [u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11];
+    // DOCUMENTS listener — ERSA operational file uploads
+    const u12 = db.collection(COL_DOCUMENTS).where('companyId','==',COMPANY_ID).onSnapshot(snap => {
+      STATE.documents = snap.docs
+        .map(d => ({ ...d.data(), _docId: d.id }))
+        .filter(d => !d.companyId || d.companyId === COMPANY_ID);
+      STATE.documents.sort((a,b) => (b.uploadedAt||'') > (a.uploadedAt||'') ? 1 : -1);
+      scheduleRender('documents');
+    }, err => { console.warn('Documents listener error:', err.message); });
+
+    unsubscribers = [u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12];
 
     // Wait for all three listeners to fire their first snapshot
     // Uses a promise instead of .get() to avoid double-reading
@@ -6507,7 +6526,7 @@ function showLoginError(msg) {
 function doLogout() {
   clearSession(); // Clear saved session — will require login next time
   stopListeners();
-  STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [] };
+  STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [], documents: [] };
   currentUser = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
@@ -7560,6 +7579,7 @@ function renderDashboard() {
         </div>`;
       }).join('') : `<div style="text-align:center;padding:24px;color:var(--gray);font-family:var(--font-mono);font-size:11px">No jobs scheduled today</div>`}
       ${isAdmin() ? `<button class="j-add" onclick="openNewJobModal()">+ Add Job</button>` : ''}
+      ${isAdmin() ? `<button class="j-add" onclick="openDocumentsModal(null)">📎 Upload Files</button>` : ''}
     </div>
 
     <!-- RECENT ACTIVITY -->
@@ -8269,6 +8289,7 @@ function renderEstimateTab() {
           ${jobs.map(j => `<option value="${j.id}" ${j.id === activeJob?.id ? 'selected' : ''}>${j.id} · ${j.client} · ${j.date}</option>`).join('')}
         </select>
         ${activeJob ? `<button class="btn-green" style="padding:8px 16px;font-size:11px" onclick="generateBOLPDF('${activeJob.id}')">⬇ DOWNLOAD BOL PDF</button>` : ''}
+        ${activeJob && isAdmin() ? `<button class="btn-outline" id="est-upload-btn" style="padding:8px 16px;font-size:11px" onclick="openDocumentsModal('${activeJob.id}')">📎 UPLOAD FILES</button>` : ''}
       </div>
     </div>
 
@@ -8291,6 +8312,12 @@ function renderEstimateForm(jobId) {
   // Update download button
   const dlBtn = document.querySelector('[onclick^="generateBOLPDF"]');
   if (dlBtn) dlBtn.setAttribute('onclick', `generateBOLPDF('${jobId}')`);
+
+  // Re-point the upload button at the newly selected job. Without this it
+  // would keep pointing at whichever job was active when the tab first
+  // rendered, silently filing documents against the wrong job.
+  const upBtn = document.getElementById('est-upload-btn');
+  if (upBtn) upBtn.setAttribute('onclick', `openDocumentsModal('${jobId}')`);
 
   const est = job.estimate || {};
   const acc = est.acc || {};
@@ -8487,6 +8514,7 @@ function renderEstimateForm(jobId) {
     <!-- DOWNLOAD -->
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
       <button class="btn-outline" onclick="openBOL('${jobId}')">👁 PREVIEW BOL</button>
+      ${isAdmin() ? `<button class="btn-outline" onclick="openDocumentsModal('${jobId}')">📎 UPLOAD FILES</button>` : ''}
       <button class="btn-green" style="padding:12px 28px;font-size:13px" onclick="generateBOLPDF('${jobId}')">
         ⬇ DOWNLOAD COMPLETE BOL PDF (7 PAGES)
       </button>
@@ -16174,6 +16202,7 @@ function openJobDetail(jobId) {
   if (!isClient || isOwningClient) html += '<button class="btn-outline" onclick="openBOL(\'' + job.id + '\')">📄 BOL</button>';
   if (isAdmin() || role==='driver') html += '<button class="btn-outline" onclick="openSigModal(\'' + job.id + '\')">✍ SIGNATURE</button>';
   if (isAdmin() || role==='driver' || role==='warehouse') html += '<button class="btn-outline" onclick="openPhotoModal(\'' + job.id + '\')">📷 PHOTOS</button>';
+  if (isAdmin()) html += '<button class="btn-outline" onclick="openDocumentsModal(\'' + job.id + '\')">📎 UPLOAD FILES</button>';
   if (isAdmin() || role==='driver' || role==='office') {
     const scanCount = (job.claimsDefense||[]).length;
     const hasDmg    = (job.claimsDefense||[]).some(s => s.hasDamage);
@@ -20340,6 +20369,266 @@ function openFieldNotes(jobId) {
   if (note === null) return;
   job.fieldNotes = note.trim();
   saveJob(job).then(() => notify('✓ Notes saved'));
+}
+
+// ============================================================
+// DOCUMENT UPLOAD — ERSA operational file intake
+// Firebase Storage: companies/{companyId}/documents/{documentId}/{filename}
+// Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in
+// initFirestore() alongside the other collections (see u12).
+// ============================================================
+
+const DOCUMENT_CATEGORIES = [
+  { id: 'bol',       label: 'BOL' },
+  { id: 'estimate',  label: 'Estimate' },
+  { id: 'contract',  label: 'Contract' },
+  { id: 'inventory', label: 'Inventory' },
+  { id: 'receipt',   label: 'Receipt' },
+  { id: 'claim',     label: 'Claim' },
+  { id: 'warehouse', label: 'Warehouse' },
+  { id: 'customer',  label: 'Customer' },
+  { id: 'driver',    label: 'Driver Paperwork' },
+  { id: 'other',     label: 'Other' },
+];
+
+const DOCUMENT_MAX_BYTES   = 25 * 1024 * 1024; // 25MB per file
+const DOCUMENT_ALLOWED_EXT = ['pdf','jpg','jpeg','png','heic','csv','xlsx','xls','doc','docx'];
+
+// Document metadata (filenames, notes, job IDs) is user-supplied and gets
+// interpolated into innerHTML below — escape it, same as any other
+// attacker-reachable text rendered into the DOM.
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function isSafeDocumentUrl(url) {
+  try { return /^https?:$/.test(new URL(url, window.location.href).protocol); } catch { return false; }
+}
+
+function sanitizeFilename(name) {
+  const dot = name.lastIndexOf('.');
+  const base = dot > 0 ? name.slice(0, dot) : name;
+  const ext  = dot > 0 ? name.slice(dot + 1) : '';
+  const safeBase = base.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'').slice(0, 80) || 'file';
+  const safeExt  = ext.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+  return safeExt ? `${safeBase}.${safeExt}` : safeBase;
+}
+
+function documentFileExt(name) {
+  const dot = name.lastIndexOf('.');
+  return dot > 0 ? name.slice(dot + 1).toLowerCase() : '';
+}
+
+function validateDocumentFile(file) {
+  const ext = documentFileExt(file.name);
+  if (!DOCUMENT_ALLOWED_EXT.includes(ext)) {
+    return `"${file.name}" — unsupported file type. Allowed: PDF, JPG, JPEG, PNG, HEIC, CSV, XLSX, DOC, DOCX.`;
+  }
+  if (file.size > DOCUMENT_MAX_BYTES) {
+    return `"${file.name}" — ${(file.size/1024/1024).toFixed(1)}MB exceeds the 25MB per-file limit.`;
+  }
+  return null;
+}
+
+async function uploadDocument(file, { jobId, category, notes }, onProgress) {
+  // Capture companyId once — COMPANY_ID is a mutable global, and if it changes
+  // mid-upload (e.g. an admin switches companies before this finishes) reading
+  // it again after the async work below would tag the Firestore record with
+  // the wrong tenant while the file itself already landed under this one.
+  const companyId   = COMPANY_ID;
+  const documentId  = 'DOC-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+  const safeName    = sanitizeFilename(file.name);
+  const storagePath = `companies/${companyId}/documents/${documentId}/${safeName}`;
+  const ref  = storage.ref(storagePath);
+  const task = ref.put(file, { contentType: file.type || undefined });
+
+  await new Promise((resolve, reject) => {
+    task.on('state_changed',
+      snap => { if (onProgress) onProgress(snap.bytesTransferred / snap.totalBytes); },
+      reject,
+      resolve
+    );
+  });
+
+  const downloadUrl = await task.snapshot.ref.getDownloadURL();
+
+  const data = {
+    companyId, // captured above, not the live global — see note at the top of this function
+    jobId:        jobId || null,
+    category:     category || 'other',
+    originalName: file.name,
+    storagePath,
+    downloadUrl,
+    mimeType:     file.type || '',
+    size:         file.size,
+    notes:        notes || '',
+    uploadedBy:   currentUser.username || currentUser.name || '',
+    uploadedAt:   new Date().toISOString(),
+    source:       'manual_upload',
+  };
+
+  await safeFirestoreSet(COL_DOCUMENTS, documentId, data);
+  return { documentId, ...data };
+}
+
+let _docModalJobId  = null;
+let _docPendingFiles = [];
+let _docSessionId    = 0; // bumped on every open — lets a slow upload detect it's no longer the active modal session
+
+function openDocumentsModal(jobId) {
+  _docModalJobId = jobId || null;
+  _docPendingFiles = [];
+  _docSessionId++;
+  renderDocumentsModal();
+  openModal('modal-documents');
+}
+
+function documentsForContext() {
+  return _docModalJobId
+    ? STATE.documents.filter(d => d.jobId === _docModalJobId)
+    : STATE.documents;
+}
+
+function documentCategoryLabel(id) {
+  const c = DOCUMENT_CATEGORIES.find(c => c.id === id);
+  return c ? c.label : 'Other';
+}
+
+function renderDocumentsModal() {
+  const el = document.getElementById('documents-modal-body');
+  if (!el) return;
+  const job  = _docModalJobId ? STATE.jobs.find(j => j.id === _docModalJobId) : null;
+  const list = documentsForContext();
+
+  el.innerHTML = `
+    <div class="form-group">
+      <label>${job ? `Files for job ${escapeHtml(job.id)}` : 'Select files to upload'}</label>
+      <div id="doc-dropzone" style="border:2px dashed var(--gray2);border-radius:4px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer" onclick="document.getElementById('doc-file-input').click()">
+        <div style="font-size:32px">📎</div>
+        <p class="info-text">Tap to choose files — PDF, JPG, PNG, HEIC, CSV, XLSX, DOC, DOCX (25MB max each)</p>
+      </div>
+      <input type="file" id="doc-file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.heic,.csv,.xlsx,.xls,.doc,.docx"
+        style="display:none" onchange="handleDocumentFilesSelected(this)" />
+    </div>
+
+    <div id="doc-selected-files"></div>
+
+    <div class="form-group">
+      <label>Category</label>
+      <select id="doc-category">
+        ${DOCUMENT_CATEGORIES.map(c => `<option value="${c.id}">${c.label}</option>`).join('')}
+      </select>
+    </div>
+
+    ${!job ? `
+    <div class="form-group">
+      <label>Connect to a job (optional)</label>
+      <select id="doc-job-link">
+        <option value="">— No job —</option>
+        ${STATE.jobs.map(j => `<option value="${escapeHtml(j.id)}">${escapeHtml(j.id)} — ${escapeHtml(j.client||'')}</option>`).join('')}
+      </select>
+    </div>` : ''}
+
+    <div class="form-group">
+      <label>Notes (optional)</label>
+      <input type="text" id="doc-notes" placeholder="e.g. Signed contract, page 2 of 3" />
+    </div>
+
+    <div id="doc-upload-status"></div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="btn-outline" onclick="closeModal('modal-documents')">CLOSE</button>
+      <button class="btn-green" id="doc-upload-btn" onclick="submitDocumentUploads()">UPLOAD</button>
+    </div>
+
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--gray2)">
+      <div class="section-title" style="font-size:12px;margin-bottom:10px">
+        📁 ${job ? 'DOCUMENTS ON THIS JOB' : 'ALL COMPANY DOCUMENTS'} (${list.length})
+      </div>
+      ${list.length ? list.map(d => `
+        <div class="receipt-card">
+          <div class="receipt-header">
+            <div>
+              <div style="font-family:var(--font-mono);font-size:12px;color:var(--white)">${escapeHtml(d.originalName)}</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray)">
+                ${documentCategoryLabel(d.category)} · ${((d.size||0)/1024).toFixed(0)}KB · ${escapeHtml((d.uploadedAt||'').slice(0,10))}${d.jobId ? ' · Job ' + escapeHtml(d.jobId) : ''}
+              </div>
+              ${d.notes ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--gray);margin-top:4px">${escapeHtml(d.notes)}</div>` : ''}
+            </div>
+            ${isSafeDocumentUrl(d.downloadUrl)
+              ? `<a href="${escapeHtml(d.downloadUrl)}" target="_blank" rel="noopener" class="btn-outline" style="padding:6px 12px;font-size:10px;text-decoration:none">⬇ OPEN</a>`
+              : `<span class="btn-outline" style="padding:6px 12px;font-size:10px;opacity:0.5">⚠ invalid link</span>`}
+          </div>
+        </div>
+      `).join('') : `<div style="text-align:center;padding:20px;color:var(--gray);font-family:var(--font-mono);font-size:11px">No documents uploaded yet</div>`}
+    </div>
+  `;
+}
+
+function handleDocumentFilesSelected(input) {
+  const files = Array.from(input.files || []);
+  const errors = [];
+  _docPendingFiles = [];
+  files.forEach(f => {
+    const err = validateDocumentFile(f);
+    if (err) errors.push(err);
+    else _docPendingFiles.push(f);
+  });
+
+  const listEl = document.getElementById('doc-selected-files');
+  if (listEl) {
+    listEl.innerHTML = [
+      ..._docPendingFiles.map(f => `<div style="font-family:var(--font-mono);font-size:11px;color:var(--green)">✓ ${escapeHtml(f.name)} (${(f.size/1024).toFixed(0)}KB)</div>`),
+      ...errors.map(e => `<div style="font-family:var(--font-mono);font-size:11px;color:var(--red)">⚠ ${escapeHtml(e)}</div>`),
+    ].join('');
+  }
+  input.value = ''; // allow re-selecting after fixing an error
+}
+
+async function submitDocumentUploads() {
+  if (!_docPendingFiles.length) { notify('Choose at least one file first', true); return; }
+  if (!isOnline()) { notify('⚠ You are offline — file uploads need an internet connection', true); return; }
+
+  // Snapshot which modal session this upload belongs to. If the user closes
+  // this modal and reopens it (same job or a different one) before this
+  // finishes, _docSessionId advances — everything below then knows to leave
+  // the now-current session's DOM/state alone instead of clobbering it.
+  const mySession = _docSessionId;
+  const btn      = document.getElementById('doc-upload-btn');
+  const statusEl = document.getElementById('doc-upload-status');
+  const category = document.getElementById('doc-category')?.value || 'other';
+  const notes    = document.getElementById('doc-notes')?.value || '';
+  const jobLinkEl = document.getElementById('doc-job-link');
+  const jobId = _docModalJobId || (jobLinkEl && jobLinkEl.value) || null;
+
+  if (btn) { btn.disabled = true; btn.textContent = 'UPLOADING...'; }
+
+  const files = _docPendingFiles.slice();
+  let done = 0, failed = 0;
+
+  for (const file of files) {
+    if (mySession === _docSessionId && statusEl) statusEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">Uploading ${escapeHtml(file.name)} (${done+1}/${files.length})...</div>`;
+    try {
+      await uploadDocument(file, { jobId, category, notes }, (pct) => {
+        if (mySession === _docSessionId && statusEl) statusEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--gray)">Uploading ${escapeHtml(file.name)} — ${Math.round(pct*100)}%</div>`;
+      });
+      done++;
+    } catch (e) {
+      failed++;
+      notify(`⚠ Failed to upload ${file.name}: ${e.message}`, true);
+    }
+  }
+
+  if (mySession === _docSessionId) {
+    if (btn) { btn.disabled = false; btn.textContent = 'UPLOAD'; }
+    if (statusEl) statusEl.innerHTML = '';
+    _docPendingFiles = [];
+    const selEl = document.getElementById('doc-selected-files');
+    if (selEl) selEl.innerHTML = '';
+    renderDocumentsModal();
+  }
+
+  if (done) notify(`✓ ${done} file(s) uploaded`);
 }
 
 // ============================================================
