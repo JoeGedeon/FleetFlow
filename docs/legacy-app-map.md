@@ -816,18 +816,30 @@ Count: 60 of 808 handlers.
 | 19790 | onclick | `closeModal(\'modal-jobdetail\')` |
 | 19791 | onclick | `saveEmployeeId(\'' + username + '\')` |
 
-## Reachability summary
+## Reference summary
 
 Every global binding falls into exactly one of three buckets. The first is the healthy
 majority and is not re-listed here — the **Global bindings** table above already carries
 each one with its read/write counts and handler status. The other two are enumerated below.
 
-| Bucket | Count | Meaning |
+| Bucket | Count | What this proves |
 |---|---|---|
-| Confirmed referenced | 398 | Something reads it, or a parseable inline handler names it. No action needed. |
-| Likely reachable via unparsed handler | 23 | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |
-| Zero-reference candidates | 37 | Nothing found that reaches it, by any check this tool performs. Needs a human verdict. |
+| Inbound-referenced bindings | 398 | At least one inbound reference exists — something reads it, or a parseable inline handler names it. |
+| Handler-linked candidates | 23 | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |
+| Zero-reference candidates | 37 | No inbound reference found by any check this tool performs. Needs a human verdict. |
 | **Total** | **458** | |
+
+> **These are reference counts, not reachability.** "Inbound-referenced" means something
+> points at the binding — it does **not** prove the application can reach it. Local reference
+> counting cannot see orphan *islands*: three functions that only call each other, with no
+> path in from any entry point, each show an inbound reference and land in the first bucket.
+> This analysis reliably finds orphan **leaves** only. Treat the first number as an upper
+> bound on live code, not a count of it.
+>
+> Closing that gap needs mark-and-sweep from real roots (inline handlers, top-level
+> statements, `addEventListener` registrations), which would replace these buckets with
+> *reachable from application roots* / *unreachable islands* / *zero-reference leaves*.
+> Not implemented here.
 
 ## Likely reachable via unparsed handler (auto-cleared, not orphans)
 
@@ -877,7 +889,7 @@ Verdicts are recorded by hand in `docs/legacy-orphan-review.json` (keyed by bind
 `status` one of `unreviewed` / `false positive` / `confirmed orphan`, optional `note`), so
 they survive regeneration of this document. Nothing in this repository deletes a candidate.
 
-Candidates: **37** · reviewed so far: 0 · confirmed referenced elsewhere: 398
+Candidates: **37** · reviewed so far: 0 · inbound-referenced elsewhere: 398
 
 | Binding | Line | Type | Section | Reads | Writes | Handler refs | Verification |
 |---|---|---|---|---|---|---|---|

@@ -498,7 +498,9 @@ function classifyBindingReachability(bindings, sections, review = {}, unparsedHa
   return {
     candidates: rows.filter((r) => r.isCandidate).sort(byLine),
     likelyReachable: rows.filter((r) => r.isLikelyReachable).sort(byLine),
-    referenced: rows.filter((r) => !r.isCandidate && !r.isLikelyReachable).sort(byLine),
+    // Named for what it proves: at least one inbound reference exists. That is
+    // NOT the same as "live" — see the reachability caveat in the report.
+    inboundReferenced: rows.filter((r) => !r.isCandidate && !r.isLikelyReachable).sort(byLine),
     reviewedCount: rows.filter((r) => r.isCandidate && r.reviewStatus !== 'unreviewed').length,
   };
 }
@@ -785,18 +787,30 @@ function renderMarkdown(r) {
     p();
   }
 
-  p('## Reachability summary');
+  p('## Reference summary');
   p();
   p('Every global binding falls into exactly one of three buckets. The first is the healthy');
   p('majority and is not re-listed here — the **Global bindings** table above already carries');
   p('each one with its read/write counts and handler status. The other two are enumerated below.');
   p();
-  p('| Bucket | Count | Meaning |');
+  p('| Bucket | Count | What this proves |');
   p('|---|---|---|');
-  p(`| Confirmed referenced | ${r.orphans.referenced.length} | Something reads it, or a parseable inline handler names it. No action needed. |`);
-  p(`| Likely reachable via unparsed handler | ${r.orphans.likelyReachable.length} | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |`);
-  p(`| Zero-reference candidates | ${r.orphans.candidates.length} | Nothing found that reaches it, by any check this tool performs. Needs a human verdict. |`);
-  p(`| **Total** | **${r.orphans.referenced.length + r.orphans.likelyReachable.length + r.orphans.candidates.length}** | |`);
+  p(`| Inbound-referenced bindings | ${r.orphans.inboundReferenced.length} | At least one inbound reference exists — something reads it, or a parseable inline handler names it. |`);
+  p(`| Handler-linked candidates | ${r.orphans.likelyReachable.length} | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |`);
+  p(`| Zero-reference candidates | ${r.orphans.candidates.length} | No inbound reference found by any check this tool performs. Needs a human verdict. |`);
+  p(`| **Total** | **${r.orphans.inboundReferenced.length + r.orphans.likelyReachable.length + r.orphans.candidates.length}** | |`);
+  p();
+  p('> **These are reference counts, not reachability.** "Inbound-referenced" means something');
+  p('> points at the binding — it does **not** prove the application can reach it. Local reference');
+  p('> counting cannot see orphan *islands*: three functions that only call each other, with no');
+  p('> path in from any entry point, each show an inbound reference and land in the first bucket.');
+  p('> This analysis reliably finds orphan **leaves** only. Treat the first number as an upper');
+  p('> bound on live code, not a count of it.');
+  p('>');
+  p('> Closing that gap needs mark-and-sweep from real roots (inline handlers, top-level');
+  p('> statements, `addEventListener` registrations), which would replace these buckets with');
+  p('> *reachable from application roots* / *unreachable islands* / *zero-reference leaves*.');
+  p('> Not implemented here.');
   p();
 
   p('## Likely reachable via unparsed handler (auto-cleared, not orphans)');
@@ -838,7 +852,7 @@ function renderMarkdown(r) {
   p('`status` one of `unreviewed` / `false positive` / `confirmed orphan`, optional `note`), so');
   p('they survive regeneration of this document. Nothing in this repository deletes a candidate.');
   p();
-  p(`Candidates: **${r.orphans.candidates.length}** · reviewed so far: ${r.orphans.reviewedCount} · confirmed referenced elsewhere: ${r.orphans.referenced.length}`);
+  p(`Candidates: **${r.orphans.candidates.length}** · reviewed so far: ${r.orphans.reviewedCount} · inbound-referenced elsewhere: ${r.orphans.inboundReferenced.length}`);
   p();
   p('| Binding | Line | Type | Section | Reads | Writes | Handler refs | Verification |');
   p('|---|---|---|---|---|---|---|---|');
