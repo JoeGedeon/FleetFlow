@@ -77,6 +77,12 @@ All from the generated map (regenerable via
   can describe the actual authorization model.
 - [P] Coupling scores are **section-level**. A section pair may share one
   binding or forty; the score counts distinct sections, not edge weight.
+- [P] Coupling scores are also **main-script-only**. Edges to the three
+  small standalone `<script>` blocks are invisible to them. Demonstrated:
+  THEME TOGGLE scores 0 yet depends on `window._ffThemePref`, first written
+  by the pre-paint block at line 108. Every "safe to extract" claim in this
+  document therefore carries an explicit dependency manifest (§8) rather
+  than resting on its score.
 - [I] No runtime tracing was performed. Everything here is static.
 
 ## 4. Runtime roots
@@ -255,10 +261,23 @@ one script block; browser sees no change.
 3. PR #35 merged and stable (sequencing decision already made — operational
    value first).
 
-**Phase 1 — leaves** (coupling ≤2, no startup/auth involvement): THEME
-TOGGLE (0), PWA (1 — PR #34 ready), CARRIER CUBIC FEET (1), FIELD NOTES (2),
-EMPLOYEE ID (2). One or two modules per PR; test = byte-diff of `dist`
-output plus smoke-load.
+**Phase 1 — leaves** (coupling ≤2, no startup/auth involvement). A coupling
+score alone is not a safety claim — a section can score 0 and still lean on
+a global the score cannot see. Each leaf therefore carries its full
+dependency manifest, all [P] via grep/map:
+
+| Leaf | Globals read | Globals written | DOM | Handlers | Data | Hidden dependency |
+|---|---|---|---|---|---|---|
+| THEME TOGGLE (20345–82) | `window._ffThemePref`, `localStorage['fleetflow-theme']` | `window._ffThemePref`, `documentElement[data-theme]` | `#theme-btn-{dark,light,system}` | 3 static `onclick` (830–832) | none | **Yes — coupling scores 0, but `_ffThemePref` is written first by the *separate* pre-paint `<script>` block (line 108). Section-level coupling only sees the main script; cross-block edges are invisible to it by construction. Extraction must keep the pre-paint block's contract intact.** |
+| PWA (6030–75) | `notify()` | `deferredInstallPrompt` (own `let`, internal-only) | `#pwa-splash`, `#install-banner` | 4 static `onclick` (672–3, 723–4) + `load`/`beforeinstallprompt` listeners | none | none found — already byte-verified as PR #34 |
+| CARRIER CUBIC FEET (8214–41) | form field values | none | `nj-*`/`ej-*` carrier fields via `getElementById` | `onchange`/`onclick` in job-form markup (handler-linked per map) | none | called from EDIT JOB (map: depended-on-by) — extract file, keep global names |
+| FIELD NOTES (20332–44) | `STATE.jobs`, `notify()` | `job.fieldNotes` via `saveJob()` | none (uses `prompt()`) | job-detail action row, concat `onclick` @16183 (unparsed-handler class) | Firestore via `saveJob` → `ff_jobs` | reference is in the *unparsed* handler bucket — invisible to the credited reference graph |
+| EMPLOYEE ID (10984–11012) | `db`, `COL_USERS` | `ff_users.{empId}` via query + update (10998–11005 region) | none | none | Firestore `ff_users` | none found |
+
+One or two modules per PR; test = byte-diff of `dist` output plus
+smoke-load. The THEME TOGGLE row is the standing proof that every later
+"safe" claim in Phase 3 must be re-verified at extraction time with this
+same manifest treatment — the score is a filter, not a verdict.
 
 **Phase 2 — extension point**: insert the guarded once-only
 `fleetflow:ready` dispatch covering all four `initFirestore` completion
