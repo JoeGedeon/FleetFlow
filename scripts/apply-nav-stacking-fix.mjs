@@ -11,7 +11,7 @@ const wednesdayJsDist = new URL('../dist/wednesday-observer.js', import.meta.url
 const startupWatchdogDist = new URL('../dist/startup-watchdog.js', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
 const wednesdayMarker = 'fleetflow-wednesday-observer-v1';
-const startupWatchdogMarker = 'fleetflow-startup-watchdog-v1';
+const startupWatchdogMarker = 'fleetflow-startup-watchdog-v2';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
 
@@ -94,7 +94,7 @@ if (!html.includes(startupWatchdogMarker)) {
 
   html = html.replace(
     '</body>',
-    `<script src="/startup-watchdog.js" defer data-feature="${startupWatchdogMarker}"></script>\n</body>`
+    `<script src="/startup-watchdog.js?v=2" defer data-feature="${startupWatchdogMarker}"></script>\n</body>`
   );
   console.log('Attached isolated startup splash watchdog.');
 } else {

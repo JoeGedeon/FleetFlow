@@ -23,7 +23,8 @@
   }
 
   function findSplash() {
-    return document.getElementById('splash-screen')
+    return document.getElementById('pwa-splash')
+      || document.getElementById('splash-screen')
       || document.getElementById('splash')
       || document.querySelector('.splash-screen')
       || document.querySelector('[data-splash]');
