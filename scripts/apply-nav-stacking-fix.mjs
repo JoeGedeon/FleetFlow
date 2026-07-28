@@ -2,46 +2,44 @@ import fs from 'node:fs';
 
 const path = new URL('../index.html', import.meta.url);
 let html = fs.readFileSync(path, 'utf8');
-const marker = 'fleetflow-original-nav-stacking-fix-v1';
+const marker = 'fleetflow-original-nav-stacking-fix-v2';
 
 if (html.includes(marker)) {
-  console.log('Original navigation stacking fix already present.');
+  console.log('Original navigation coordinate-system fix already present.');
   process.exit(0);
 }
 
 const patch = `
 <!-- ${marker} -->
 <style id="${marker}">
-  /* Preserve the original FleetFlow dropdown behavior. Only correct its paint order. */
+  /*
+   * Preserve the original navigation contract:
+   * - dropdown coordinates are calculated from getBoundingClientRect()
+   * - dropdowns therefore remain viewport-relative (position: fixed)
+   * - nav groups remain non-positioning ancestors (position: static)
+   */
   .topbar {
     z-index: 5000 !important;
     overflow: visible !important;
   }
 
-  nav,
-  .nav,
-  .nav-bar,
-  .nav-shell,
-  .nav-container,
-  .nav-row,
-  .nav-groups,
-  .nav-group,
-  .nav-item {
+  .tabs,
+  #tabs-container,
+  .nav-bar {
     position: relative;
     z-index: 4500 !important;
     overflow: visible !important;
   }
 
-  .nav-dropdown,
-  .dropdown,
-  .dropdown-menu,
-  .submenu,
-  .sub-menu,
-  [class*="nav-dropdown"],
-  [class*="dropdown-menu"],
-  [class*="submenu"] {
+  .nav-group {
+    position: static !important;
+    z-index: auto !important;
+    overflow: visible !important;
+  }
+
+  .nav-dropdown {
+    position: fixed !important;
     z-index: 6000 !important;
-    isolation: isolate;
   }
 
   .main-content,
@@ -55,28 +53,18 @@ const patch = `
   }
 
   @media (hover: none), (pointer: coarse), (max-width: 1180px) {
-    .topbar,
-    nav,
-    .nav,
-    .nav-bar,
-    .nav-shell,
-    .nav-container,
-    .nav-row,
-    .nav-groups,
-    .nav-group,
-    .nav-item {
+    .tabs,
+    #tabs-container,
+    .nav-bar {
       overflow: visible !important;
     }
 
-    .nav-dropdown,
-    .dropdown,
-    .dropdown-menu,
-    .submenu,
-    .sub-menu,
-    [class*="nav-dropdown"],
-    [class*="dropdown-menu"],
-    [class*="submenu"] {
-      position: absolute !important;
+    .nav-group {
+      position: static !important;
+    }
+
+    .nav-dropdown {
+      position: fixed !important;
       z-index: 6000 !important;
     }
   }
@@ -89,4 +77,4 @@ if (!html.includes('</head>')) {
 
 html = html.replace('</head>', `${patch}\n</head>`);
 fs.writeFileSync(path, html);
-console.log('Injected original navigation stacking fix.');
+console.log('Injected original navigation coordinate-system fix.');
