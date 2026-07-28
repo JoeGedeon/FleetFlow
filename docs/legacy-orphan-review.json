@@ -1,0 +1,6 @@
+{
+  "_README": {
+    "status": "unreviewed",
+    "note": "Human verdicts for the zero-reference candidates listed in docs/legacy-app-map.md. Keyed by binding name. status must be one of: 'unreviewed', 'false positive', 'confirmed orphan'. 'note' is optional free text. This file is hand-maintained and is NOT overwritten by the analyzer, so verdicts survive regeneration of the map. Recording 'confirmed orphan' here does not delete anything — removal is always a separate, deliberate PR. Delete this _README entry once real entries exist."
+  }
+}
