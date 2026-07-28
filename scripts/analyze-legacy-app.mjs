@@ -95,29 +95,37 @@ function extractSections(scriptContent, contentStartFileLine, offsetToLine, scri
     if (BANNER_RE.test(line)) borderLineNumbers.push(idx + 1);
   });
 
-  if (borderLineNumbers.length % 2 !== 0) {
-    throw new Error(
-      `Found an odd number of banner border lines (${borderLineNumbers.length}) inside the main script. ` +
-      `Banners are expected in open/close pairs — cannot safely determine section boundaries.`
-    );
-  }
-
   const toFileLine = (localLine) => contentStartFileLine + (localLine - 1);
 
+  // Not every "// ====" border line marks a real section boundary — some are
+  // used as one-off decorative dividers between functions *inside* a
+  // section, with no matching close border and real code right after them
+  // (e.g. file line 16615, directly above `function openNewJobModal`). A
+  // border only opens a genuine banner if every line between it and the
+  // next border is itself blank or a comment — i.e. an actual title, not
+  // code. Anything else is a solo divider: skip it, don't start a section.
+  const decorativeDividers = [];
   const sections = [];
-  for (let i = 0; i < borderLineNumbers.length; i += 2) {
+  let i = 0;
+  while (i < borderLineNumbers.length) {
     const openLocal = borderLineNumbers[i];
-    const closeLocal = borderLineNumbers[i + 1];
-    const titleLines = lines
-      .slice(openLocal, closeLocal - 1)
-      .map((l) => l.replace(/^\s*\/\/\s?/, '').trim())
-      .filter(Boolean);
-    sections.push({
-      name: titleLines.join(' — ') || `(untitled section at line ${toFileLine(openLocal)})`,
-      bannerStartLocal: openLocal,
-      bannerEndLocal: closeLocal,
-      contentStartLocal: closeLocal + 1, // filled as final content start below
-    });
+    const closeLocal = i + 1 < borderLineNumbers.length ? borderLineNumbers[i + 1] : null;
+    const between = closeLocal ? lines.slice(openLocal, closeLocal - 1) : [];
+    const isRealPair = closeLocal !== null && between.length > 0 && between.every((l) => l.trim() === '' || /^\s*\/\//.test(l));
+
+    if (isRealPair) {
+      const titleLines = between.map((l) => l.replace(/^\s*\/\/\s?/, '').trim()).filter(Boolean);
+      sections.push({
+        name: titleLines.join(' — ') || `(untitled section at line ${toFileLine(openLocal)})`,
+        bannerStartLocal: openLocal,
+        bannerEndLocal: closeLocal,
+        contentStartLocal: closeLocal + 1,
+      });
+      i += 2;
+    } else {
+      decorativeDividers.push(toFileLine(openLocal));
+      i += 1;
+    }
   }
 
   // content of section i spans from just after its banner close to just
@@ -159,7 +167,7 @@ function extractSections(scriptContent, contentStartFileLine, offsetToLine, scri
     );
   }
 
-  return { sections: allSections, coverageOk: true, scriptStartFileLine, scriptEndFileLine };
+  return { sections: allSections, coverageOk: true, scriptStartFileLine, scriptEndFileLine, decorativeDividers };
 }
 
 function sectionForLine(sections, fileLine) {
@@ -360,7 +368,7 @@ function main() {
   const smallScripts = inlineScripts.slice(1);
 
   const mainScriptStartLine = offsetToLine(mainScript.contentStart);
-  const { sections, scriptStartFileLine, scriptEndFileLine } = extractSections(
+  const { sections, scriptStartFileLine, scriptEndFileLine, decorativeDividers } = extractSections(
     mainScript.content,
     mainScriptStartLine,
     offsetToLine,
@@ -407,6 +415,7 @@ function main() {
       localTestingOnly: /location\.protocol\s*===?\s*['"]file:['"]/i.test(t.content),
     })),
     mainScript: { startLine: scriptStartFileLine, endLine: scriptEndFileLine, sectionCount: sections.length },
+    decorativeDividers,
     sections: sections.map((s) => ({ name: s.name, startLine: s.startLine, endLine: s.endLine, lineCount: s.endLine - s.startLine + 1 })),
     bindings,
     unresolvedGlobals: unresolved,
@@ -420,6 +429,7 @@ function main() {
   fs.writeFileSync(outPath, renderMarkdown(report));
 
   console.log(`Sections: ${sections.length}`);
+  console.log(`Decorative dividers (solo "// ====" lines, not section boundaries): ${decorativeDividers.length}${decorativeDividers.length ? ' at lines ' + decorativeDividers.join(', ') : ''}`);
   console.log(`Global bindings: ${bindings.length}`);
   console.log(`Unresolved globals referenced (e.g. firebase/document/window): ${unresolved.length}`);
   console.log(`Inline event handlers: ${handlers.length}`);
@@ -441,6 +451,9 @@ function renderMarkdown(r) {
   p(`- Total file lines: ${r.totalLines}`);
   p(`- Main application script: lines ${r.mainScript.startLine}-${r.mainScript.endLine} (${r.mainScript.sectionCount} banner-delimited sections)`);
   p(`- Section coverage: validated — sections exactly tile lines ${r.mainScript.startLine}-${r.mainScript.endLine} with no gaps or overlaps`);
+  if (r.decorativeDividers.length) {
+    p(`- Decorative dividers: ${r.decorativeDividers.length} solo "// ====" line(s) at ${r.decorativeDividers.join(', ')} — these are one-off separators between functions *inside* a section (no matching close border, real code immediately follows), not section boundaries. They are excluded from the section list below rather than misread as banners.`);
+  }
   p(`- Global bindings resolved: ${r.bindings.length}`);
   p(`- Inline HTML event handlers cataloged: ${r.handlers.length}`);
   p();
@@ -488,7 +501,7 @@ function renderMarkdown(r) {
   p('| Section | Lines | Coupling | Depends on | Depended on by |');
   p('|---|---|---|---|---|');
   for (const c of r.coupling) {
-    p(`| ${c.name} | ${c.startLine}-${c.endLine} | ${c.couplingScore} | ${c.dependsOn.join(', ') || '—'} | ${c.dependedOnBy.join(', ') || '—'}`);
+    p(`| ${c.name} | ${c.startLine}-${c.endLine} | ${c.couplingScore} | ${c.dependsOn.join(', ') || '—'} | ${c.dependedOnBy.join(', ') || '—'} |`);
   }
   p();
 
