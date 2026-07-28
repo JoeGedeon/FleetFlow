@@ -1,0 +1,1 @@
+Wednesday must never block FleetFlow startup. Keep it isolated from authentication, Firebase initialization, splash-screen lifecycle, navigation, and operational data paths.
