@@ -785,6 +785,20 @@ function renderMarkdown(r) {
     p();
   }
 
+  p('## Reachability summary');
+  p();
+  p('Every global binding falls into exactly one of three buckets. The first is the healthy');
+  p('majority and is not re-listed here — the **Global bindings** table above already carries');
+  p('each one with its read/write counts and handler status. The other two are enumerated below.');
+  p();
+  p('| Bucket | Count | Meaning |');
+  p('|---|---|---|');
+  p(`| Confirmed referenced | ${r.orphans.referenced.length} | Something reads it, or a parseable inline handler names it. No action needed. |`);
+  p(`| Likely reachable via unparsed handler | ${r.orphans.likelyReachable.length} | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |`);
+  p(`| Zero-reference candidates | ${r.orphans.candidates.length} | Nothing found that reaches it, by any check this tool performs. Needs a human verdict. |`);
+  p(`| **Total** | **${r.orphans.referenced.length + r.orphans.likelyReachable.length + r.orphans.candidates.length}** | |`);
+  p();
+
   p('## Likely reachable via unparsed handler (auto-cleared, not orphans)');
   p();
   p('These have no credited reference, but their name appears as a call inside one of the');

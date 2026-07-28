@@ -816,6 +816,19 @@ Count: 60 of 808 handlers.
 | 19790 | onclick | `closeModal(\'modal-jobdetail\')` |
 | 19791 | onclick | `saveEmployeeId(\'' + username + '\')` |
 
+## Reachability summary
+
+Every global binding falls into exactly one of three buckets. The first is the healthy
+majority and is not re-listed here — the **Global bindings** table above already carries
+each one with its read/write counts and handler status. The other two are enumerated below.
+
+| Bucket | Count | Meaning |
+|---|---|---|
+| Confirmed referenced | 398 | Something reads it, or a parseable inline handler names it. No action needed. |
+| Likely reachable via unparsed handler | 23 | No credited reference, but an unparsed handler fragment appears to call it. Auto-cleared; confirm the call site. |
+| Zero-reference candidates | 37 | Nothing found that reaches it, by any check this tool performs. Needs a human verdict. |
+| **Total** | **458** | |
+
 ## Likely reachable via unparsed handler (auto-cleared, not orphans)
 
 These have no credited reference, but their name appears as a call inside one of the
