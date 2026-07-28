@@ -5,12 +5,12 @@ AST/scope resolution, not regex). Deterministic: re-running against unchanged so
 produces an identical file. This document contains no runtime code and describes the
 file as it exists today; it does not itself change any behavior.
 
-- Total file lines: 20707
-- Main application script: lines 1938-20663 (80 banner-delimited sections)
-- Section coverage: validated — sections exactly tile lines 1938-20663 with no gaps or overlaps
-- Decorative dividers: 2 solo "// ====" line(s) at 16636, 18105 — these are one-off separators between functions *inside* a section (no matching close border, real code immediately follows), not section boundaries. They are excluded from the section list below rather than misread as banners.
+- Total file lines: 20715
+- Main application script: lines 1938-20671 (80 banner-delimited sections)
+- Section coverage: validated — sections exactly tile lines 1938-20671 with no gaps or overlaps
+- Decorative dividers: 2 solo "// ====" line(s) at 16644, 18113 — these are one-off separators between functions *inside* a section (no matching close border, real code immediately follows), not section boundaries. They are excluded from the section list below rather than misread as banners.
 - Global bindings resolved: 477
-- Inline HTML event handlers cataloged: 815
+- Inline HTML event handlers cataloged: 817
 
 ## External CDN scripts
 
@@ -78,56 +78,56 @@ file as it exists today; it does not itself change any behavior.
 | 28 | PAYROLL CALCULATION ENGINE — Supports: hourly (hours × rate), flat (fixed amount), daily (rate per day) | 8196 | 8200 | 5 |
 | 29 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive | 8201 | 8233 | 33 |
 | 30 | CARRIER CUBIC FEET HELPERS | 8234 | 8261 | 28 |
-| 31 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 8262 | 8553 | 292 |
-| 32 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 8554 | 8953 | 400 |
-| 33 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 8954 | 9540 | 587 |
-| 34 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 9541 | 9965 | 425 |
-| 35 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 9966 | 10031 | 66 |
-| 36 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 10032 | 10273 | 242 |
-| 37 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 10274 | 10929 | 656 |
-| 38 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 10930 | 11003 | 74 |
-| 39 | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 11004 | 11032 | 29 |
-| 40 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 11033 | 11941 | 909 |
-| 41 | PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation | 11942 | 12779 | 838 |
-| 42 | PAY SCHEDULE & UNPAID CREW CHECKER | 12780 | 12836 | 57 |
-| 43 | COMPANY BRANDING ENGINE | 12837 | 12873 | 37 |
-| 44 | NOTIFICATION ENGINE | 12874 | 12934 | 61 |
-| 45 | SOUND ENGINE — Web Audio API, no external files needed | 12935 | 13214 | 280 |
-| 46 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 13215 | 13262 | 48 |
-| 47 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 13263 | 13529 | 267 |
-| 48 | CALENDAR | 13530 | 13676 | 147 |
-| 49 | MONTH VIEW — Google Calendar style with multi-day span bars | 13677 | 13921 | 245 |
-| 50 | WEEK VIEW — time-based layout like Google Calendar | 13922 | 14229 | 308 |
-| 51 | MESSAGING | 14230 | 14452 | 223 |
-| 52 | WAREHOUSE | 14453 | 14745 | 293 |
-| 53 | BOL TAB | 14746 | 14977 | 232 |
-| 54 | SCHEDULE | 14978 | 15032 | 55 |
-| 55 | RECEIPTS | 15033 | 15909 | 877 |
-| 56 | JOB DETAIL MODAL | 15910 | 16317 | 408 |
-| 57 | EDIT JOB  ← NEW FEATURE | 16318 | 16791 | 474 |
-| 58 | MY PAY — Personal earnings, commissions, and tax summary | 16792 | 16934 | 143 |
-| 59 | EXPENSES — Disbursements vs Receipts per job | 16935 | 17188 | 254 |
-| 60 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 17189 | 17410 | 222 |
-| 61 | PAYROLL SUMMARY — Full output view | 17411 | 17504 | 94 |
-| 62 | EXPORT — CSV and financial reporting | 17505 | 17579 | 75 |
-| 63 | JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job | 17580 | 17796 | 217 |
-| 64 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 17797 | 18215 | 419 |
-| 65 | PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle | 18216 | 18376 | 161 |
-| 66 | PAYROLL LEDGER — Build running balance from jobs + payments | 18377 | 18573 | 197 |
-| 67 | PAYROLL LEDGER — Mark Paid modal | 18574 | 18853 | 280 |
-| 68 | SETTINGS TAB | 18854 | 19459 | 606 |
-| 69 | SETTINGS ACTION FUNCTIONS | 19460 | 19474 | 15 |
-| 70 | ROLE SWITCHER — instant role switch without logout | 19475 | 19667 | 193 |
-| 71 | USER MANAGEMENT (Office only) | 19668 | 19987 | 320 |
-| 72 | MODAL HELPERS | 19988 | 20028 | 41 |
-| 73 | NOTIFICATION | 20029 | 20053 | 25 |
-| 74 | PAYWALL — Company activation gate | 20054 | 20057 | 4 |
-| 75 | TRIAL + TIER SYSTEM | 20058 | 20216 | 159 |
-| 76 | PHOTO VIEWER | 20217 | 20306 | 90 |
-| 77 | SIGNATURE MODAL | 20307 | 20352 | 46 |
-| 78 | FIELD NOTES | 20353 | 20365 | 13 |
-| 79 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 20366 | 20625 | 260 |
-| 80 | THEME TOGGLE | 20626 | 20663 | 38 |
+| 31 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 8262 | 8561 | 300 |
+| 32 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 8562 | 8961 | 400 |
+| 33 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 8962 | 9548 | 587 |
+| 34 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 9549 | 9973 | 425 |
+| 35 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 9974 | 10039 | 66 |
+| 36 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 10040 | 10281 | 242 |
+| 37 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 10282 | 10937 | 656 |
+| 38 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 10938 | 11011 | 74 |
+| 39 | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 11012 | 11040 | 29 |
+| 40 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 11041 | 11949 | 909 |
+| 41 | PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation | 11950 | 12787 | 838 |
+| 42 | PAY SCHEDULE & UNPAID CREW CHECKER | 12788 | 12844 | 57 |
+| 43 | COMPANY BRANDING ENGINE | 12845 | 12881 | 37 |
+| 44 | NOTIFICATION ENGINE | 12882 | 12942 | 61 |
+| 45 | SOUND ENGINE — Web Audio API, no external files needed | 12943 | 13222 | 280 |
+| 46 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 13223 | 13270 | 48 |
+| 47 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 13271 | 13537 | 267 |
+| 48 | CALENDAR | 13538 | 13684 | 147 |
+| 49 | MONTH VIEW — Google Calendar style with multi-day span bars | 13685 | 13929 | 245 |
+| 50 | WEEK VIEW — time-based layout like Google Calendar | 13930 | 14237 | 308 |
+| 51 | MESSAGING | 14238 | 14460 | 223 |
+| 52 | WAREHOUSE | 14461 | 14753 | 293 |
+| 53 | BOL TAB | 14754 | 14985 | 232 |
+| 54 | SCHEDULE | 14986 | 15040 | 55 |
+| 55 | RECEIPTS | 15041 | 15917 | 877 |
+| 56 | JOB DETAIL MODAL | 15918 | 16325 | 408 |
+| 57 | EDIT JOB  ← NEW FEATURE | 16326 | 16799 | 474 |
+| 58 | MY PAY — Personal earnings, commissions, and tax summary | 16800 | 16942 | 143 |
+| 59 | EXPENSES — Disbursements vs Receipts per job | 16943 | 17196 | 254 |
+| 60 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 17197 | 17418 | 222 |
+| 61 | PAYROLL SUMMARY — Full output view | 17419 | 17512 | 94 |
+| 62 | EXPORT — CSV and financial reporting | 17513 | 17587 | 75 |
+| 63 | JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job | 17588 | 17804 | 217 |
+| 64 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 17805 | 18223 | 419 |
+| 65 | PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle | 18224 | 18384 | 161 |
+| 66 | PAYROLL LEDGER — Build running balance from jobs + payments | 18385 | 18581 | 197 |
+| 67 | PAYROLL LEDGER — Mark Paid modal | 18582 | 18861 | 280 |
+| 68 | SETTINGS TAB | 18862 | 19467 | 606 |
+| 69 | SETTINGS ACTION FUNCTIONS | 19468 | 19482 | 15 |
+| 70 | ROLE SWITCHER — instant role switch without logout | 19483 | 19675 | 193 |
+| 71 | USER MANAGEMENT (Office only) | 19676 | 19995 | 320 |
+| 72 | MODAL HELPERS | 19996 | 20036 | 41 |
+| 73 | NOTIFICATION | 20037 | 20061 | 25 |
+| 74 | PAYWALL — Company activation gate | 20062 | 20065 | 4 |
+| 75 | TRIAL + TIER SYSTEM | 20066 | 20224 | 159 |
+| 76 | PHOTO VIEWER | 20225 | 20314 | 90 |
+| 77 | SIGNATURE MODAL | 20315 | 20360 | 46 |
+| 78 | FIELD NOTES | 20361 | 20373 | 13 |
+| 79 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 20374 | 20633 | 260 |
+| 80 | THEME TOGGLE | 20634 | 20671 | 38 |
 
 ## Safe extraction order (lowest coupling first)
 
@@ -142,80 +142,80 @@ including inline HTML event handlers). Lower is safer to extract first.
 | AUTH | 5860-5863 | 0 | — | — |
 | CREW LOG  ← BUG FIX: removed stray content.innerHTML = html; that was outside this function | 7861-7865 | 0 | — | — |
 | PAYROLL CALCULATION ENGINE — Supports: hourly (hours × rate), flat (fixed amount), daily (rate per day) | 8196-8200 | 0 | — | — |
-| PAYWALL — Company activation gate | 20054-20057 | 0 | — | — |
-| THEME TOGGLE | 20626-20663 | 0 | — | — |
+| PAYWALL — Company activation gate | 20062-20065 | 0 | — | — |
+| THEME TOGGLE | 20634-20671 | 0 | — | — |
 | PWA — SPLASH, INSTALL PROMPT, SERVICE WORKER | 6049-6094 | 1 | NOTIFICATION | — |
 | CARRIER CUBIC FEET HELPERS | 8234-8261 | 1 | — | EDIT JOB  ← NEW FEATURE |
-| EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 11004-11032 | 2 | FIREBASE INIT, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | — |
-| FIELD NOTES | 20353-20365 | 2 | NOTIFICATION, STATE & STORAGE | — |
+| EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 11012-11040 | 2 | FIREBASE INIT, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | — |
+| FIELD NOTES | 20361-20373 | 2 | NOTIFICATION, STATE & STORAGE | — |
 | LABOR PRODUCTIVITY SCORES — v52 — Uses gate timestamps to calculate efficiency per crew member — Crew A moves 50 cu.ft/hr vs Crew B at 35 cu.ft/hr — Visible to owner/office — used for rewards and training | 4394-4615 | 3 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, STATE & STORAGE | TABS |
 | HISTORY | 7768-7791 | 3 | JOB DETAIL MODAL, STATE & STORAGE | TABS |
-| TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 9966-10031 | 3 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, STATE & STORAGE | JOB DETAIL MODAL |
+| TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 9974-10039 | 3 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, STATE & STORAGE | JOB DETAIL MODAL |
 | OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online | 6141-6336 | 4 | FIREBASE INIT, NOTIFICATION | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., STATE & STORAGE |
-| ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 8262-8553 | 4 | BOL TAB, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, STATE & STORAGE | TABS |
-| P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 9541-9965 | 4 | NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE | TABS |
-| SCHEDULE | 14978-15032 | 4 | JOB DETAIL MODAL, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, STATE & STORAGE | TABS |
-| SETTINGS ACTION FUNCTIONS | 19460-19474 | 4 | NOTIFICATION, SETTINGS TAB, USER SETTINGS — stored in localStorage per user | SETTINGS TAB |
-| JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 10930-11003 | 5 | JOB DETAIL MODAL, MODAL HELPERS, NOTIFICATION, STATE & STORAGE | JOB DETAIL MODAL |
-| CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 11033-11941 | 5 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, NOTIFICATION, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | SESSION PERSISTENCE — remember me across refreshes/tab closes |
-| PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation | 11942-12779 | 5 | NOTIFICATION, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | BOL TAB, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF |
-| MY PAY — Personal earnings, commissions, and tax summary | 16792-16934 | 5 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | TABS |
-| PAYROLL LEDGER — Build running balance from jobs + payments | 18377-18573 | 5 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle |
-| PHOTO VIEWER | 20217-20306 | 5 | NOTIFICATION, STATE & STORAGE | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool |
-| SIGNATURE MODAL | 20307-20352 | 5 | MODAL HELPERS, NOTIFICATION, STATE & STORAGE | BOL TAB, CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs |
+| P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 9549-9973 | 4 | NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE | TABS |
+| SCHEDULE | 14986-15040 | 4 | JOB DETAIL MODAL, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, STATE & STORAGE | TABS |
+| SETTINGS ACTION FUNCTIONS | 19468-19482 | 4 | NOTIFICATION, SETTINGS TAB, USER SETTINGS — stored in localStorage per user | SETTINGS TAB |
+| JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 10938-11011 | 5 | JOB DETAIL MODAL, MODAL HELPERS, NOTIFICATION, STATE & STORAGE | JOB DETAIL MODAL |
+| CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 11041-11949 | 5 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, NOTIFICATION, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | SESSION PERSISTENCE — remember me across refreshes/tab closes |
+| PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation | 11950-12787 | 5 | NOTIFICATION, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | BOL TAB, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF |
+| MY PAY — Personal earnings, commissions, and tax summary | 16800-16942 | 5 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | TABS |
+| PAYROLL LEDGER — Build running balance from jobs + payments | 18385-18581 | 5 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle |
+| PHOTO VIEWER | 20225-20314 | 5 | NOTIFICATION, STATE & STORAGE | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool |
+| SIGNATURE MODAL | 20315-20360 | 5 | MODAL HELPERS, NOTIFICATION, STATE & STORAGE | BOL TAB, CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs |
 | ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard | 4005-4393 | 6 | COMPANY BRANDING ENGINE, MODAL HELPERS, NOTIFICATION, STATE & STORAGE, TABS | TABS |
 | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims. | 4616-4813 | 6 | JOB DETAIL MODAL, MODAL HELPERS, NOTIFICATION, PHOTO VIEWER, STATE & STORAGE | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool |
-| PAY SCHEDULE & UNPAID CREW CHECKER | 12780-12836 | 6 | NOTIFICATION, NOTIFICATION ENGINE, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | — |
-| FLEET MODULE — Vehicle profiles, assignments, maintenance | 17189-17410 | 6 | FIREBASE INIT, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
-| JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job | 17580-17796 | 6 | EXPORT — CSV and financial reporting, JOB DETAIL MODAL, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE, TABS | TABS |
+| ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 8262-8561 | 6 | BOL TAB, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
+| PAY SCHEDULE & UNPAID CREW CHECKER | 12788-12844 | 6 | NOTIFICATION, NOTIFICATION ENGINE, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | — |
+| FLEET MODULE — Vehicle profiles, assignments, maintenance | 17197-17418 | 6 | FIREBASE INIT, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
+| JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job | 17588-17804 | 6 | EXPORT — CSV and financial reporting, JOB DETAIL MODAL, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE, TABS | TABS |
 | WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll | 2944-3155 | 7 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | WEEK VIEW — time-based layout like Google Calendar |
 | MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly | 6095-6140 | 7 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS | STATE & STORAGE |
 | FINANCIALS | 7792-7860 | 7 | EXPORT — CSV and financial reporting, JOB DETAIL MODAL, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, PAYROLL SUMMARY — Full output view, STATE & STORAGE | TABS |
 | CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting | 7866-8195 | 7 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | TABS, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate |
-| CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 8554-8953 | 7 | BOL TAB, MODAL HELPERS, PHOTO VIEWER, SIGNATURE MODAL, STATE & STORAGE, TABS | DASHBOARD |
-| MESSAGING | 14230-14452 | 7 | FIREBASE INIT, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
-| PAYROLL SUMMARY — Full output view | 17411-17504 | 7 | EXPORT — CSV and financial reporting, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE, TABS, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | EXPORT — CSV and financial reporting, FINANCIALS |
-| USER MANAGEMENT (Office only) | 19668-19987 | 7 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
+| CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 8562-8961 | 7 | BOL TAB, MODAL HELPERS, PHOTO VIEWER, SIGNATURE MODAL, STATE & STORAGE, TABS | DASHBOARD |
+| MESSAGING | 14238-14460 | 7 | FIREBASE INIT, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
+| PAYROLL SUMMARY — Full output view | 17419-17512 | 7 | EXPORT — CSV and financial reporting, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE, TABS, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | EXPORT — CSV and financial reporting, FINANCIALS |
+| USER MANAGEMENT (Office only) | 19676-19995 | 7 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
 | SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts | 4814-5298 | 8 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, TRIAL + TIER SYSTEM | TABS, TRIAL + TIER SYSTEM |
-| COMPANY BRANDING ENGINE | 12837-12873 | 8 | FIREBASE INIT, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | ROLE SWITCHER — instant role switch without logout, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live |
-| MONTH VIEW — Google Calendar style with multi-day span bars | 13677-13921 | 8 | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CALENDAR, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, WEEK VIEW — time-based layout like Google Calendar | CALENDAR |
-| WAREHOUSE | 14453-14745 | 8 | FIREBASE INIT, JOB DETAIL MODAL, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
-| DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 20366-20625 | 8 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | DASHBOARD |
+| COMPANY BRANDING ENGINE | 12845-12881 | 8 | FIREBASE INIT, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | ROLE SWITCHER — instant role switch without logout, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live |
+| MONTH VIEW — Google Calendar style with multi-day span bars | 13685-13929 | 8 | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CALENDAR, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, WEEK VIEW — time-based layout like Google Calendar | CALENDAR |
+| WAREHOUSE | 14461-14753 | 8 | FIREBASE INIT, JOB DETAIL MODAL, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | TABS |
 | TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order | 3156-4004 | 9 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS | EDIT JOB  ← NEW FEATURE, TABS |
 | FIRST RUN CHECK — runs on page load before login | 5864-6048 | 9 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, SESSION PERSISTENCE — remember me across refreshes/tab closes, STATE & STORAGE, TABS | SESSION PERSISTENCE — remember me across refreshes/tab closes |
-| 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 8954-9540 | 9 | FIREBASE INIT, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | SETTINGS TAB, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TABS |
-| SOUND ENGINE — Web Audio API, no external files needed | 12935-13214 | 9 | FIREBASE INIT, JOB DETAIL MODAL, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS, USER SETTINGS — stored in localStorage per user | SETTINGS TAB, STATE & STORAGE |
-| TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 13263-13529 | 9 | CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE | CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, EDIT JOB  ← NEW FEATURE, EXPORT — CSV and financial reporting, MY PAY — Personal earnings, commissions, and tax summary, PAYROLL SUMMARY — Full output view |
-| BOL TAB | 14746-14977 | 9 | MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, SIGNATURE MODAL, STATE & STORAGE | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF, TABS |
-| EXPORT — CSV and financial reporting | 17505-17579 | 9 | NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, PAYROLL SUMMARY — Full output view, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | FINANCIALS, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, PAYROLL SUMMARY — Full output view |
-| TRIAL + TIER SYSTEM | 20058-20216 | 9 | FIREBASE INIT, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts | SESSION PERSISTENCE — remember me across refreshes/tab closes, STATE & STORAGE, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TABS |
+| 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 8962-9548 | 9 | FIREBASE INIT, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | SETTINGS TAB, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TABS |
+| SOUND ENGINE — Web Audio API, no external files needed | 12943-13222 | 9 | FIREBASE INIT, JOB DETAIL MODAL, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS, USER SETTINGS — stored in localStorage per user | SETTINGS TAB, STATE & STORAGE |
+| TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 13271-13537 | 9 | CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, STATE & STORAGE | CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, EDIT JOB  ← NEW FEATURE, EXPORT — CSV and financial reporting, MY PAY — Personal earnings, commissions, and tax summary, PAYROLL SUMMARY — Full output view |
+| BOL TAB | 14754-14985 | 9 | MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, SIGNATURE MODAL, STATE & STORAGE | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF, TABS |
+| EXPORT — CSV and financial reporting | 17513-17587 | 9 | NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, PAYROLL SUMMARY — Full output view, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | FINANCIALS, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, PAYROLL SUMMARY — Full output view |
+| TRIAL + TIER SYSTEM | 20066-20224 | 9 | FIREBASE INIT, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts | SESSION PERSISTENCE — remember me across refreshes/tab closes, STATE & STORAGE, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TABS |
+| DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 20374-20633 | 9 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | DASHBOARD, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF |
 | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore | 2456-2943 | 10 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS | MONTH VIEW — Google Calendar style with multi-day span bars, SETTINGS TAB, STATE & STORAGE |
 | SESSION PERSISTENCE — remember me across refreshes/tab closes | 6368-6603 | 10 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, FIRST RUN CHECK — runs on page load before login, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS, TRIAL + TIER SYSTEM | FIRST RUN CHECK — runs on page load before login, ROLE SWITCHER — instant role switch without logout |
-| STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 10032-10273 | 10 | COMPANY BRANDING ENGINE, FIREBASE INIT, JOB DETAIL MODAL, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, SETTINGS TAB, STATE & STORAGE | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, SETTINGS TAB |
-| NOTIFICATION ENGINE | 12874-12934 | 10 | FIREBASE INIT, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | EXPENSES — Disbursements vs Receipts per job, JOB DETAIL MODAL, MESSAGING, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, WAREHOUSE |
-| EXPENSES — Disbursements vs Receipts per job | 16935-17188 | 10 | FIREBASE INIT, JOB DETAIL MODAL, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | TABS |
-| PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle | 18216-18376 | 10 | EXPORT — CSV and financial reporting, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, TABS |
-| ROLE SWITCHER — instant role switch without logout | 19475-19667 | 10 | COMPANY BRANDING ENGINE, FIREBASE INIT, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, SESSION PERSISTENCE — remember me across refreshes/tab closes, SETTINGS TAB, STATE & STORAGE, TABS, USER SETTINGS — stored in localStorage per user | SETTINGS TAB |
+| STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 10040-10281 | 10 | COMPANY BRANDING ENGINE, FIREBASE INIT, JOB DETAIL MODAL, MODAL HELPERS, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, SETTINGS TAB, STATE & STORAGE | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, SETTINGS TAB |
+| NOTIFICATION ENGINE | 12882-12942 | 10 | FIREBASE INIT, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | EXPENSES — Disbursements vs Receipts per job, JOB DETAIL MODAL, MESSAGING, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, WAREHOUSE |
+| EXPENSES — Disbursements vs Receipts per job | 16943-17196 | 10 | FIREBASE INIT, JOB DETAIL MODAL, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | TABS |
+| PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle | 18224-18384 | 10 | EXPORT — CSV and financial reporting, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, TABS |
+| ROLE SWITCHER — instant role switch without logout | 19483-19675 | 10 | COMPANY BRANDING ENGINE, FIREBASE INIT, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, SESSION PERSISTENCE — remember me across refreshes/tab closes, SETTINGS TAB, STATE & STORAGE, TABS, USER SETTINGS — stored in localStorage per user | SETTINGS TAB |
 | TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created | 2012-2455 | 11 | CALENDAR, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, WEEK VIEW — time-based layout like Google Calendar | WEEK VIEW — time-based layout like Google Calendar |
 | USER SETTINGS — stored in localStorage per user | 6337-6367 | 11 | STATE & STORAGE | EDIT JOB  ← NEW FEATURE, EXPENSES — Disbursements vs Receipts per job, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, RECEIPTS, ROLE SWITCHER — instant role switch without logout, SETTINGS ACTION FUNCTIONS, SETTINGS TAB, SOUND ENGINE — Web Audio API, no external files needed |
-| PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 17797-18215 | 11 | FIREBASE INIT, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | PAYROLL LEDGER — Mark Paid modal, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle |
-| CALENDAR | 13530-13676 | 12 | EDIT JOB  ← NEW FEATURE, MONTH VIEW — Google Calendar style with multi-day span bars, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, RECEIPTS, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, WEEK VIEW — time-based layout like Google Calendar | EDIT JOB  ← NEW FEATURE, MONTH VIEW — Google Calendar style with multi-day span bars, TABS, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, WEEK VIEW — time-based layout like Google Calendar |
-| RECEIPTS | 15033-15909 | 12 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | CALENDAR, TABS, WEEK VIEW — time-based layout like Google Calendar |
-| PAYROLL LEDGER — Mark Paid modal | 18574-18853 | 12 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle |
+| PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 17805-18223 | 11 | FIREBASE INIT, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | PAYROLL LEDGER — Mark Paid modal, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle |
+| CALENDAR | 13538-13684 | 12 | EDIT JOB  ← NEW FEATURE, MONTH VIEW — Google Calendar style with multi-day span bars, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, RECEIPTS, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, WEEK VIEW — time-based layout like Google Calendar | EDIT JOB  ← NEW FEATURE, MONTH VIEW — Google Calendar style with multi-day span bars, TABS, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, WEEK VIEW — time-based layout like Google Calendar |
+| RECEIPTS | 15041-15917 | 12 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, USER SETTINGS — stored in localStorage per user | CALENDAR, TABS, WEEK VIEW — time-based layout like Google Calendar |
+| PAYROLL LEDGER — Mark Paid modal | 18582-18861 | 12 | FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, NOTIFICATION ENGINE, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle |
 | DASHBOARD | 6725-7767 | 13 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, FIREBASE INIT, JOB DETAIL MODAL, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, PAYROLL CALCULATION ENGINE v2 — pay + commission + tax, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TABS | TABS |
-| WEEK VIEW — time-based layout like Google Calendar | 13922-14229 | 13 | CALENDAR, EDIT JOB  ← NEW FEATURE, JOB DETAIL MODAL, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, RECEIPTS, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll | CALENDAR, MONTH VIEW — Google Calendar style with multi-day span bars, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created |
-| PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 13215-13262 | 14 | — | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, EXPORT — CSV and financial reporting, FINANCIALS, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, MONTH VIEW — Google Calendar style with multi-day span bars, MY PAY — Personal earnings, commissions, and tax summary, P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL SUMMARY — Full output view, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate |
-| SETTINGS TAB | 18854-19459 | 14 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, ROLE SWITCHER — instant role switch without logout, SETTINGS ACTION FUNCTIONS, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, USER SETTINGS — stored in localStorage per user | ROLE SWITCHER — instant role switch without logout, SETTINGS ACTION FUNCTIONS, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, TABS |
-| LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 10274-10929 | 15 | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., EDIT JOB  ← NEW FEATURE, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, PHOTO VIEWER, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | DASHBOARD, FIRST RUN CHECK — runs on page load before login, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, STATE & STORAGE, TABS, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created |
+| WEEK VIEW — time-based layout like Google Calendar | 13930-14237 | 13 | CALENDAR, EDIT JOB  ← NEW FEATURE, JOB DETAIL MODAL, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, RECEIPTS, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll | CALENDAR, MONTH VIEW — Google Calendar style with multi-day span bars, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created |
+| PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 13223-13270 | 14 | — | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, EXPORT — CSV and financial reporting, FINANCIALS, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, MONTH VIEW — Google Calendar style with multi-day span bars, MY PAY — Personal earnings, commissions, and tax summary, P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL SUMMARY — Full output view, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate |
+| SETTINGS TAB | 18862-19467 | 14 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, ROLE SWITCHER — instant role switch without logout, SETTINGS ACTION FUNCTIONS, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, USER SETTINGS — stored in localStorage per user | ROLE SWITCHER — instant role switch without logout, SETTINGS ACTION FUNCTIONS, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, TABS |
+| LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 10282-10937 | 15 | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., EDIT JOB  ← NEW FEATURE, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NOTIFICATION, PHOTO VIEWER, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE | DASHBOARD, FIRST RUN CHECK — runs on page load before login, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, STATE & STORAGE, TABS, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created |
 | FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill | 5299-5322 | 16 | — | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, FIRST RUN CHECK — runs on page load before login, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, SESSION PERSISTENCE — remember me across refreshes/tab closes, STATE & STORAGE, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll |
-| EDIT JOB  ← NEW FEATURE | 16318-16791 | 17 | CALENDAR, CARRIER CUBIC FEET HELPERS, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER SETTINGS — stored in localStorage per user | CALENDAR, DASHBOARD, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MODAL HELPERS, WEEK VIEW — time-based layout like Google Calendar |
-| JOB DETAIL MODAL | 15910-16317 | 21 | FIREBASE INIT, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, MODAL HELPERS, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TWILIO SMS — Real text notifications — Configure in Settings → Integrations | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., DASHBOARD, EXPENSES — Disbursements vs Receipts per job, FINANCIALS, HISTORY, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, MODAL HELPERS, SCHEDULE, SOUND ENGINE — Web Audio API, no external files needed, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, WAREHOUSE, WEEK VIEW — time-based layout like Google Calendar |
+| EDIT JOB  ← NEW FEATURE | 16326-16799 | 17 | CALENDAR, CARRIER CUBIC FEET HELPERS, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, MODAL HELPERS, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER SETTINGS — stored in localStorage per user | CALENDAR, DASHBOARD, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MODAL HELPERS, WEEK VIEW — time-based layout like Google Calendar |
+| JOB DETAIL MODAL | 15918-16325 | 21 | FIREBASE INIT, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, MODAL HELPERS, NOTIFICATION, NOTIFICATION ENGINE, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, STATE & STORAGE, TWILIO SMS — Real text notifications — Configure in Settings → Integrations | CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., DASHBOARD, EXPENSES — Disbursements vs Receipts per job, FINANCIALS, HISTORY, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, MODAL HELPERS, SCHEDULE, SOUND ENGINE — Web Audio API, no external files needed, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, WAREHOUSE, WEEK VIEW — time-based layout like Google Calendar |
 | NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive | 8201-8233 | 22 | — | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BOL TAB, CALENDAR, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, EDIT JOB  ← NEW FEATURE, EXPENSES — Disbursements vs Receipts per job, FINANCIALS, LABOR PRODUCTIVITY SCORES — v52 — Uses gate timestamps to calculate efficiency per crew member — Crew A moves 50 cu.ft/hr vs Crew B at 35 cu.ft/hr — Visible to owner/office — used for rewards and training, MESSAGING, MONTH VIEW — Google Calendar style with multi-day span bars, MY PAY — Personal earnings, commissions, and tax summary, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, RECEIPTS, SCHEDULE, STATE & STORAGE, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TWILIO SMS — Real text notifications — Configure in Settings → Integrations, WAREHOUSE, WEEK VIEW — time-based layout like Google Calendar |
-| MODAL HELPERS | 19988-20028 | 26 | EDIT JOB  ← NEW FEATURE, JOB DETAIL MODAL | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, BOL TAB, CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EXPENSES — Disbursements vs Receipts per job, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, NOTIFICATION, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SIGNATURE MODAL, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll, WEEK VIEW — time-based layout like Google Calendar |
+| MODAL HELPERS | 19996-20036 | 26 | EDIT JOB  ← NEW FEATURE, JOB DETAIL MODAL | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, BOL TAB, CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EXPENSES — Disbursements vs Receipts per job, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, NOTIFICATION, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SIGNATURE MODAL, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll, WEEK VIEW — time-based layout like Google Calendar |
 | FIREBASE INIT | 1939-1962 | 32 | — | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, COMPANY BRANDING ENGINE, DASHBOARD, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId, EXPENSES — Disbursements vs Receipts per job, FIRST RUN CHECK — runs on page load before login, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, NOTIFICATION ENGINE, OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, ROLE SWITCHER — instant role switch without logout, SESSION PERSISTENCE — remember me across refreshes/tab closes, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll |
-| ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 1967-2011 | 36 | STATE & STORAGE | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CALENDAR, COMPANY BRANDING ENGINE, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId, EXPENSES — Disbursements vs Receipts per job, FIRST RUN CHECK — runs on page load before login, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, MONTH VIEW — Google Calendar style with multi-day span bars, NOTIFICATION ENGINE, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, ROLE SWITCHER — instant role switch without logout, SESSION PERSISTENCE — remember me across refreshes/tab closes, SETTINGS TAB, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll, WEEK VIEW — time-based layout like Google Calendar |
+| ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 1967-2011 | 37 | STATE & STORAGE | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CALENDAR, COMPANY BRANDING ENGINE, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF, EXPENSES — Disbursements vs Receipts per job, FIRST RUN CHECK — runs on page load before login, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, MONTH VIEW — Google Calendar style with multi-day span bars, NOTIFICATION ENGINE, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, RECEIPTS, ROLE SWITCHER — instant role switch without logout, SESSION PERSISTENCE — remember me across refreshes/tab closes, SETTINGS TAB, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll, WEEK VIEW — time-based layout like Google Calendar |
 | TABS | 6604-6724 | 40 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BOL TAB, CALENDAR, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF, EXPENSES — Disbursements vs Receipts per job, FINANCIALS, FLEET MODULE — Vehicle profiles, assignments, maintenance, HISTORY, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, LABOR PRODUCTIVITY SCORES — v52 — Uses gate timestamps to calculate efficiency per crew member — Crew A moves 50 cu.ft/hr vs Crew B at 35 cu.ft/hr — Visible to owner/office — used for rewards and training, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, MY PAY — Personal earnings, commissions, and tax summary, P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, RECEIPTS, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SCHEDULE, SETTINGS TAB, STATE & STORAGE, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, DASHBOARD, FIRST RUN CHECK — runs on page load before login, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, PAYROLL SUMMARY — Full output view, ROLE SWITCHER — instant role switch without logout, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SESSION PERSISTENCE — remember me across refreshes/tab closes, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order |
-| NOTIFICATION | 20029-20053 | 44 | MODAL HELPERS | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, BOL TAB, CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, COMPANY BRANDING ENGINE, DASHBOARD, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EXPENSES — Disbursements vs Receipts per job, EXPORT — CSV and financial reporting, FIELD NOTES, FIRST RUN CHECK — runs on page load before login, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online, P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, PHOTO VIEWER, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, PWA — SPLASH, INSTALL PROMPT, SERVICE WORKER, RECEIPTS, ROLE SWITCHER — instant role switch without logout, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SETTINGS ACTION FUNCTIONS, SETTINGS TAB, SIGNATURE MODAL, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll |
+| NOTIFICATION | 20037-20061 | 44 | MODAL HELPERS | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, BOL TAB, CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created, COMPANY BRANDING ENGINE, DASHBOARD, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, EXPENSES — Disbursements vs Receipts per job, EXPORT — CSV and financial reporting, FIELD NOTES, FIRST RUN CHECK — runs on page load before login, FLEET MODULE — Vehicle profiles, assignments, maintenance, JOB DETAIL MODAL, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online, P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, PHOTO VIEWER, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, PWA — SPLASH, INSTALL PROMPT, SERVICE WORKER, RECEIPTS, ROLE SWITCHER — instant role switch without logout, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SETTINGS ACTION FUNCTIONS, SETTINGS TAB, SIGNATURE MODAL, SOUND ENGINE — Web Audio API, no external files needed, STATE & STORAGE, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, SYSTEM HEALTH DASHBOARD — Platform operator view — JPG Ventures sees all licensees, sync status, revenue flow — Accessible only to creator/owner accounts, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, USER MANAGEMENT (Office only), WAREHOUSE, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll |
 | STATE & STORAGE | 5323-5859 | 72 | BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, COMPANY BRANDING ENGINE, FIREBASE INIT, FIRESTORE SECURITY RULES — deploy in Firebase Console → Firestore → Rules — rules_version = '2'; — Enforces company isolation at the DATABASE level (not just UI) — See migrateExistingDataToCompanyId() for one-time data backfill, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, NAME NORMALIZATION — "joe gedeon" === "Joe Gedeon" === "JOE GEDEON" — All names stored in Title Case, compared case-insensitive, NOTIFICATION, OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, SOUND ENGINE — Web Audio API, no external files needed, TABS, TRIAL + TIER SYSTEM | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report, BETA WELCOME & ONBOARDING SCREEN — Shows once to new owner/admin accounts on first login — Gives them a 4-step quickstart, their booking URL, — and a feedback button that logs to Firestore, BOL TAB, CALENDAR, CLAIMS DEFENSE AI — v51 — Pre-load damage detection using Claude vision — When driver takes a photo at pre-load gate, AI scans for — pre-existing damage, flags it, embeds in BOL as evidence. — Protects moving company from false damage claims., CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs, COMPANY BRANDING ENGINE, CREW LOG HELPERS — extracted to avoid nested template literal — Chrome syntax errors from 4+ levels of backtick nesting, DASHBOARD, DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12)., EDIT JOB  ← NEW FEATURE, ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF, EXPENSES — Disbursements vs Receipts per job, EXPORT — CSV and financial reporting, FIELD NOTES, FINANCIALS, FIRST RUN CHECK — runs on page load before login, FLEET MODULE — Vehicle profiles, assignments, maintenance, HISTORY, JOB DETAIL MODAL, JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI, JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job, LABOR PRODUCTIVITY SCORES — v52 — Uses gate timestamps to calculate efficiency per crew member — Crew A moves 50 cu.ft/hr vs Crew B at 35 cu.ft/hr — Visible to owner/office — used for rewards and training, LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool, MESSAGING, MIGRATION — Stamp companyId on any legacy docs missing it — Runs silently on every login — safe to run repeatedly, MONTH VIEW — Google Calendar style with multi-day span bars, MY PAY — Personal earnings, commissions, and tax summary, NOTIFICATION ENGINE, P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export, PAY SCHEDULE & UNPAID CREW CHECKER, PAYROLL LEDGER — Build running balance from jobs + payments, PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check, PAYROLL LEDGER — Mark Paid modal, PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle, PAYROLL SUMMARY — Full output view, PHOTO VIEWER, PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation, RECEIPTS, ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client, ROLE SWITCHER — instant role switch without logout, ROUTE & LOAD OPTIMIZATION — v53 — AI truck-job matching based on cubic footage, fuel efficiency — and fleet capacity. Tells owner: "Swap Truck 2 for Truck 4 — and save $45 in fuel today." — Accessible from Fleet tab and Dashboard, SCHEDULE, SESSION PERSISTENCE — remember me across refreshes/tab closes, SETTINGS TAB, SIGNATURE MODAL, SOUND ENGINE — Web Audio API, no external files needed, STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live, TABS, TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate, TRAVEL BLOCKS — Pre-job drive time scheduling — Logs "driving to location" before job details are known — Appears on calendar, crew schedule, and driver dashboard — Can later be linked to a job once it's created, TRIAL + TIER SYSTEM, TRUCK LOAD SHEET — Multi-job truck loading manifest — Tracks multiple job numbers loaded into one truck — DOT compliant, weight/cuft totals, sequential order, TWILIO SMS — Real text notifications — Configure in Settings → Integrations, USER MANAGEMENT (Office only), USER SETTINGS — stored in localStorage per user, WAREHOUSE, WAREHOUSE WORK LOGGING — Log warehouse work by employee — shows on calendar + payroll, WEEK VIEW — time-based layout like Google Calendar |
 
 ## Global bindings
@@ -238,7 +238,7 @@ for whichever Phase 3 split first tries to separate its declaring section from i
 | `myTier` | function | 1976 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 3 | 3 | 0 | no |
 | `tierOf` | function | 1977 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 3 | 3 | 0 | no |
 | `isCreator` | function | 1978 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 12 | 12 | 0 | no |
-| `isAdmin` | function | 1979 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 54 | 54 | 0 | no |
+| `isAdmin` | function | 1979 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 56 | 56 | 0 | no |
 | `isCreatorAccount` | function | 1980 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 17 | 17 | 0 | no |
 | `canModifyUser` | function | 1982 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 4 | 4 | 0 | no |
 | `canDeleteUser` | function | 1993 | ROLE HIERARCHY — creator > owner > office > driver/helper/warehouse/client | 2 | 2 | 0 | no |
@@ -410,303 +410,303 @@ for whichever Phase 3 split first tries to separate its declaring section from i
 | `toggleCarrierFields` | function | 8238 | CARRIER CUBIC FEET HELPERS | 3 | 3 | 0 | yes |
 | `calcCarrierTotal` | function | 8246 | CARRIER CUBIC FEET HELPERS | 4 | 4 | 0 | yes |
 | `renderEstimateTab` | function | 8267 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 1 | 1 | 0 | no |
-| `renderEstimateForm` | function | 8306 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 5 | 5 | 0 | yes |
-| `saveEstimateField` | function | 8517 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 6 | 6 | 0 | yes |
-| `saveEstimateJobField` | function | 8527 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 3 | 3 | 0 | yes |
-| `saveEstimateAcc` | function | 8534 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 1 | 1 | 0 | yes |
-| `calcLiveTotal` | function | 8544 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 2 | 2 | 0 | yes |
-| `buildClientPortal` | function | 8560 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 1 | 1 | 0 | no |
-| `openClientInventory` | function | 8934 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 1 | 1 | 0 | yes |
-| `renderTax1099` | function | 8960 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 2 | 2 | 0 | yes |
-| `build1099Report` | function | 9176 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 3 | 3 | 0 | no |
-| `getAvailableYears` | function | 9248 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 1 | 1 | 0 | no |
-| `export1099CSV` | function | 9260 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 0 | 0 | 0 | no |
-| `generate1099PDF` | function | 9311 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 0 | 0 | 0 | no |
-| `migrateExistingDataToCompanyId` | function | 9488 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 2 | 2 | 0 | yes |
-| `renderAccounting` | function | 9546 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 2 | 2 | 0 | yes |
-| `buildPL` | function | 9715 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 3 | 3 | 0 | no |
-| `getAccountingPeriods` | function | 9822 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 1 | 1 | 0 | no |
-| `exportPLCSV` | function | 9832 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 1 | 1 | 0 | yes |
-| `exportPLPDF` | function | 9881 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 1 | 1 | 0 | yes |
-| `sendSMS` | function | 9971 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 3 | 3 | 0 | no |
-| `smsDriver` | function | 9999 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | no |
-| `smsClient` | function | 10009 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | no |
-| `sendGateSMS` | function | 10016 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 1 | 1 | 0 | no |
-| `STRIPE_PK` | const | 10038 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 3 | 2 | 1 | no |
-| `_stripe` | let | 10039 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 5 | 2 | 3 | no |
-| `_stripeCard` | let | 10040 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 6 | 4 | 2 | no |
-| `getStripe` | function | 10042 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 3 | 3 | 0 | no |
-| `testStripeConnection` | function | 10051 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
-| `openStripeUpdateKey` | function | 10061 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
-| `saveStripeKey` | function | 10082 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
-| `openStripePayment` | function | 10098 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 2 | 2 | 0 | no |
-| `processStripePayment` | function | 10164 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | no |
-| `openPaymentGateStripe` | function | 10210 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
-| `openBookingDeposit` | function | 10251 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | no |
-| `renderPaymentGateButton` | function | 10262 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | no |
-| `COL_LEADS` | const | 10280 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 9 | 8 | 1 | no |
-| `COL_TRAVEL` | const | 10281 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 8 | 7 | 1 | no |
-| `LEAD_STAGES` | const | 10283 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 11 | 10 | 1 | no |
-| `LEAD_SOURCES` | const | 10292 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 1 | 1 | no |
-| `renderLeads` | function | 10294 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 8 | 8 | 0 | yes |
-| `openAddLead` | function | 10475 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 4 | 4 | 0 | yes |
-| `saveLead` | function | 10592 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 1 | 1 | 0 | yes |
-| `openLeadDetail` | function | 10640 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 3 | 3 | 0 | yes |
-| `openEditLead` | function | 10738 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 1 | 1 | 0 | yes |
-| `advanceLeadStage` | function | 10751 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 1 | 1 | 0 | yes |
-| `addLeadActivity` | function | 10774 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | yes |
-| `openClaimsDefensePanel` | function | 10797 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | no |
-| `deleteLead` | function | 10833 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | yes |
-| `convertLeadToJob` | function | 10850 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | yes |
-| `createJobFromLead` | function | 10876 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | no |
-| `loadLeads` | function | 10895 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 5 | 5 | 0 | no |
-| `getOverdueLeadCount` | function | 10922 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | no |
-| `jobDispId` | function | 10937 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 0 | 0 | 0 | no |
-| `renderRefBadge` | function | 10942 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 1 | 1 | 0 | no |
-| `openEditRefNum` | function | 10959 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 2 | 2 | 0 | yes |
-| `saveRefNum` | function | 10993 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 1 | 1 | 0 | yes |
-| `getEmployeeDisplay` | function | 11011 | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | no |
-| `assignEmpId` | function | 11017 | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | no |
-| `checkPortalRoutes` | function | 11040 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | no |
-| `renderBookingPortal` | function | 11054 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | no |
-| `calcBookingQuote` | function | 11302 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 4 | 4 | 0 | yes |
-| `bookingNextStep` | function | 11336 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 4 | 4 | 0 | yes |
-| `confirmBooking` | function | 11403 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | yes |
-| `_doConfirmBooking` | function | 11420 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 2 | 2 | 0 | no |
-| `renderOnboardingPortal` | function | 11529 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | no |
-| `obNextStep` | function | 11765 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 6 | 6 | 0 | yes |
-| `selectObPlan` | function | 11798 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | yes |
-| `launchCompany` | function | 11809 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | yes |
-| `autoInviteClient` | function | 11896 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 0 | 0 | 0 | no |
-| `generateBOLPDF` | function | 11949 | PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation | 3 | 3 | 0 | yes |
-| `checkUnpaidCrew` | function | 12784 | PAY SCHEDULE & UNPAID CREW CHECKER | 0 | 0 | 0 | no |
-| `applyCompanyBranding` | function | 12841 | COMPANY BRANDING ENGINE | 1 | 1 | 0 | no |
-| `saveCompanyProfile` | function | 12867 | COMPANY BRANDING ENGINE | 7 | 7 | 0 | no |
-| `requestPushPermission` | function | 12879 | NOTIFICATION ENGINE | 0 | 0 | 0 | no |
-| `sendNotification` | function | 12887 | NOTIFICATION ENGINE | 11 | 11 | 0 | no |
-| `notifyAllOffice` | function | 12919 | NOTIFICATION ENGINE | 3 | 3 | 0 | no |
-| `_audioCtx` | let | 12939 | SOUND ENGINE — Web Audio API, no external files needed | 4 | 2 | 2 | no |
-| `getAudioCtx` | function | 12941 | SOUND ENGINE — Web Audio API, no external files needed | 2 | 2 | 0 | no |
-| `playTone` | function | 12950 | SOUND ENGINE — Web Audio API, no external files needed | 10 | 10 | 0 | no |
-| `SOUNDS` | const | 12980 | SOUND ENGINE — Web Audio API, no external files needed | 12 | 11 | 1 | yes |
-| `playNotifSound` | function | 13049 | SOUND ENGINE — Web Audio API, no external files needed | 2 | 2 | 0 | no |
-| `_audioUnlocked` | let | 13057 | SOUND ENGINE — Web Audio API, no external files needed | 4 | 1 | 3 | no |
-| `unlockAudio` | function | 13058 | SOUND ENGINE — Web Audio API, no external files needed | 2 | 2 | 0 | no |
-| `showPushNotification` | function | 13070 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
-| `updateNotifBadge` | function | 13092 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
-| `markNotifRead` | function | 13105 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
-| `markAllNotifsRead` | function | 13112 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | yes |
-| `deleteNotif` | function | 13122 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | yes |
-| `_notifPanelOpen` | let | 13129 | SOUND ENGINE — Web Audio API, no external files needed | 5 | 2 | 3 | no |
-| `toggleNotifPanel` | function | 13130 | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | no |
-| `closeNotifPanel` | function | 13142 | SOUND ENGINE — Web Audio API, no external files needed | 3 | 3 | 0 | yes |
-| `renderNotifPanel` | function | 13148 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
-| `handleNotifTap` | function | 13199 | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | no |
-| `calcPay` | function | 13219 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 18 | 18 | 0 | no |
-| `calcBasePay` | function | 13235 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 3 | 3 | 0 | no |
-| `payLabel` | function | 13249 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 4 | 4 | 0 | no |
-| `TAX_RATES` | const | 13270 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 12 | 11 | 1 | no |
-| `calcTax` | function | 13279 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 6 | 6 | 0 | no |
-| `renderTaxBreakdown` | function | 13326 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 3 | 3 | 0 | no |
-| `updateDriverPay` | function | 13354 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
-| `updateDriverPayType` | function | 13361 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
-| `updateDriverRate` | function | 13369 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
-| `updateDriverHours` | function | 13376 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
-| `updateDriverDays` | function | 13383 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
-| `updateDriverCommission` | function | 13390 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
-| `updateDriverWorkerType` | function | 13397 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
-| `recalcDriverTotal` | function | 13404 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 6 | 6 | 0 | no |
-| `updateHelper` | function | 13428 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
-| `addHelperRow` | function | 13446 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 3 | 3 | 0 | yes |
-| `addEjHelperRow` | function | 13467 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
-| `removeHelper` | function | 13495 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
-| `recalcCrewTotal` | function | 13503 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 4 | 4 | 0 | no |
-| `saveCrewLog` | function | 13512 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
-| `calYear` | let | 13535 | CALENDAR | 12 | 9 | 5 | no |
-| `calMonth` | let | 13536 | CALENDAR | 15 | 10 | 6 | no |
-| `DRIVER_COLORS` | const | 13539 | CALENDAR | 4 | 3 | 1 | no |
-| `_driverColorMap` | let | 13550 | CALENDAR | 5 | 3 | 2 | no |
-| `_driverColorIdx` | let | 13551 | CALENDAR | 4 | 2 | 3 | no |
-| `getDriverColor` | function | 13553 | CALENDAR | 8 | 8 | 0 | no |
-| `renderCalendar` | function | 13562 | CALENDAR | 7 | 7 | 0 | yes |
-| `setCalView` | function | 13672 | CALENDAR | 2 | 2 | 0 | yes |
-| `renderMonthView` | function | 13680 | MONTH VIEW — Google Calendar style with multi-day span bars | 1 | 1 | 0 | no |
-| `renderWeekView` | function | 13925 | WEEK VIEW — time-based layout like Google Calendar | 1 | 1 | 0 | no |
-| `calNav` | function | 14030 | WEEK VIEW — time-based layout like Google Calendar | 3 | 3 | 0 | yes |
-| `openCalDay` | function | 14042 | WEEK VIEW — time-based layout like Google Calendar | 2 | 2 | 0 | yes |
-| `renderMessaging` | function | 14234 | MESSAGING | 3 | 3 | 0 | no |
-| `sendBroadcast` | function | 14337 | MESSAGING | 3 | 3 | 0 | yes |
-| `sendMsg` | function | 14414 | MESSAGING | 2 | 2 | 0 | yes |
-| `renderWarehouse` | function | 14457 | WAREHOUSE | 6 | 6 | 0 | yes |
-| `saveJobWarehouseLocation` | function | 14698 | WAREHOUSE | 1 | 1 | 0 | yes |
-| `notifyWarehouseShortage` | function | 14710 | WAREHOUSE | 1 | 1 | 0 | yes |
-| `adjustQty` | function | 14730 | WAREHOUSE | 0 | 0 | 0 | no |
-| `addInventoryItem` | function | 14736 | WAREHOUSE | 1 | 1 | 0 | yes |
-| `renderBOLTab` | function | 14750 | BOL TAB | 1 | 1 | 0 | no |
-| `openBOL` | function | 14788 | BOL TAB | 4 | 4 | 0 | yes |
-| `renderSchedule` | function | 14982 | SCHEDULE | 1 | 1 | 0 | no |
-| `renderReceipts` | function | 15037 | RECEIPTS | 11 | 11 | 0 | yes |
-| `approveAllDriverReceipts` | function | 15400 | RECEIPTS | 1 | 1 | 0 | yes |
-| `openReceiptModal` | function | 15422 | RECEIPTS | 2 | 2 | 0 | yes |
-| `openReceiptModalFromCal` | function | 15446 | RECEIPTS | 4 | 4 | 0 | yes |
-| `triggerReceiptCamera` | function | 15451 | RECEIPTS | 3 | 3 | 0 | yes |
-| `handleReceiptPhoto` | function | 15482 | RECEIPTS | 1 | 1 | 0 | no |
-| `scanReceiptWithAI` | function | 15506 | RECEIPTS | 1 | 1 | 0 | no |
-| `saveReceiptSubmission` | function | 15654 | RECEIPTS | 1 | 1 | 0 | yes |
-| `openEditReceipt` | function | 15745 | RECEIPTS | 4 | 4 | 0 | yes |
-| `deleteReceipt` | function | 15778 | RECEIPTS | 2 | 2 | 0 | yes |
-| `openAddPhoto` | function | 15814 | RECEIPTS | 0 | 0 | 0 | no |
-| `approveReceipt` | function | 15851 | RECEIPTS | 3 | 3 | 0 | yes |
-| `rejectReceipt` | function | 15872 | RECEIPTS | 2 | 2 | 0 | yes |
-| `viewReceiptPhoto` | function | 15895 | RECEIPTS | 2 | 2 | 0 | yes |
-| `openJobDetail` | function | 15914 | JOB DETAIL MODAL | 19 | 19 | 0 | yes |
-| `saveEstimateFieldDirect` | function | 16220 | JOB DETAIL MODAL | 0 | 0 | 0 | no |
-| `deleteJob` | function | 16228 | JOB DETAIL MODAL | 1 | 1 | 0 | yes |
-| `advanceGate` | function | 16243 | JOB DETAIL MODAL | 3 | 3 | 0 | yes |
-| `changeJobStatus` | function | 16308 | JOB DETAIL MODAL | 0 | 0 | 0 | no |
-| `openEditJob` | function | 16322 | EDIT JOB  ← NEW FEATURE | 1 | 1 | 0 | no |
-| `saveEditJob` | function | 16442 | EDIT JOB  ← NEW FEATURE | 1 | 1 | 0 | yes |
-| `openNewJobModal` | function | 16637 | EDIT JOB  ← NEW FEATURE | 7 | 7 | 0 | yes |
-| `createJob` | function | 16710 | EDIT JOB  ← NEW FEATURE | 2 | 2 | 0 | yes |
-| `renderMyPay` | function | 16796 | MY PAY — Personal earnings, commissions, and tax summary | 1 | 1 | 0 | no |
-| `renderExpenses` | function | 16939 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | no |
-| `openJobExpenseDetail` | function | 17082 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | yes |
-| `openDisbursementModal` | function | 17088 | EXPENSES — Disbursements vs Receipts per job | 2 | 2 | 0 | yes |
-| `populateDisbDriverDropdown` | function | 17100 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | no |
-| `saveDisbursementEntry` | function | 17122 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | yes |
-| `deleteDisbursementEntry` | function | 17181 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | yes |
-| `renderFleet` | function | 17193 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | no |
-| `openFleetModal` | function | 17301 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 3 | 3 | 0 | yes |
-| `saveVehicle` | function | 17360 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 0 | 0 | 0 | no |
-| `logMaintenance` | function | 17388 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | yes |
-| `updateMileage` | function | 17400 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | yes |
-| `updateVehicleStatus` | function | 17406 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | yes |
-| `renderPayrollSummary` | function | 17415 | PAYROLL SUMMARY — Full output view | 2 | 2 | 0 | yes |
-| `exportPayrollCSV` | function | 17509 | EXPORT — CSV and financial reporting | 4 | 4 | 0 | yes |
-| `exportJobsCSV` | function | 17535 | EXPORT — CSV and financial reporting | 3 | 3 | 0 | yes |
-| `exportReceiptsCSV` | function | 17547 | EXPORT — CSV and financial reporting | 2 | 2 | 0 | yes |
-| `downloadCSV` | function | 17557 | EXPORT — CSV and financial reporting | 3 | 3 | 0 | no |
-| `renderExportBar` | function | 17569 | EXPORT — CSV and financial reporting | 0 | 0 | 0 | no |
-| `renderMargins` | function | 17585 | JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job | 2 | 2 | 0 | yes |
-| `openPayrollCorrectByName` | function | 17802 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
-| `openManualPayrollCorrection` | function | 17847 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 2 | 2 | 0 | yes |
-| `saveManualPayrollCorrection` | function | 17911 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
-| `editPayrollEntry` | function | 17947 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 6 | 6 | 0 | yes |
-| `savePayrollEdit` | function | 18028 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
-| `voidPayrollEntry` | function | 18095 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | no |
-| `restorePayrollEntry` | function | 18100 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | no |
-| `runDuplicateScan` | function | 18107 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 2 | 2 | 0 | no |
-| `showDuplicateScanResults` | function | 18180 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
-| `checkForDuplicatesOnLoad` | function | 18206 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | no |
-| `renderPayrollLedger` | function | 18221 | PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle | 5 | 5 | 0 | no |
-| `buildCrewLedger` | function | 18381 | PAYROLL LEDGER — Build running balance from jobs + payments | 8 | 8 | 0 | no |
-| `getNextPayday` | function | 18563 | PAYROLL LEDGER — Build running balance from jobs + payments | 1 | 1 | 0 | no |
-| `openMarkPaidModal` | function | 18578 | PAYROLL LEDGER — Mark Paid modal | 0 | 0 | 0 | no |
-| `processPayment` | function | 18631 | PAYROLL LEDGER — Mark Paid modal | 0 | 0 | 0 | no |
-| `openPayAllModal` | function | 18719 | PAYROLL LEDGER — Mark Paid modal | 1 | 1 | 0 | yes |
-| `processPayAll` | function | 18757 | PAYROLL LEDGER — Mark Paid modal | 1 | 1 | 0 | yes |
-| `openCrewLedgerDetail` | function | 18789 | PAYROLL LEDGER — Mark Paid modal | 2 | 2 | 0 | yes |
-| `renderLineLabelSettings` | function | 18859 | SETTINGS TAB | 1 | 1 | 0 | no |
-| `renderSettings` | function | 18872 | SETTINGS TAB | 10 | 10 | 0 | no |
-| `toggleSetting` | function | 19464 | SETTINGS ACTION FUNCTIONS | 0 | 0 | 0 | no |
-| `saveSetting` | function | 19470 | SETTINGS ACTION FUNCTIONS | 3 | 3 | 0 | yes |
-| `switchRole` | function | 19479 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `saveProfileSettings` | function | 19517 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `saveTwilioConfig` | function | 19526 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `saveCompanySettings` | function | 19537 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `handleLogoUpload` | function | 19582 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `removeCompanyLogo` | function | 19596 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `setAccentColor` | function | 19603 | ROLE SWITCHER — instant role switch without logout | 2 | 2 | 0 | yes |
-| `changePassword` | function | 19610 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `changeAvatar` | function | 19629 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `testPushPermission` | function | 19642 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `clearAllSettings` | function | 19659 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
-| `renderUsers` | function | 19672 | USER MANAGEMENT (Office only) | 5 | 5 | 0 | no |
-| `openEditHandle` | function | 19785 | USER MANAGEMENT (Office only) | 0 | 0 | 0 | no |
-| `saveEmployeeId` | function | 19817 | USER MANAGEMENT (Office only) | 0 | 0 | 0 | no |
-| `openAddUser` | function | 19841 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
-| `openEditUser` | function | 19858 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
-| `saveUser` | function | 19902 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
-| `toggleUserActive` | function | 19952 | USER MANAGEMENT (Office only) | 0 | 0 | 0 | no |
-| `deleteUser` | function | 19967 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
-| `resetPassword` | function | 19979 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
-| `openModal` | function | 19992 | MODAL HELPERS | 41 | 41 | 0 | no |
-| `closeModal` | function | 20004 | MODAL HELPERS | 121 | 121 | 0 | yes |
-| `openEditJobFromCal` | function | 20010 | MODAL HELPERS | 1 | 1 | 0 | yes |
-| `openJobDetailFromCal` | function | 20016 | MODAL HELPERS | 1 | 1 | 0 | yes |
-| `notifyTimer` | let | 20033 | NOTIFICATION | 4 | 2 | 2 | no |
-| `notify` | function | 20034 | NOTIFICATION | 236 | 236 | 0 | yes |
-| `_scribbleCtx` | var | 20045 | NOTIFICATION | 22 | 20 | 2 | no |
-| `_scribbleStrokes` | var | 20045 | NOTIFICATION | 8 | 5 | 3 | no |
-| `_scribbleCur` | var | 20045 | NOTIFICATION | 6 | 3 | 3 | no |
-| `_scribbleTarget` | var | 20045 | NOTIFICATION | 5 | 2 | 3 | no |
-| `_scribbleDraw` | var | 20045 | NOTIFICATION | 5 | 2 | 3 | no |
-| `openScribble` | function | 20046 | NOTIFICATION | 1 | 1 | 0 | yes |
-| `_sPos` | function | 20047 | NOTIFICATION | 6 | 6 | 0 | no |
-| `closeScribble` | function | 20048 | NOTIFICATION | 2 | 2 | 0 | yes |
-| `scribbleClear` | function | 20049 | NOTIFICATION | 1 | 1 | 0 | yes |
-| `scribbleUndo` | function | 20050 | NOTIFICATION | 1 | 1 | 0 | yes |
-| `scribbleTranscribe` | function | 20051 | NOTIFICATION | 2 | 2 | 0 | yes |
-| `scribbleApply` | function | 20052 | NOTIFICATION | 1 | 1 | 0 | yes |
-| `PLANS` | const | 20062 | TRIAL + TIER SYSTEM | 14 | 13 | 1 | no |
-| `TRIAL_DAYS` | const | 20067 | TRIAL + TIER SYSTEM | 3 | 2 | 1 | no |
-| `checkCompanyAccess` | function | 20069 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `getCompanyPlan` | function | 20089 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `toggleTierFirewall` | function | 20095 | TRIAL + TIER SYSTEM | 0 | 0 | 0 | no |
-| `toggleCompanyFeature` | function | 20100 | TRIAL + TIER SYSTEM | 0 | 0 | 0 | no |
-| `_platformConfig` | let | 20111 | TRIAL + TIER SYSTEM | 2 | 0 | 2 | no |
-| `loadPlatformConfig` | function | 20112 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `planAllowsTab` | function | 20114 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `showTrialBanner` | function | 20140 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `showUpgradeModal` | function | 20152 | TRIAL + TIER SYSTEM | 3 | 3 | 0 | yes |
-| `selectUpgradePlan` | function | 20164 | TRIAL + TIER SYSTEM | 2 | 2 | 0 | yes |
-| `requestUpgrade` | function | 20170 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | yes |
-| `showTabLockedPrompt` | function | 20177 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `showPaywall` | function | 20184 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
-| `toggleCompanyAccess` | function | 20199 | TRIAL + TIER SYSTEM | 0 | 0 | 0 | no |
-| `setCompanyPlan` | function | 20208 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | yes |
-| `_photoViewerPhotos` | let | 20220 | PHOTO VIEWER | 13 | 9 | 4 | no |
-| `_photoViewerIdx` | let | 20221 | PHOTO VIEWER | 13 | 8 | 5 | no |
-| `_photoViewerJobId` | let | 20222 | PHOTO VIEWER | 5 | 3 | 2 | no |
-| `_photoViewerField` | let | 20223 | PHOTO VIEWER | 8 | 6 | 2 | no |
-| `_photoZoomLevel` | let | 20224 | PHOTO VIEWER | 9 | 3 | 6 | no |
-| `openPhotoViewer` | function | 20226 | PHOTO VIEWER | 2 | 2 | 0 | yes |
-| `_refreshPhotoViewer` | function | 20239 | PHOTO VIEWER | 5 | 5 | 0 | no |
-| `closePhotoViewer` | function | 20252 | PHOTO VIEWER | 2 | 2 | 0 | yes |
-| `photoNav` | function | 20259 | PHOTO VIEWER | 2 | 2 | 0 | yes |
-| `photoZoom` | function | 20267 | PHOTO VIEWER | 2 | 2 | 0 | yes |
-| `photoZoomReset` | function | 20272 | PHOTO VIEWER | 1 | 1 | 0 | yes |
-| `deleteViewedPhoto` | function | 20277 | PHOTO VIEWER | 1 | 1 | 0 | yes |
-| `downloadViewedPhoto` | function | 20295 | PHOTO VIEWER | 1 | 1 | 0 | yes |
-| `openPhotoModal` | function | 20303 | PHOTO VIEWER | 2 | 2 | 0 | yes |
-| `_sigJobId` | let | 20310 | SIGNATURE MODAL | 5 | 3 | 2 | no |
-| `_sigCanvas` | let | 20311 | SIGNATURE MODAL | 22 | 20 | 2 | no |
-| `_sigCtx` | let | 20312 | SIGNATURE MODAL | 17 | 15 | 2 | no |
-| `_sigDrawing` | let | 20313 | SIGNATURE MODAL | 8 | 2 | 6 | no |
-| `openSigModal` | function | 20315 | SIGNATURE MODAL | 2 | 2 | 0 | yes |
-| `clearSig` | function | 20337 | SIGNATURE MODAL | 1 | 1 | 0 | yes |
-| `saveSig` | function | 20341 | SIGNATURE MODAL | 1 | 1 | 0 | yes |
-| `openFieldNotes` | function | 20356 | FIELD NOTES | 0 | 0 | 0 | no |
-| `DOCUMENT_CATEGORIES` | const | 20373 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 3 | 2 | 1 | no |
-| `DOCUMENT_MAX_BYTES` | const | 20386 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 2 | 1 | 1 | no |
-| `DOCUMENT_ALLOWED_EXT` | const | 20387 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 2 | 1 | 1 | no |
-| `escapeHtml` | function | 20392 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 13 | 13 | 0 | no |
-| `isSafeDocumentUrl` | function | 20396 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `sanitizeFilename` | function | 20400 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `documentFileExt` | function | 20409 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `validateDocumentFile` | function | 20414 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `uploadDocument` | function | 20425 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `_docModalJobId` | let | 20466 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 7 | 5 | 2 | no |
-| `_docPendingFiles` | let | 20467 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 8 | 4 | 4 | no |
-| `_docSessionId` | let | 20468 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 6 | 5 | 2 | no |
-| `openDocumentsModal` | function | 20470 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | yes |
-| `documentsForContext` | function | 20478 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `documentCategoryLabel` | function | 20484 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
-| `renderDocumentsModal` | function | 20489 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 2 | 2 | 0 | no |
-| `handleDocumentFilesSelected` | function | 20560 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | yes |
-| `submitDocumentUploads` | function | 20580 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | yes |
-| `setTheme` | function | 20629 | THEME TOGGLE | 3 | 3 | 0 | yes |
-| `_updateThemeBtns` | function | 20640 | THEME TOGGLE | 3 | 3 | 0 | no |
+| `renderEstimateForm` | function | 8307 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 5 | 5 | 0 | yes |
+| `saveEstimateField` | function | 8525 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 6 | 6 | 0 | yes |
+| `saveEstimateJobField` | function | 8535 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 3 | 3 | 0 | yes |
+| `saveEstimateAcc` | function | 8542 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 1 | 1 | 0 | yes |
+| `calcLiveTotal` | function | 8552 | ESTIMATE TAB — Per-job BOL line item editor — This is the source of truth for the BOL PDF | 2 | 2 | 0 | yes |
+| `buildClientPortal` | function | 8568 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 1 | 1 | 0 | no |
+| `openClientInventory` | function | 8942 | CLIENT MOVE PORTAL — Full transparency experience — This is what the client pays $100-150 for — Real-time gate tracking, item location, messaging, docs | 1 | 1 | 0 | yes |
+| `renderTax1099` | function | 8968 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 2 | 2 | 0 | yes |
+| `build1099Report` | function | 9184 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 3 | 3 | 0 | no |
+| `getAvailableYears` | function | 9256 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 1 | 1 | 0 | no |
+| `export1099CSV` | function | 9268 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 0 | 0 | 0 | no |
+| `generate1099PDF` | function | 9319 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 0 | 0 | 0 | no |
+| `migrateExistingDataToCompanyId` | function | 9496 | 1099 / W2 YEAR-END TAX EXPORT — Aggregates all payments per contractor/employee for the year — Generates: on-screen summary + CSV export + PDF report | 2 | 2 | 0 | yes |
+| `renderAccounting` | function | 9554 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 2 | 2 | 0 | yes |
+| `buildPL` | function | 9723 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 3 | 3 | 0 | no |
+| `getAccountingPeriods` | function | 9830 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 1 | 1 | 0 | no |
+| `exportPLCSV` | function | 9840 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 1 | 1 | 0 | yes |
+| `exportPLPDF` | function | 9889 | P&L ACCOUNTING MODULE — Kills QuickBooks — Chart of accounts, monthly P&L, period reports, export | 1 | 1 | 0 | yes |
+| `sendSMS` | function | 9979 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 3 | 3 | 0 | no |
+| `smsDriver` | function | 10007 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | no |
+| `smsClient` | function | 10017 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | no |
+| `sendGateSMS` | function | 10024 | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 1 | 1 | 0 | no |
+| `STRIPE_PK` | const | 10046 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 3 | 2 | 1 | no |
+| `_stripe` | let | 10047 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 5 | 2 | 3 | no |
+| `_stripeCard` | let | 10048 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 6 | 4 | 2 | no |
+| `getStripe` | function | 10050 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 3 | 3 | 0 | no |
+| `testStripeConnection` | function | 10059 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
+| `openStripeUpdateKey` | function | 10069 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
+| `saveStripeKey` | function | 10090 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
+| `openStripePayment` | function | 10106 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 2 | 2 | 0 | no |
+| `processStripePayment` | function | 10172 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | no |
+| `openPaymentGateStripe` | function | 10218 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | yes |
+| `openBookingDeposit` | function | 10259 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 1 | 1 | 0 | no |
+| `renderPaymentGateButton` | function | 10270 | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | no |
+| `COL_LEADS` | const | 10288 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 9 | 8 | 1 | no |
+| `COL_TRAVEL` | const | 10289 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 8 | 7 | 1 | no |
+| `LEAD_STAGES` | const | 10291 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 11 | 10 | 1 | no |
+| `LEAD_SOURCES` | const | 10300 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 1 | 1 | no |
+| `renderLeads` | function | 10302 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 8 | 8 | 0 | yes |
+| `openAddLead` | function | 10483 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 4 | 4 | 0 | yes |
+| `saveLead` | function | 10600 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 1 | 1 | 0 | yes |
+| `openLeadDetail` | function | 10648 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 3 | 3 | 0 | yes |
+| `openEditLead` | function | 10746 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 1 | 1 | 0 | yes |
+| `advanceLeadStage` | function | 10759 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 1 | 1 | 0 | yes |
+| `addLeadActivity` | function | 10782 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | yes |
+| `openClaimsDefensePanel` | function | 10805 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | no |
+| `deleteLead` | function | 10841 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | yes |
+| `convertLeadToJob` | function | 10858 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | yes |
+| `createJobFromLead` | function | 10884 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | no |
+| `loadLeads` | function | 10903 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 5 | 5 | 0 | no |
+| `getOverdueLeadCount` | function | 10930 | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 2 | 2 | 0 | no |
+| `jobDispId` | function | 10945 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 0 | 0 | 0 | no |
+| `renderRefBadge` | function | 10950 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 1 | 1 | 0 | no |
+| `openEditRefNum` | function | 10967 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 2 | 2 | 0 | yes |
+| `saveRefNum` | function | 11001 | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 1 | 1 | 0 | yes |
+| `getEmployeeDisplay` | function | 11019 | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | no |
+| `assignEmpId` | function | 11025 | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | no |
+| `checkPortalRoutes` | function | 11048 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | no |
+| `renderBookingPortal` | function | 11062 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | no |
+| `calcBookingQuote` | function | 11310 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 4 | 4 | 0 | yes |
+| `bookingNextStep` | function | 11344 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 4 | 4 | 0 | yes |
+| `confirmBooking` | function | 11411 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | yes |
+| `_doConfirmBooking` | function | 11428 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 2 | 2 | 0 | no |
+| `renderOnboardingPortal` | function | 11537 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | no |
+| `obNextStep` | function | 11773 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 6 | 6 | 0 | yes |
+| `selectObPlan` | function | 11806 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | yes |
+| `launchCompany` | function | 11817 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 1 | 1 | 0 | yes |
+| `autoInviteClient` | function | 11904 | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 0 | 0 | 0 | no |
+| `generateBOLPDF` | function | 11957 | PORTAL ROUTE CHECK — runs before login screen — Matches Good Friends Movers LLC document package exactly — US DOT# 3921653 / MC# 1450729 — Structure: Interstate BOL | Legal Terms | Inventory x2 | Packing | Post Contract | Valuation | 3 | 3 | 0 | yes |
+| `checkUnpaidCrew` | function | 12792 | PAY SCHEDULE & UNPAID CREW CHECKER | 0 | 0 | 0 | no |
+| `applyCompanyBranding` | function | 12849 | COMPANY BRANDING ENGINE | 1 | 1 | 0 | no |
+| `saveCompanyProfile` | function | 12875 | COMPANY BRANDING ENGINE | 7 | 7 | 0 | no |
+| `requestPushPermission` | function | 12887 | NOTIFICATION ENGINE | 0 | 0 | 0 | no |
+| `sendNotification` | function | 12895 | NOTIFICATION ENGINE | 11 | 11 | 0 | no |
+| `notifyAllOffice` | function | 12927 | NOTIFICATION ENGINE | 3 | 3 | 0 | no |
+| `_audioCtx` | let | 12947 | SOUND ENGINE — Web Audio API, no external files needed | 4 | 2 | 2 | no |
+| `getAudioCtx` | function | 12949 | SOUND ENGINE — Web Audio API, no external files needed | 2 | 2 | 0 | no |
+| `playTone` | function | 12958 | SOUND ENGINE — Web Audio API, no external files needed | 10 | 10 | 0 | no |
+| `SOUNDS` | const | 12988 | SOUND ENGINE — Web Audio API, no external files needed | 12 | 11 | 1 | yes |
+| `playNotifSound` | function | 13057 | SOUND ENGINE — Web Audio API, no external files needed | 2 | 2 | 0 | no |
+| `_audioUnlocked` | let | 13065 | SOUND ENGINE — Web Audio API, no external files needed | 4 | 1 | 3 | no |
+| `unlockAudio` | function | 13066 | SOUND ENGINE — Web Audio API, no external files needed | 2 | 2 | 0 | no |
+| `showPushNotification` | function | 13078 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
+| `updateNotifBadge` | function | 13100 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
+| `markNotifRead` | function | 13113 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
+| `markAllNotifsRead` | function | 13120 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | yes |
+| `deleteNotif` | function | 13130 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | yes |
+| `_notifPanelOpen` | let | 13137 | SOUND ENGINE — Web Audio API, no external files needed | 5 | 2 | 3 | no |
+| `toggleNotifPanel` | function | 13138 | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | no |
+| `closeNotifPanel` | function | 13150 | SOUND ENGINE — Web Audio API, no external files needed | 3 | 3 | 0 | yes |
+| `renderNotifPanel` | function | 13156 | SOUND ENGINE — Web Audio API, no external files needed | 1 | 1 | 0 | no |
+| `handleNotifTap` | function | 13207 | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | no |
+| `calcPay` | function | 13227 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 18 | 18 | 0 | no |
+| `calcBasePay` | function | 13243 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 3 | 3 | 0 | no |
+| `payLabel` | function | 13257 | PAYROLL CALCULATION ENGINE v2 — pay + commission + tax | 4 | 4 | 0 | no |
+| `TAX_RATES` | const | 13278 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 12 | 11 | 1 | no |
+| `calcTax` | function | 13287 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 6 | 6 | 0 | no |
+| `renderTaxBreakdown` | function | 13334 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 3 | 3 | 0 | no |
+| `updateDriverPay` | function | 13362 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
+| `updateDriverPayType` | function | 13369 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
+| `updateDriverRate` | function | 13377 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
+| `updateDriverHours` | function | 13384 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
+| `updateDriverDays` | function | 13391 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
+| `updateDriverCommission` | function | 13398 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
+| `updateDriverWorkerType` | function | 13405 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
+| `recalcDriverTotal` | function | 13412 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 6 | 6 | 0 | no |
+| `updateHelper` | function | 13436 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
+| `addHelperRow` | function | 13454 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 3 | 3 | 0 | yes |
+| `addEjHelperRow` | function | 13475 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
+| `removeHelper` | function | 13503 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | no |
+| `recalcCrewTotal` | function | 13511 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 4 | 4 | 0 | no |
+| `saveCrewLog` | function | 13520 | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 1 | 1 | 0 | yes |
+| `calYear` | let | 13543 | CALENDAR | 12 | 9 | 5 | no |
+| `calMonth` | let | 13544 | CALENDAR | 15 | 10 | 6 | no |
+| `DRIVER_COLORS` | const | 13547 | CALENDAR | 4 | 3 | 1 | no |
+| `_driverColorMap` | let | 13558 | CALENDAR | 5 | 3 | 2 | no |
+| `_driverColorIdx` | let | 13559 | CALENDAR | 4 | 2 | 3 | no |
+| `getDriverColor` | function | 13561 | CALENDAR | 8 | 8 | 0 | no |
+| `renderCalendar` | function | 13570 | CALENDAR | 7 | 7 | 0 | yes |
+| `setCalView` | function | 13680 | CALENDAR | 2 | 2 | 0 | yes |
+| `renderMonthView` | function | 13688 | MONTH VIEW — Google Calendar style with multi-day span bars | 1 | 1 | 0 | no |
+| `renderWeekView` | function | 13933 | WEEK VIEW — time-based layout like Google Calendar | 1 | 1 | 0 | no |
+| `calNav` | function | 14038 | WEEK VIEW — time-based layout like Google Calendar | 3 | 3 | 0 | yes |
+| `openCalDay` | function | 14050 | WEEK VIEW — time-based layout like Google Calendar | 2 | 2 | 0 | yes |
+| `renderMessaging` | function | 14242 | MESSAGING | 3 | 3 | 0 | no |
+| `sendBroadcast` | function | 14345 | MESSAGING | 3 | 3 | 0 | yes |
+| `sendMsg` | function | 14422 | MESSAGING | 2 | 2 | 0 | yes |
+| `renderWarehouse` | function | 14465 | WAREHOUSE | 6 | 6 | 0 | yes |
+| `saveJobWarehouseLocation` | function | 14706 | WAREHOUSE | 1 | 1 | 0 | yes |
+| `notifyWarehouseShortage` | function | 14718 | WAREHOUSE | 1 | 1 | 0 | yes |
+| `adjustQty` | function | 14738 | WAREHOUSE | 0 | 0 | 0 | no |
+| `addInventoryItem` | function | 14744 | WAREHOUSE | 1 | 1 | 0 | yes |
+| `renderBOLTab` | function | 14758 | BOL TAB | 1 | 1 | 0 | no |
+| `openBOL` | function | 14796 | BOL TAB | 4 | 4 | 0 | yes |
+| `renderSchedule` | function | 14990 | SCHEDULE | 1 | 1 | 0 | no |
+| `renderReceipts` | function | 15045 | RECEIPTS | 11 | 11 | 0 | yes |
+| `approveAllDriverReceipts` | function | 15408 | RECEIPTS | 1 | 1 | 0 | yes |
+| `openReceiptModal` | function | 15430 | RECEIPTS | 2 | 2 | 0 | yes |
+| `openReceiptModalFromCal` | function | 15454 | RECEIPTS | 4 | 4 | 0 | yes |
+| `triggerReceiptCamera` | function | 15459 | RECEIPTS | 3 | 3 | 0 | yes |
+| `handleReceiptPhoto` | function | 15490 | RECEIPTS | 1 | 1 | 0 | no |
+| `scanReceiptWithAI` | function | 15514 | RECEIPTS | 1 | 1 | 0 | no |
+| `saveReceiptSubmission` | function | 15662 | RECEIPTS | 1 | 1 | 0 | yes |
+| `openEditReceipt` | function | 15753 | RECEIPTS | 4 | 4 | 0 | yes |
+| `deleteReceipt` | function | 15786 | RECEIPTS | 2 | 2 | 0 | yes |
+| `openAddPhoto` | function | 15822 | RECEIPTS | 0 | 0 | 0 | no |
+| `approveReceipt` | function | 15859 | RECEIPTS | 3 | 3 | 0 | yes |
+| `rejectReceipt` | function | 15880 | RECEIPTS | 2 | 2 | 0 | yes |
+| `viewReceiptPhoto` | function | 15903 | RECEIPTS | 2 | 2 | 0 | yes |
+| `openJobDetail` | function | 15922 | JOB DETAIL MODAL | 19 | 19 | 0 | yes |
+| `saveEstimateFieldDirect` | function | 16228 | JOB DETAIL MODAL | 0 | 0 | 0 | no |
+| `deleteJob` | function | 16236 | JOB DETAIL MODAL | 1 | 1 | 0 | yes |
+| `advanceGate` | function | 16251 | JOB DETAIL MODAL | 3 | 3 | 0 | yes |
+| `changeJobStatus` | function | 16316 | JOB DETAIL MODAL | 0 | 0 | 0 | no |
+| `openEditJob` | function | 16330 | EDIT JOB  ← NEW FEATURE | 1 | 1 | 0 | no |
+| `saveEditJob` | function | 16450 | EDIT JOB  ← NEW FEATURE | 1 | 1 | 0 | yes |
+| `openNewJobModal` | function | 16645 | EDIT JOB  ← NEW FEATURE | 7 | 7 | 0 | yes |
+| `createJob` | function | 16718 | EDIT JOB  ← NEW FEATURE | 2 | 2 | 0 | yes |
+| `renderMyPay` | function | 16804 | MY PAY — Personal earnings, commissions, and tax summary | 1 | 1 | 0 | no |
+| `renderExpenses` | function | 16947 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | no |
+| `openJobExpenseDetail` | function | 17090 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | yes |
+| `openDisbursementModal` | function | 17096 | EXPENSES — Disbursements vs Receipts per job | 2 | 2 | 0 | yes |
+| `populateDisbDriverDropdown` | function | 17108 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | no |
+| `saveDisbursementEntry` | function | 17130 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | yes |
+| `deleteDisbursementEntry` | function | 17189 | EXPENSES — Disbursements vs Receipts per job | 1 | 1 | 0 | yes |
+| `renderFleet` | function | 17201 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | no |
+| `openFleetModal` | function | 17309 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 3 | 3 | 0 | yes |
+| `saveVehicle` | function | 17368 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 0 | 0 | 0 | no |
+| `logMaintenance` | function | 17396 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | yes |
+| `updateMileage` | function | 17408 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | yes |
+| `updateVehicleStatus` | function | 17414 | FLEET MODULE — Vehicle profiles, assignments, maintenance | 1 | 1 | 0 | yes |
+| `renderPayrollSummary` | function | 17423 | PAYROLL SUMMARY — Full output view | 2 | 2 | 0 | yes |
+| `exportPayrollCSV` | function | 17517 | EXPORT — CSV and financial reporting | 4 | 4 | 0 | yes |
+| `exportJobsCSV` | function | 17543 | EXPORT — CSV and financial reporting | 3 | 3 | 0 | yes |
+| `exportReceiptsCSV` | function | 17555 | EXPORT — CSV and financial reporting | 2 | 2 | 0 | yes |
+| `downloadCSV` | function | 17565 | EXPORT — CSV and financial reporting | 3 | 3 | 0 | no |
+| `renderExportBar` | function | 17577 | EXPORT — CSV and financial reporting | 0 | 0 | 0 | no |
+| `renderMargins` | function | 17593 | JOB MARGIN DASHBOARD — Revenue - Crew Cost - Expenses = Net per job | 2 | 2 | 0 | yes |
+| `openPayrollCorrectByName` | function | 17810 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
+| `openManualPayrollCorrection` | function | 17855 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 2 | 2 | 0 | yes |
+| `saveManualPayrollCorrection` | function | 17919 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
+| `editPayrollEntry` | function | 17955 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 6 | 6 | 0 | yes |
+| `savePayrollEdit` | function | 18036 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
+| `voidPayrollEntry` | function | 18103 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | no |
+| `restorePayrollEntry` | function | 18108 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | no |
+| `runDuplicateScan` | function | 18115 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 2 | 2 | 0 | no |
+| `showDuplicateScanResults` | function | 18188 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 1 | 1 | 0 | yes |
+| `checkForDuplicatesOnLoad` | function | 18214 | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | no |
+| `renderPayrollLedger` | function | 18229 | PAYROLL LEDGER — Running balance per crew member — Balance = earned - paid. When paid → resets to 0 → new cycle | 5 | 5 | 0 | no |
+| `buildCrewLedger` | function | 18389 | PAYROLL LEDGER — Build running balance from jobs + payments | 8 | 8 | 0 | no |
+| `getNextPayday` | function | 18571 | PAYROLL LEDGER — Build running balance from jobs + payments | 1 | 1 | 0 | no |
+| `openMarkPaidModal` | function | 18586 | PAYROLL LEDGER — Mark Paid modal | 0 | 0 | 0 | no |
+| `processPayment` | function | 18639 | PAYROLL LEDGER — Mark Paid modal | 0 | 0 | 0 | no |
+| `openPayAllModal` | function | 18727 | PAYROLL LEDGER — Mark Paid modal | 1 | 1 | 0 | yes |
+| `processPayAll` | function | 18765 | PAYROLL LEDGER — Mark Paid modal | 1 | 1 | 0 | yes |
+| `openCrewLedgerDetail` | function | 18797 | PAYROLL LEDGER — Mark Paid modal | 2 | 2 | 0 | yes |
+| `renderLineLabelSettings` | function | 18867 | SETTINGS TAB | 1 | 1 | 0 | no |
+| `renderSettings` | function | 18880 | SETTINGS TAB | 10 | 10 | 0 | no |
+| `toggleSetting` | function | 19472 | SETTINGS ACTION FUNCTIONS | 0 | 0 | 0 | no |
+| `saveSetting` | function | 19478 | SETTINGS ACTION FUNCTIONS | 3 | 3 | 0 | yes |
+| `switchRole` | function | 19487 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `saveProfileSettings` | function | 19525 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `saveTwilioConfig` | function | 19534 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `saveCompanySettings` | function | 19545 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `handleLogoUpload` | function | 19590 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `removeCompanyLogo` | function | 19604 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `setAccentColor` | function | 19611 | ROLE SWITCHER — instant role switch without logout | 2 | 2 | 0 | yes |
+| `changePassword` | function | 19618 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `changeAvatar` | function | 19637 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `testPushPermission` | function | 19650 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `clearAllSettings` | function | 19667 | ROLE SWITCHER — instant role switch without logout | 1 | 1 | 0 | yes |
+| `renderUsers` | function | 19680 | USER MANAGEMENT (Office only) | 5 | 5 | 0 | no |
+| `openEditHandle` | function | 19793 | USER MANAGEMENT (Office only) | 0 | 0 | 0 | no |
+| `saveEmployeeId` | function | 19825 | USER MANAGEMENT (Office only) | 0 | 0 | 0 | no |
+| `openAddUser` | function | 19849 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
+| `openEditUser` | function | 19866 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
+| `saveUser` | function | 19910 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
+| `toggleUserActive` | function | 19960 | USER MANAGEMENT (Office only) | 0 | 0 | 0 | no |
+| `deleteUser` | function | 19975 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
+| `resetPassword` | function | 19987 | USER MANAGEMENT (Office only) | 1 | 1 | 0 | yes |
+| `openModal` | function | 20000 | MODAL HELPERS | 41 | 41 | 0 | no |
+| `closeModal` | function | 20012 | MODAL HELPERS | 121 | 121 | 0 | yes |
+| `openEditJobFromCal` | function | 20018 | MODAL HELPERS | 1 | 1 | 0 | yes |
+| `openJobDetailFromCal` | function | 20024 | MODAL HELPERS | 1 | 1 | 0 | yes |
+| `notifyTimer` | let | 20041 | NOTIFICATION | 4 | 2 | 2 | no |
+| `notify` | function | 20042 | NOTIFICATION | 236 | 236 | 0 | yes |
+| `_scribbleCtx` | var | 20053 | NOTIFICATION | 22 | 20 | 2 | no |
+| `_scribbleStrokes` | var | 20053 | NOTIFICATION | 8 | 5 | 3 | no |
+| `_scribbleCur` | var | 20053 | NOTIFICATION | 6 | 3 | 3 | no |
+| `_scribbleTarget` | var | 20053 | NOTIFICATION | 5 | 2 | 3 | no |
+| `_scribbleDraw` | var | 20053 | NOTIFICATION | 5 | 2 | 3 | no |
+| `openScribble` | function | 20054 | NOTIFICATION | 1 | 1 | 0 | yes |
+| `_sPos` | function | 20055 | NOTIFICATION | 6 | 6 | 0 | no |
+| `closeScribble` | function | 20056 | NOTIFICATION | 2 | 2 | 0 | yes |
+| `scribbleClear` | function | 20057 | NOTIFICATION | 1 | 1 | 0 | yes |
+| `scribbleUndo` | function | 20058 | NOTIFICATION | 1 | 1 | 0 | yes |
+| `scribbleTranscribe` | function | 20059 | NOTIFICATION | 2 | 2 | 0 | yes |
+| `scribbleApply` | function | 20060 | NOTIFICATION | 1 | 1 | 0 | yes |
+| `PLANS` | const | 20070 | TRIAL + TIER SYSTEM | 14 | 13 | 1 | no |
+| `TRIAL_DAYS` | const | 20075 | TRIAL + TIER SYSTEM | 3 | 2 | 1 | no |
+| `checkCompanyAccess` | function | 20077 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `getCompanyPlan` | function | 20097 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `toggleTierFirewall` | function | 20103 | TRIAL + TIER SYSTEM | 0 | 0 | 0 | no |
+| `toggleCompanyFeature` | function | 20108 | TRIAL + TIER SYSTEM | 0 | 0 | 0 | no |
+| `_platformConfig` | let | 20119 | TRIAL + TIER SYSTEM | 2 | 0 | 2 | no |
+| `loadPlatformConfig` | function | 20120 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `planAllowsTab` | function | 20122 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `showTrialBanner` | function | 20148 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `showUpgradeModal` | function | 20160 | TRIAL + TIER SYSTEM | 3 | 3 | 0 | yes |
+| `selectUpgradePlan` | function | 20172 | TRIAL + TIER SYSTEM | 2 | 2 | 0 | yes |
+| `requestUpgrade` | function | 20178 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | yes |
+| `showTabLockedPrompt` | function | 20185 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `showPaywall` | function | 20192 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | no |
+| `toggleCompanyAccess` | function | 20207 | TRIAL + TIER SYSTEM | 0 | 0 | 0 | no |
+| `setCompanyPlan` | function | 20216 | TRIAL + TIER SYSTEM | 1 | 1 | 0 | yes |
+| `_photoViewerPhotos` | let | 20228 | PHOTO VIEWER | 13 | 9 | 4 | no |
+| `_photoViewerIdx` | let | 20229 | PHOTO VIEWER | 13 | 8 | 5 | no |
+| `_photoViewerJobId` | let | 20230 | PHOTO VIEWER | 5 | 3 | 2 | no |
+| `_photoViewerField` | let | 20231 | PHOTO VIEWER | 8 | 6 | 2 | no |
+| `_photoZoomLevel` | let | 20232 | PHOTO VIEWER | 9 | 3 | 6 | no |
+| `openPhotoViewer` | function | 20234 | PHOTO VIEWER | 2 | 2 | 0 | yes |
+| `_refreshPhotoViewer` | function | 20247 | PHOTO VIEWER | 5 | 5 | 0 | no |
+| `closePhotoViewer` | function | 20260 | PHOTO VIEWER | 2 | 2 | 0 | yes |
+| `photoNav` | function | 20267 | PHOTO VIEWER | 2 | 2 | 0 | yes |
+| `photoZoom` | function | 20275 | PHOTO VIEWER | 2 | 2 | 0 | yes |
+| `photoZoomReset` | function | 20280 | PHOTO VIEWER | 1 | 1 | 0 | yes |
+| `deleteViewedPhoto` | function | 20285 | PHOTO VIEWER | 1 | 1 | 0 | yes |
+| `downloadViewedPhoto` | function | 20303 | PHOTO VIEWER | 1 | 1 | 0 | yes |
+| `openPhotoModal` | function | 20311 | PHOTO VIEWER | 2 | 2 | 0 | yes |
+| `_sigJobId` | let | 20318 | SIGNATURE MODAL | 5 | 3 | 2 | no |
+| `_sigCanvas` | let | 20319 | SIGNATURE MODAL | 22 | 20 | 2 | no |
+| `_sigCtx` | let | 20320 | SIGNATURE MODAL | 17 | 15 | 2 | no |
+| `_sigDrawing` | let | 20321 | SIGNATURE MODAL | 8 | 2 | 6 | no |
+| `openSigModal` | function | 20323 | SIGNATURE MODAL | 2 | 2 | 0 | yes |
+| `clearSig` | function | 20345 | SIGNATURE MODAL | 1 | 1 | 0 | yes |
+| `saveSig` | function | 20349 | SIGNATURE MODAL | 1 | 1 | 0 | yes |
+| `openFieldNotes` | function | 20364 | FIELD NOTES | 0 | 0 | 0 | no |
+| `DOCUMENT_CATEGORIES` | const | 20381 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 3 | 2 | 1 | no |
+| `DOCUMENT_MAX_BYTES` | const | 20394 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 2 | 1 | 1 | no |
+| `DOCUMENT_ALLOWED_EXT` | const | 20395 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 2 | 1 | 1 | no |
+| `escapeHtml` | function | 20400 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 13 | 13 | 0 | no |
+| `isSafeDocumentUrl` | function | 20404 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `sanitizeFilename` | function | 20408 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `documentFileExt` | function | 20417 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `validateDocumentFile` | function | 20422 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `uploadDocument` | function | 20433 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `_docModalJobId` | let | 20474 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 7 | 5 | 2 | no |
+| `_docPendingFiles` | let | 20475 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 8 | 4 | 4 | no |
+| `_docSessionId` | let | 20476 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 6 | 5 | 2 | no |
+| `openDocumentsModal` | function | 20478 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 3 | 3 | 0 | yes |
+| `documentsForContext` | function | 20486 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `documentCategoryLabel` | function | 20492 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | no |
+| `renderDocumentsModal` | function | 20497 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 2 | 2 | 0 | no |
+| `handleDocumentFilesSelected` | function | 20568 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | yes |
+| `submitDocumentUploads` | function | 20588 | DOCUMENT UPLOAD — ERSA operational file intake — Firebase Storage: companies/{companyId}/documents/{documentId}/{filename} — Firestore: ff_documents (see COL_DOCUMENTS). Listener lives in — initFirestore() alongside the other collections (see u12). | 1 | 1 | 0 | yes |
+| `setTheme` | function | 20637 | THEME TOGGLE | 3 | 3 | 0 | yes |
+| `_updateThemeBtns` | function | 20648 | THEME TOGGLE | 3 | 3 | 0 | no |
 
 ## Unresolved identifiers (not declared anywhere in the main script)
 
@@ -717,13 +717,13 @@ browser APIs, or CDN-provided names. Not a problem by itself; listed for complet
 
 ## Inline HTML event handlers
 
-Found 815 total. Classification distinguishes a direct function call
+Found 817 total. Classification distinguishes a direct function call
 (`toggleNavGroup('command')`) from an assignment, a multi-statement handler, or anything
 that did not parse as a standalone JS snippet.
 
 | Event | Count |
 |---|---|
-| onclick | 418 |
+| onclick | 420 |
 | onfocus | 152 |
 | onblur | 151 |
 | onchange | 67 |
@@ -738,7 +738,7 @@ that did not parse as a standalone JS snippet.
 
 | Classification | Count |
 |---|---|
-| direct-call | 345 |
+| direct-call | 347 |
 | assignment | 308 |
 | multi-statement | 72 |
 | unparsed | 61 |
@@ -772,7 +772,7 @@ fragment rather than an expression. **Their references are not credited to any b
 That makes them the specific reason a zero-reference result below is a *candidate* and
 not a verdict: a function reachable only through one of these looks unreferenced.
 
-Count: 61 of 815 handlers.
+Count: 61 of 817 handlers.
 
 | Line | Event | Captured fragment |
 |---|---|---|
@@ -796,47 +796,47 @@ Count: 61 of 815 handlers.
 | 8156 | onchange | `updateHelper('${j.id}',${i},'commission',this.value)` |
 | 8160 | onchange | `updateHelper('${j.id}',${i},'workerType',this.value)` |
 | 8166 | onclick | `removeHelper('${j.id}',${i})` |
-| 9005 | onclick | `export1099CSV(${selYear})` |
-| 9006 | onclick | `generate1099PDF(${selYear})` |
-| 10127 | onclick | `processStripePayment(${amountCents})` |
-| 10983 | onclick | `saveRefNum(this.dataset.jid,\'\')` |
-| 13176 | onclick | `handleNotifTap('${n._docId}','${n.type}',${JSON.stringify(n.meta\|\|{}).replace(/` |
-| 13179 | onmouseleave | `this.style.background='${n.read ? 'transparent' : 'rgba(0,255,65,0.04)'}'` |
-| 13958 | onclick | `openCalDay(\'' + ds + '\')` |
-| 13975 | onclick | `openCalDay(\'' + ds + '\')` |
-| 13987 | onclick | `event.stopPropagation();openJobDetail(\'' + j.id + '\')` |
-| 14680 | onchange | `STATE.inventory[${realIdx}].location=this.value;saveInventoryItem(STATE.inventory[${realIdx}],${realIdx})` |
-| 14683 | onclick | `adjustQty(${realIdx}, -1)` |
-| 14685 | onclick | `adjustQty(${realIdx}, 1)` |
-| 16164 | onclick | `advanceGate(\'' + job.id + '\',\'' + k + '\')` |
-| 16180 | onchange | `saveEstimateFieldDirect(this.dataset.jobid,\'officeRemarks\',this.value)` |
-| 16184 | onchange | `saveEstimateFieldDirect(this.dataset.jobid,\'slipRemarks\',this.value)` |
-| 16194 | onclick | `openBOL(\'' + job.id + '\')` |
-| 16195 | onclick | `openSigModal(\'' + job.id + '\')` |
-| 16196 | onclick | `openPhotoModal(\'' + job.id + '\')` |
-| 16197 | onclick | `openDocumentsModal(\'' + job.id + '\')` |
-| 16201 | onclick | `openClaimsDefensePanel(\'' + job.id + '\')` |
-| 16204 | onclick | `openFieldNotes(\'' + job.id + '\')` |
-| 16206 | onclick | `openEditJob(\'' + job.id + '\')` |
-| 16207 | onclick | `changeJobStatus(\'' + job.id + '\',\'active\')` |
-| 16208 | onclick | `changeJobStatus(\'' + job.id + '\',\'complete\')` |
-| 16209 | onclick | `changeJobStatus(\'' + job.id + '\',\'cancelled\')` |
-| 16210 | onclick | `deleteJob(\'' + job.id + '\')` |
-| 17355 | onclick | `saveVehicle('${vehicleId\|\|''}')` |
-| 18319 | onclick | `event.stopPropagation();openMarkPaidModal('${p.name}',${p.balance.toFixed(2)},'${p.role}','${p.username\|\|''}')` |
-| 18624 | onclick | `processPayment('${crewName}','${role}','${username}',${balance})` |
-| 18847 | onclick | `closeModal('modal-jobdetail');openMarkPaidModal('${crewName}',${p.balance},'${p.role}','${p.username}')` |
-| 18902 | onclick | `toggleSetting('${key}',${!val})` |
-| 19426 | onchange | `saveCompanyProfile({${JSON.stringify(key).slice(1,-1)}:this.value})` |
-| 19757 | onclick | `openEditHandle('${u.username}','${u.empId\|\|''}','${u.handle\|\|''}')` |
-| 19760 | onclick | `toggleUserActive('${u.username}','${u.role}',${!u.active})` |
-| 19787 | onclick | `closeModal(\'modal-jobdetail\')` |
-| 19795 | onfocus | `this.style.borderColor=\'var(--green)\'` |
-| 19795 | onblur | `this.style.borderColor=\'var(--gray2)\'` |
-| 19802 | onfocus | `this.style.borderColor=\'var(--green)\'` |
-| 19802 | onblur | `this.style.borderColor=\'var(--gray2)\'` |
-| 19811 | onclick | `closeModal(\'modal-jobdetail\')` |
-| 19812 | onclick | `saveEmployeeId(\'' + username + '\')` |
+| 9013 | onclick | `export1099CSV(${selYear})` |
+| 9014 | onclick | `generate1099PDF(${selYear})` |
+| 10135 | onclick | `processStripePayment(${amountCents})` |
+| 10991 | onclick | `saveRefNum(this.dataset.jid,\'\')` |
+| 13184 | onclick | `handleNotifTap('${n._docId}','${n.type}',${JSON.stringify(n.meta\|\|{}).replace(/` |
+| 13187 | onmouseleave | `this.style.background='${n.read ? 'transparent' : 'rgba(0,255,65,0.04)'}'` |
+| 13966 | onclick | `openCalDay(\'' + ds + '\')` |
+| 13983 | onclick | `openCalDay(\'' + ds + '\')` |
+| 13995 | onclick | `event.stopPropagation();openJobDetail(\'' + j.id + '\')` |
+| 14688 | onchange | `STATE.inventory[${realIdx}].location=this.value;saveInventoryItem(STATE.inventory[${realIdx}],${realIdx})` |
+| 14691 | onclick | `adjustQty(${realIdx}, -1)` |
+| 14693 | onclick | `adjustQty(${realIdx}, 1)` |
+| 16172 | onclick | `advanceGate(\'' + job.id + '\',\'' + k + '\')` |
+| 16188 | onchange | `saveEstimateFieldDirect(this.dataset.jobid,\'officeRemarks\',this.value)` |
+| 16192 | onchange | `saveEstimateFieldDirect(this.dataset.jobid,\'slipRemarks\',this.value)` |
+| 16202 | onclick | `openBOL(\'' + job.id + '\')` |
+| 16203 | onclick | `openSigModal(\'' + job.id + '\')` |
+| 16204 | onclick | `openPhotoModal(\'' + job.id + '\')` |
+| 16205 | onclick | `openDocumentsModal(\'' + job.id + '\')` |
+| 16209 | onclick | `openClaimsDefensePanel(\'' + job.id + '\')` |
+| 16212 | onclick | `openFieldNotes(\'' + job.id + '\')` |
+| 16214 | onclick | `openEditJob(\'' + job.id + '\')` |
+| 16215 | onclick | `changeJobStatus(\'' + job.id + '\',\'active\')` |
+| 16216 | onclick | `changeJobStatus(\'' + job.id + '\',\'complete\')` |
+| 16217 | onclick | `changeJobStatus(\'' + job.id + '\',\'cancelled\')` |
+| 16218 | onclick | `deleteJob(\'' + job.id + '\')` |
+| 17363 | onclick | `saveVehicle('${vehicleId\|\|''}')` |
+| 18327 | onclick | `event.stopPropagation();openMarkPaidModal('${p.name}',${p.balance.toFixed(2)},'${p.role}','${p.username\|\|''}')` |
+| 18632 | onclick | `processPayment('${crewName}','${role}','${username}',${balance})` |
+| 18855 | onclick | `closeModal('modal-jobdetail');openMarkPaidModal('${crewName}',${p.balance},'${p.role}','${p.username}')` |
+| 18910 | onclick | `toggleSetting('${key}',${!val})` |
+| 19434 | onchange | `saveCompanyProfile({${JSON.stringify(key).slice(1,-1)}:this.value})` |
+| 19765 | onclick | `openEditHandle('${u.username}','${u.empId\|\|''}','${u.handle\|\|''}')` |
+| 19768 | onclick | `toggleUserActive('${u.username}','${u.role}',${!u.active})` |
+| 19795 | onclick | `closeModal(\'modal-jobdetail\')` |
+| 19803 | onfocus | `this.style.borderColor=\'var(--green)\'` |
+| 19803 | onblur | `this.style.borderColor=\'var(--gray2)\'` |
+| 19810 | onfocus | `this.style.borderColor=\'var(--green)\'` |
+| 19810 | onblur | `this.style.borderColor=\'var(--gray2)\'` |
+| 19819 | onclick | `closeModal(\'modal-jobdetail\')` |
+| 19820 | onclick | `saveEmployeeId(\'' + username + '\')` |
 
 ## Reference summary
 
@@ -874,27 +874,27 @@ is textual: confirm the call site before relying on it.
 |---|---|---|---|
 | `launchFJStep` | 2651 | function | 2644 |
 | `toggleJobLoaded` | 3662 | function | 3639 |
-| `export1099CSV` | 9260 | function | 9005 |
-| `generate1099PDF` | 9311 | function | 9006 |
-| `processStripePayment` | 10164 | function | 10127 |
-| `openClaimsDefensePanel` | 10797 | function | 16201 |
-| `handleNotifTap` | 13199 | function | 13176 |
-| `updateDriverPayType` | 13361 | function | 7916 |
-| `updateHelper` | 13428 | function | 8117, 8124, 8132, 8138, 8156, 8160 |
-| `removeHelper` | 13495 | function | 8166 |
-| `adjustQty` | 14730 | function | 14683, 14685 |
-| `saveEstimateFieldDirect` | 16220 | function | 16180, 16184 |
-| `changeJobStatus` | 16308 | function | 16207, 16208, 16209 |
-| `saveVehicle` | 17360 | function | 17355 |
-| `openMarkPaidModal` | 18578 | function | 18319, 18847 |
-| `processPayment` | 18631 | function | 18624 |
-| `toggleSetting` | 19464 | function | 18902 |
-| `openEditHandle` | 19785 | function | 19757 |
-| `saveEmployeeId` | 19817 | function | 19812 |
-| `toggleUserActive` | 19952 | function | 19760 |
-| `toggleCompanyFeature` | 20100 | function | 5073 |
-| `toggleCompanyAccess` | 20199 | function | 5037 |
-| `openFieldNotes` | 20356 | function | 16204 |
+| `export1099CSV` | 9268 | function | 9013 |
+| `generate1099PDF` | 9319 | function | 9014 |
+| `processStripePayment` | 10172 | function | 10135 |
+| `openClaimsDefensePanel` | 10805 | function | 16209 |
+| `handleNotifTap` | 13207 | function | 13184 |
+| `updateDriverPayType` | 13369 | function | 7916 |
+| `updateHelper` | 13436 | function | 8117, 8124, 8132, 8138, 8156, 8160 |
+| `removeHelper` | 13503 | function | 8166 |
+| `adjustQty` | 14738 | function | 14691, 14693 |
+| `saveEstimateFieldDirect` | 16228 | function | 16188, 16192 |
+| `changeJobStatus` | 16316 | function | 16215, 16216, 16217 |
+| `saveVehicle` | 17368 | function | 17363 |
+| `openMarkPaidModal` | 18586 | function | 18327, 18855 |
+| `processPayment` | 18639 | function | 18632 |
+| `toggleSetting` | 19472 | function | 18910 |
+| `openEditHandle` | 19793 | function | 19765 |
+| `saveEmployeeId` | 19825 | function | 19820 |
+| `toggleUserActive` | 19960 | function | 19768 |
+| `toggleCompanyFeature` | 20108 | function | 5073 |
+| `toggleCompanyAccess` | 20207 | function | 5037 |
+| `openFieldNotes` | 20364 | function | 16212 |
 
 ## Zero-reference bindings (candidates — verification required)
 
@@ -932,26 +932,26 @@ Candidates: **37** · reviewed so far: 0 · inbound-referenced elsewhere: 417
 | `saveState` | 5735 | function | STATE & STORAGE | 0 | 0 | 0 | unreviewed |
 | `currentJobForModal` | 5858 | variable | STATE & STORAGE | 0 | 2 | 0 | unreviewed |
 | `enableFirestoreOffline` | 6266 | function | OFFLINE MODE — Full PWA with offline queue — Caches app shell on first load — Queues Firestore writes when offline — Syncs queue automatically when back online | 0 | 0 | 0 | unreviewed |
-| `smsDriver` | 9999 | function | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | unreviewed |
-| `smsClient` | 10009 | function | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | unreviewed |
-| `renderPaymentGateButton` | 10262 | function | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | unreviewed |
-| `createJobFromLead` | 10876 | function | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | unreviewed |
-| `jobDispId` | 10937 | function | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 0 | 0 | 0 | unreviewed |
-| `getEmployeeDisplay` | 11011 | function | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | unreviewed |
-| `assignEmpId` | 11017 | function | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | unreviewed |
-| `autoInviteClient` | 11896 | function | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 0 | 0 | 0 | unreviewed |
-| `checkUnpaidCrew` | 12784 | function | PAY SCHEDULE & UNPAID CREW CHECKER | 0 | 0 | 0 | unreviewed |
-| `requestPushPermission` | 12879 | function | NOTIFICATION ENGINE | 0 | 0 | 0 | unreviewed |
-| `toggleNotifPanel` | 13130 | function | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | unreviewed |
-| `updateDriverPay` | 13354 | function | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | unreviewed |
-| `updateDriverWorkerType` | 13397 | function | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | unreviewed |
-| `openAddPhoto` | 15814 | function | RECEIPTS | 0 | 0 | 0 | unreviewed |
-| `renderExportBar` | 17569 | function | EXPORT — CSV and financial reporting | 0 | 0 | 0 | unreviewed |
-| `voidPayrollEntry` | 18095 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
-| `restorePayrollEntry` | 18100 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
-| `checkForDuplicatesOnLoad` | 18206 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
-| `toggleTierFirewall` | 20095 | function | TRIAL + TIER SYSTEM | 0 | 0 | 0 | unreviewed |
-| `_platformConfig` | 20111 | variable | TRIAL + TIER SYSTEM | 0 | 2 | 0 | unreviewed |
+| `smsDriver` | 10007 | function | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | unreviewed |
+| `smsClient` | 10017 | function | TWILIO SMS — Real text notifications — Configure in Settings → Integrations | 0 | 0 | 0 | unreviewed |
+| `renderPaymentGateButton` | 10270 | function | STRIPE PAYMENT INTEGRATION — pk_test_51TJ9Sy7OpLKLw4wS1pBgWlKDocDOhvAIOGmmYx0LAk2mPztD88Ph3tCybFeHpuOhRyaDQBfbXOhySaWOOErgoNIG00692nsJib — Switch to pk_live_ key in Settings when ready to go live | 0 | 0 | 0 | unreviewed |
+| `createJobFromLead` | 10884 | function | LEAD CRM — Full pipeline management — Capture → Qualify → Quote → Follow-up → Convert → Job — Replaces the need for any external CRM tool | 0 | 0 | 0 | unreviewed |
+| `jobDispId` | 10945 | function | JOB DISPLAY ID — broker/carrier ref number support — job.id      = FleetFlow internal ID (never changes) — job.refNum  = Broker/carrier order number (editable by office) — jobDispId() = what to show everywhere in the UI | 0 | 0 | 0 | unreviewed |
+| `getEmployeeDisplay` | 11019 | function | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | unreviewed |
+| `assignEmpId` | 11025 | function | EMPLOYEE ID SYSTEM — empId  = auto-assigned badge (EMP-001, EMP-002...) — handle = user-chosen nickname/alias — displayHandle() = handle if set, else empId | 0 | 0 | 0 | unreviewed |
+| `autoInviteClient` | 11904 | function | CLIENT BOOKING PORTAL — URL: fleetflowmovemasters.netlify.app/?book=1&co=COMPANY_ID — Moving company shares this link on their website — Client fills details → instant quote → pays deposit → job created | 0 | 0 | 0 | unreviewed |
+| `checkUnpaidCrew` | 12792 | function | PAY SCHEDULE & UNPAID CREW CHECKER | 0 | 0 | 0 | unreviewed |
+| `requestPushPermission` | 12887 | function | NOTIFICATION ENGINE | 0 | 0 | 0 | unreviewed |
+| `toggleNotifPanel` | 13138 | function | SOUND ENGINE — Web Audio API, no external files needed | 0 | 0 | 0 | unreviewed |
+| `updateDriverPay` | 13362 | function | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | unreviewed |
+| `updateDriverWorkerType` | 13405 | function | TAX CALCULATION ENGINE — Independent contractors (1099) — self-employment tax — W2 employees — standard withholding estimate | 0 | 0 | 0 | unreviewed |
+| `openAddPhoto` | 15822 | function | RECEIPTS | 0 | 0 | 0 | unreviewed |
+| `renderExportBar` | 17577 | function | EXPORT — CSV and financial reporting | 0 | 0 | 0 | unreviewed |
+| `voidPayrollEntry` | 18103 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
+| `restorePayrollEntry` | 18108 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
+| `checkForDuplicatesOnLoad` | 18214 | function | PAYROLL LEDGER — Edit, Void, Restore, Duplicate Check | 0 | 0 | 0 | unreviewed |
+| `toggleTierFirewall` | 20103 | function | TRIAL + TIER SYSTEM | 0 | 0 | 0 | unreviewed |
+| `_platformConfig` | 20119 | variable | TRIAL + TIER SYSTEM | 0 | 2 | 0 | unreviewed |
 
 ## Firestore collections
 
@@ -961,7 +961,7 @@ their literal value; anything not statically resolvable is reported as-is rather
 | Collection | Referenced via | Call sites | First line |
 |---|---|---|---|
 | `(dynamic: op.collection)` | dynamic expression | 3 | 6182 |
-| `(unresolved: col)` | col | 1 | 9505 |
+| `(unresolved: col)` | col | 1 | 9513 |
 | `(unresolved: collection)` | collection | 2 | 6238 |
 | `ff_company` | COL_COMPANY, literal 'ff_company' | 15 | 4857 |
 | `ff_disbursements` | COL_DISBURSEMENTS | 8 | 5442 |
@@ -988,8 +988,8 @@ so the literal expression is more honest than an interpolated guess.
 | Line | Method | Path argument (source) | Resolved from |
 |---|---|---|---|
 | 5657 | `ref` | `` `ff_receipts/${receiptId}.${ext}` `` | path assigned at line 5656 |
-| 15802 | `refFromURL` | `r.photo` | — |
-| 20434 | `ref` | `` `companies/${companyId}/documents/${documentId}/${safeName}` `` | storagePath assigned at line 20433 |
+| 15810 | `refFromURL` | `r.photo` | — |
+| 20442 | `ref` | `` `companies/${companyId}/documents/${documentId}/${safeName}` `` | storagePath assigned at line 20441 |
 
 ## Phase 2 `fleetflow:ready` candidate dispatch points
 

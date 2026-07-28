@@ -8289,6 +8289,7 @@ function renderEstimateTab() {
           ${jobs.map(j => `<option value="${j.id}" ${j.id === activeJob?.id ? 'selected' : ''}>${j.id} · ${j.client} · ${j.date}</option>`).join('')}
         </select>
         ${activeJob ? `<button class="btn-green" style="padding:8px 16px;font-size:11px" onclick="generateBOLPDF('${activeJob.id}')">⬇ DOWNLOAD BOL PDF</button>` : ''}
+        ${activeJob && isAdmin() ? `<button class="btn-outline" id="est-upload-btn" style="padding:8px 16px;font-size:11px" onclick="openDocumentsModal('${activeJob.id}')">📎 UPLOAD FILES</button>` : ''}
       </div>
     </div>
 
@@ -8311,6 +8312,12 @@ function renderEstimateForm(jobId) {
   // Update download button
   const dlBtn = document.querySelector('[onclick^="generateBOLPDF"]');
   if (dlBtn) dlBtn.setAttribute('onclick', `generateBOLPDF('${jobId}')`);
+
+  // Re-point the upload button at the newly selected job. Without this it
+  // would keep pointing at whichever job was active when the tab first
+  // rendered, silently filing documents against the wrong job.
+  const upBtn = document.getElementById('est-upload-btn');
+  if (upBtn) upBtn.setAttribute('onclick', `openDocumentsModal('${jobId}')`);
 
   const est = job.estimate || {};
   const acc = est.acc || {};
@@ -8507,6 +8514,7 @@ function renderEstimateForm(jobId) {
     <!-- DOWNLOAD -->
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
       <button class="btn-outline" onclick="openBOL('${jobId}')">👁 PREVIEW BOL</button>
+      ${isAdmin() ? `<button class="btn-outline" onclick="openDocumentsModal('${jobId}')">📎 UPLOAD FILES</button>` : ''}
       <button class="btn-green" style="padding:12px 28px;font-size:13px" onclick="generateBOLPDF('${jobId}')">
         ⬇ DOWNLOAD COMPLETE BOL PDF (7 PAGES)
       </button>
