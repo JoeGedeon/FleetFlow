@@ -1,11 +1,28 @@
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const sourcePath = new URL('../index.html', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
+
+// Resolve `// LEGACY_EXTRACT: <path>` markers left by the ongoing legacy
+// decomposition (see docs/legacy-app-map.md): index.html keeps the extracted
+// source out of the monolith for readability/review, and the build splices
+// each file's content back into the same inline <script> block it always
+// occupied, wrapped in BEGIN/END markers. This is invisible to the browser —
+// dist/index.html still ships one script block, identical apart from the
+// two marker comment lines per extraction.
+const extractRe = /^\/\/ LEGACY_EXTRACT: (.+)$/gm;
+html = html.replace(extractRe, (full, relPath) => {
+  const filePath = path.join(repoRoot, relPath.trim());
+  const content = fs.readFileSync(filePath, 'utf8');
+  return `/* ===== BEGIN ${relPath.trim()} ===== */\n${content}/* ===== END ${relPath.trim()} ===== */`;
+});
 
 if (!html.includes(marker)) {
   const patch = `
