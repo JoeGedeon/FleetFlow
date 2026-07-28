@@ -1,4 +1,5 @@
 [build]
+  command = "node scripts/apply-nav-stacking-fix.mjs"
   publish = "."
 
 [[redirects]]
