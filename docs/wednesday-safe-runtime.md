@@ -1,0 +1,1 @@
+Wednesday is deployed as isolated CSS and JavaScript assets. Its runtime is wrapped in a top-level try/catch, mounts only after DOM readiness, waits for a visible FleetFlow navigation/dashboard element before first-run presentation, and never participates in authentication or application startup.
