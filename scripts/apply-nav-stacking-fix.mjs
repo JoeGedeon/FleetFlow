@@ -5,10 +5,13 @@ const distDir = new URL('../dist/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
 const wednesdayCssSource = new URL('../assets/wednesday-observer.css', import.meta.url);
 const wednesdayJsSource = new URL('../assets/wednesday-observer.js', import.meta.url);
+const startupWatchdogSource = new URL('../assets/startup-watchdog.js', import.meta.url);
 const wednesdayCssDist = new URL('../dist/wednesday-observer.css', import.meta.url);
 const wednesdayJsDist = new URL('../dist/wednesday-observer.js', import.meta.url);
+const startupWatchdogDist = new URL('../dist/startup-watchdog.js', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
 const wednesdayMarker = 'fleetflow-wednesday-observer-v1';
+const startupWatchdogMarker = 'fleetflow-startup-watchdog-v1';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
 
@@ -84,6 +87,20 @@ if (!html.includes(marker)) {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
+if (!html.includes(startupWatchdogMarker)) {
+  if (!html.includes('</body>')) {
+    throw new Error('index.html is missing </body>; refusing to attach startup watchdog.');
+  }
+
+  html = html.replace(
+    '</body>',
+    `<script src="/startup-watchdog.js" defer data-feature="${startupWatchdogMarker}"></script>\n</body>`
+  );
+  console.log('Attached isolated startup splash watchdog.');
+} else {
+  console.log('Startup splash watchdog already attached.');
+}
+
 if (!html.includes(wednesdayMarker)) {
   if (!html.includes('</head>') || !html.includes('</body>')) {
     throw new Error('index.html is missing required closing tags; refusing to attach Wednesday.');
@@ -107,4 +124,5 @@ fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
 fs.copyFileSync(wednesdayCssSource, wednesdayCssDist);
 fs.copyFileSync(wednesdayJsSource, wednesdayJsDist);
-console.log('Staged patched legacy FleetFlow and Wednesday observer assets in dist/.');
+fs.copyFileSync(startupWatchdogSource, startupWatchdogDist);
+console.log('Staged patched legacy FleetFlow, startup watchdog, and Wednesday observer assets in dist/.');
