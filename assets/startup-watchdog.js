@@ -10,6 +10,18 @@
   const POLL_MS = 250;
   let recovered = false;
   let intervalId = null;
+  let firstStartupError = '';
+
+  window.addEventListener('error', event => {
+    if (!firstStartupError) firstStartupError = event.message || 'Unknown script error';
+  }, true);
+
+  window.addEventListener('unhandledrejection', event => {
+    if (!firstStartupError) {
+      const reason = event.reason;
+      firstStartupError = reason?.message || String(reason || 'Unhandled promise rejection');
+    }
+  });
 
   function isVisible(element) {
     if (!element) return false;
@@ -38,6 +50,18 @@
     return document.getElementById('app');
   }
 
+  function suppressSplashPermanently() {
+    const removeSplash = () => {
+      const splash = findSplash();
+      if (splash) splash.remove();
+    };
+
+    removeSplash();
+    const observer = new MutationObserver(removeSplash);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    window.setTimeout(() => observer.disconnect(), 60000);
+  }
+
   function ensureStatusMessage(message) {
     const login = findLogin();
     if (!login) return;
@@ -55,7 +79,9 @@
         'color:#ffaa00',
         'font:12px/1.45 monospace',
         'letter-spacing:.4px',
-        'text-align:left'
+        'text-align:left',
+        'position:relative',
+        'z-index:2147483647'
       ].join(';');
       host.appendChild(notice);
     }
@@ -64,38 +90,35 @@
 
   function revealLogin(reason) {
     if (recovered) return;
-    const splash = findSplash();
     const login = findLogin();
     const app = findApp();
 
     if (isVisible(app)) {
-      if (splash) splash.style.display = 'none';
+      suppressSplashPermanently();
       recovered = true;
       return;
     }
 
     if (!login) return;
 
-    if (splash) {
-      splash.style.display = 'none';
-      splash.setAttribute('aria-hidden', 'true');
-    }
-    login.style.display = 'flex';
-    login.style.visibility = 'visible';
+    suppressSplashPermanently();
+    login.style.cssText += ';display:flex !important;visibility:visible !important;opacity:1 !important;position:fixed !important;inset:0 !important;z-index:2147483646 !important;';
     login.removeAttribute('aria-hidden');
 
     const firebaseReady = typeof window.firebase !== 'undefined';
+    const detail = firstStartupError ? ` First error: ${firstStartupError}` : '';
     ensureStatusMessage(
       firebaseReady
-        ? 'FleetFlow startup took too long. The login screen was restored safely. You may sign in or refresh once.'
-        : 'FleetFlow could not finish loading an external service. Check the connection, then refresh once.'
+        ? `FleetFlow startup stalled. Login was restored in recovery mode.${detail}`
+        : `FleetFlow could not finish loading an external service.${detail}`
     );
 
-    console.error('[FleetFlow startup watchdog] Recovered from stalled splash screen.', {
+    console.error('[FleetFlow startup watchdog] Entered terminal recovery mode.', {
       reason,
       elapsedMs: Date.now() - STARTED_AT,
       readyState: document.readyState,
       firebaseReady,
+      firstStartupError,
       appVisible: isVisible(app),
       loginVisible: isVisible(login)
     });
@@ -103,12 +126,11 @@
   }
 
   function inspectStartup() {
-    const splash = findSplash();
     const login = findLogin();
     const app = findApp();
 
     if (isVisible(app) || isVisible(login)) {
-      if (splash && isVisible(splash)) splash.style.display = 'none';
+      suppressSplashPermanently();
       recovered = true;
       if (intervalId) window.clearInterval(intervalId);
       return;
@@ -121,7 +143,7 @@
       return;
     }
 
-    if (elapsed >= SOFT_TIMEOUT_MS && splash && isVisible(splash)) {
+    if (elapsed >= SOFT_TIMEOUT_MS && findSplash() && isVisible(findSplash())) {
       revealLogin('visible-splash-timeout');
       if (intervalId) window.clearInterval(intervalId);
     }
