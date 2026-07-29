@@ -4,6 +4,7 @@ const sourcePath = new URL('../index.html', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
+const uploadEntrancesMarker = 'fleetflow-global-upload-entrances-v1';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
 
@@ -99,11 +100,105 @@ if (!html.includes(marker)) {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
+if (!html.includes(uploadEntrancesMarker)) {
+  const uploadEntrances = `
+<!-- ${uploadEntrancesMarker} -->
+<script id="${uploadEntrancesMarker}">
+(function () {
+  'use strict';
+
+  var allowedRoles = ['CREATOR', 'OWNER', 'OFFICE'];
+
+  function textOf(node) {
+    return String(node && node.textContent || '')
+      .replace(/\\s+/g, ' ')
+      .trim()
+      .toUpperCase();
+  }
+
+  function roleCanUpload() {
+    var pageText = textOf(document.body);
+    return allowedRoles.some(function (role) {
+      return pageText.indexOf(role) !== -1;
+    });
+  }
+
+  function makeUploadButton(id) {
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.id = id;
+    button.className = 'btn secondary';
+    button.textContent = '📎 UPLOAD FILES';
+    button.setAttribute('onclick', 'openDocumentsModal(null)');
+    button.setAttribute('aria-label', 'Upload operational documents');
+    button.style.marginLeft = '8px';
+    button.style.whiteSpace = 'nowrap';
+    return button;
+  }
+
+  function insertAfter(anchor, button) {
+    if (!anchor || !anchor.parentNode || document.getElementById(button.id)) return;
+    anchor.parentNode.insertBefore(button, anchor.nextSibling);
+  }
+
+  function ensureUploadEntrances() {
+    if (!roleCanUpload()) return;
+    if (typeof window.openDocumentsModal !== 'function') return;
+
+    var actions = Array.prototype.slice.call(document.querySelectorAll('button, a'));
+
+    var dashboardAnchor = actions.find(function (node) {
+      var label = textOf(node).replace(/^\\+\\s*/, '');
+      return label === 'ADD JOB';
+    });
+    if (dashboardAnchor) {
+      insertAfter(dashboardAnchor, makeUploadButton('dashboard-upload-files-btn'));
+    }
+
+    var calendarAnchor = actions.find(function (node) {
+      var label = textOf(node).replace(/^\\+\\s*/, '');
+      return label === 'RECEIPT';
+    });
+    if (calendarAnchor) {
+      insertAfter(calendarAnchor, makeUploadButton('calendar-upload-files-btn'));
+    }
+  }
+
+  var scheduled = false;
+  function scheduleEnsure() {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(function () {
+      scheduled = false;
+      ensureUploadEntrances();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleEnsure, { once: true });
+  } else {
+    scheduleEnsure();
+  }
+
+  window.addEventListener('load', scheduleEnsure, { once: true });
+
+  var observer = new MutationObserver(scheduleEnsure);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+`;
+
+  if (!html.includes('</body>')) {
+    throw new Error('index.html is missing </body>; refusing to add upload entrances.');
+  }
+
+  html = html.replace('</body>', `${uploadEntrances}\n</body>`);
+  console.log('Injected Dashboard and Calendar upload entrances.');
+} else {
+  console.log('Dashboard and Calendar upload entrances already present.');
+}
+
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
-fs.copyFileSync(wednesdayCssSource, wednesdayCssDist);
-fs.copyFileSync(wednesdayJsSource, wednesdayJsDist);
-fs.copyFileSync(startupWatchdogSource, startupWatchdogDist);
-console.log('Staged patched legacy FleetFlow with syntax repair, inline startup recovery, and Wednesday observer assets in dist/.');
 console.log('Staged patched legacy FleetFlow index.html in dist/.');
