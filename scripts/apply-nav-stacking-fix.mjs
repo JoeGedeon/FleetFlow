@@ -1,15 +1,24 @@
 import fs from 'node:fs';
+import {
+  HEAD_EXTENSION_ANCHOR,
+  NAV_MARKER,
+  requireExactlyOnce,
+  validateGeneratedDocument,
+} from './build-validation.mjs';
 
 const sourcePath = new URL('../index.html', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
-const marker = 'fleetflow-original-nav-stacking-fix-v2';
+const marker = NAV_MARKER;
+const insertionAnchor = HEAD_EXTENSION_ANCHOR;
 
-let html = fs.readFileSync(sourcePath, 'utf8');
+const sourceHtml = fs.readFileSync(sourcePath, 'utf8');
+let html = sourceHtml;
+
+requireExactlyOnce(sourceHtml, insertionAnchor, 'head extension anchor');
 
 if (!html.includes(marker)) {
   const patch = `
-<!-- ${marker} -->
 <style id="${marker}">
   /*
    * Preserve the original navigation contract:
@@ -69,17 +78,21 @@ if (!html.includes(marker)) {
 </style>
 `;
 
-  if (!html.includes('</head>')) {
-    throw new Error('index.html is missing </head>; refusing to patch.');
-  }
-
-  html = html.replace('</head>', `${patch}\n</head>`);
+  html = html.replace(insertionAnchor, `${insertionAnchor}${patch}`);
   console.log('Injected original navigation coordinate-system fix.');
 } else {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
+validateGeneratedDocument(html, sourceHtml);
+
+// Building must never modify the authoritative production monolith.
+if (fs.readFileSync(sourcePath, 'utf8') !== sourceHtml) {
+  throw new Error('index.html changed during assembly; refusing to publish.');
+}
+
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
-console.log('Staged patched legacy FleetFlow index.html in dist/.');
+validateGeneratedDocument(fs.readFileSync(distIndexPath, 'utf8'), sourceHtml);
+console.log('Validated and staged patched legacy FleetFlow index.html in dist/.');
