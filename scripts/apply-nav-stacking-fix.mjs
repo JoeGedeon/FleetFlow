@@ -2,8 +2,12 @@ import fs from 'node:fs';
 
 const sourcePath = new URL('../index.html', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
+const distAssetsDir = new URL('../dist/assets/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
+const extensionsSource = new URL('../assets/operational-extensions.js', import.meta.url);
+const extensionsDist = new URL('../dist/assets/operational-extensions.js', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
+const extensionsMarker = 'fleetflow-operational-extensions-v1';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
 
@@ -79,7 +83,24 @@ if (!html.includes(marker)) {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
+if (!fs.existsSync(extensionsSource)) {
+  throw new Error('assets/operational-extensions.js is missing; refusing to stage an incomplete deploy.');
+}
+
+if (!html.includes(extensionsMarker)) {
+  if (!html.includes('</body>')) {
+    throw new Error('index.html is missing </body>; refusing to attach operational extensions.');
+  }
+
+  const scriptTag = `\n<!-- ${extensionsMarker} -->\n<script defer src="/assets/operational-extensions.js"></script>\n`;
+  html = html.replace('</body>', `${scriptTag}</body>`);
+  console.log('Attached isolated post-login operational extensions.');
+} else {
+  console.log('Operational extensions already attached.');
+}
+
 fs.rmSync(distDir, { recursive: true, force: true });
-fs.mkdirSync(distDir, { recursive: true });
+fs.mkdirSync(distAssetsDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
-console.log('Staged patched legacy FleetFlow index.html in dist/.');
+fs.copyFileSync(extensionsSource, extensionsDist);
+console.log('Staged FleetFlow with isolated upload entrances and Wednesday observer in dist/.');
