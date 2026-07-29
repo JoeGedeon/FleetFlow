@@ -3,20 +3,9 @@ import fs from 'node:fs';
 const sourcePath = new URL('../index.html', import.meta.url);
 const distDir = new URL('../dist/', import.meta.url);
 const distIndexPath = new URL('../dist/index.html', import.meta.url);
-const wednesdayCssSource = new URL('../assets/wednesday-observer.css', import.meta.url);
-const wednesdayJsSource = new URL('../assets/wednesday-observer.js', import.meta.url);
-const startupWatchdogSource = new URL('../assets/startup-watchdog.js', import.meta.url);
-const wednesdayCssDist = new URL('../dist/wednesday-observer.css', import.meta.url);
-const wednesdayJsDist = new URL('../dist/wednesday-observer.js', import.meta.url);
-const startupWatchdogDist = new URL('../dist/startup-watchdog.js', import.meta.url);
 const marker = 'fleetflow-original-nav-stacking-fix-v2';
-const wednesdayMarker = 'fleetflow-wednesday-observer-v1';
-const startupWatchdogMarker = 'fleetflow-startup-watchdog-v3-inline';
 
 let html = fs.readFileSync(sourcePath, 'utf8');
-const startupWatchdogCode = fs
-  .readFileSync(startupWatchdogSource, 'utf8')
-  .replaceAll('</script>', '<\\/script>');
 
 const brokenLoadSheetRowsPattern = /\$\{jobs\.map\(\(j,i\)=>`[\s\S]*?<\/tr>`\)\.join\(''\)\}/;
 const fixedLoadSheetRows = `\${jobs.map((j,i)=>[
@@ -110,38 +99,6 @@ if (!html.includes(marker)) {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
-if (!html.includes(startupWatchdogMarker)) {
-  if (!html.includes('</body>')) {
-    throw new Error('index.html is missing </body>; refusing to attach startup watchdog.');
-  }
-
-  html = html.replace(
-    '</body>',
-    `<script data-feature="${startupWatchdogMarker}">\n${startupWatchdogCode}\n</script>\n</body>`
-  );
-  console.log('Inlined startup splash watchdog into deployed HTML.');
-} else {
-  console.log('Inline startup splash watchdog already attached.');
-}
-
-if (!html.includes(wednesdayMarker)) {
-  if (!html.includes('</head>') || !html.includes('</body>')) {
-    throw new Error('index.html is missing required closing tags; refusing to attach Wednesday.');
-  }
-
-  html = html.replace(
-    '</head>',
-    `<link rel="stylesheet" href="/wednesday-observer.css" data-feature="${wednesdayMarker}">\n</head>`
-  );
-  html = html.replace(
-    '</body>',
-    `<script src="/wednesday-observer.js" defer data-feature="${wednesdayMarker}"></script>\n</body>`
-  );
-  console.log('Attached isolated Wednesday observer assets.');
-} else {
-  console.log('Wednesday observer assets already attached.');
-}
-
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
@@ -149,3 +106,4 @@ fs.copyFileSync(wednesdayCssSource, wednesdayCssDist);
 fs.copyFileSync(wednesdayJsSource, wednesdayJsDist);
 fs.copyFileSync(startupWatchdogSource, startupWatchdogDist);
 console.log('Staged patched legacy FleetFlow with syntax repair, inline startup recovery, and Wednesday observer assets in dist/.');
+console.log('Staged patched legacy FleetFlow index.html in dist/.');
