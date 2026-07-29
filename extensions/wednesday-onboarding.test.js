@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { progressKey, readProgress, STEPS, writeProgress } from './wednesday-onboarding.js';
+import fs from 'node:fs';
 
 function memoryStorage() {
   const values = new Map();
@@ -28,4 +29,13 @@ test('guide has every deterministic emergency onboarding step', () => {
     'Create or review the first job', 'Explain Dashboard', 'Explain Jobs', 'Explain Calendar',
     'Explain Warehouse', 'Explain Payroll', 'Explain Documents', 'Onboarding completion summary'
   ]);
+});
+
+test('resume control stays above mobile safe areas and browser toolbars', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+  assert.match(source, /right:max\(16px,env\(safe-area-inset-right\)\)/);
+  assert.match(source, /bottom:calc\(max\(16px,env\(safe-area-inset-bottom\)\) \+ 72px\)/);
+  assert.match(source, /z-index:7000/);
+  assert.match(source, /\.ffw-resume\{display:block;margin-left:auto/);
+  assert.doesNotMatch(source, /\.ffw-resume\{float:/);
 });
