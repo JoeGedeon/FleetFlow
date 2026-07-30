@@ -5858,6 +5858,23 @@ function getDateOffset(days) { const d = new Date(); d.setDate(d.getDate() + day
 let currentUser = null;
 let currentJobForModal = null;
 
+// Core readiness is a generic, exact-once extension boundary. Extensions receive
+// only sanitized tenant/user identity after authentication; core never imports,
+// awaits, or depends on an extension.
+let fleetflowAppReadySignaled = false;
+function signalFleetFlowAppReady() {
+  if (fleetflowAppReadySignaled || !currentUser) return;
+  fleetflowAppReadySignaled = true;
+  const detail = Object.freeze({
+    companyId: String(currentUser.companyId || 'default'),
+    username: String(currentUser.username || ''),
+    displayName: String(currentUser.name || ''),
+    role: String(currentUser.role || '')
+  });
+  window.__fleetflowReadyContext = detail;
+  window.dispatchEvent(new CustomEvent('fleetflow:app-ready', { detail }));
+}
+
 // ============================================================
 // AUTH
 // ============================================================
@@ -5891,6 +5908,7 @@ async function checkFirstRun() {
         activeTab = 'dashboard';
         buildTabs();
         initFirestore();
+        signalFleetFlowAppReady();
         return;
       }
     }
@@ -5943,6 +5961,7 @@ async function checkFirstRun() {
                     user.role === 'helper' ? 'jobs' : 'dashboard';
         buildTabs();
         initFirestore();
+        signalFleetFlowAppReady();
         notify('Welcome back, ' + (user.handle||user.displayName) + ' ✓');
         clearTimeout(loginTimeout);
         loadLeads();
@@ -6449,6 +6468,7 @@ async function doLogin() {
     activeTab = 'dashboard';
     buildTabs();
     initFirestore();
+    signalFleetFlowAppReady();
     return;
   }
   // ── END LOCAL BYPASS ──────────────────────────────────────────────
@@ -6511,6 +6531,7 @@ async function doLogin() {
 
     buildTabs();
     initFirestore();
+    signalFleetFlowAppReady();
 
   } catch(e) {
     showLoginError('Connection error: ' + e.message);
@@ -6525,6 +6546,8 @@ function showLoginError(msg) {
 }
 
 function doLogout() {
+  window.dispatchEvent(new CustomEvent('fleetflow:session-ended'));
+  fleetflowAppReadySignaled = false;
   clearSession(); // Clear saved session — will require login next time
   stopListeners();
   STATE = { jobs: [], inventory: [], receipts: [], disbursements: [], notifications: [], fleet: [], company: {}, payrollLedger: [], travelBlocks: [], loadSheets: [], warehouseLogs: [], documents: [] };
@@ -13571,13 +13594,6 @@ function getDriverColor(driverName) {
 function renderCalendar() {
   const content_el = document.getElementById('main-content');
   const role = currentUser.role;
-  // Reset to current month if calendar is stale (more than 2 months behind)
-  const now = new Date();
-  const monthDiff = (now.getFullYear() - calYear) * 12 + (now.getMonth() - calMonth);
-  if (monthDiff > 2 || monthDiff < -6) {
-    calYear  = now.getFullYear();
-    calMonth = now.getMonth();
-  }
 
   // Scope jobs per role — include pending, active, AND complete; exclude only cancelled
   // Pending jobs MUST show on calendar even before driver is assigned

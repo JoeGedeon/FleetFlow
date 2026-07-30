@@ -2,6 +2,7 @@ import { parse } from 'acorn';
 import { createHash } from 'node:crypto';
 
 export const NAV_MARKER = 'fleetflow-original-nav-stacking-fix-v2';
+export const EXTENSION_MARKER = 'fleetflow-post-readiness-extension-loader-v1';
 export const HEAD_EXTENSION_ANCHOR = '<!-- FLEETFLOW_BUILD_HEAD_EXTENSIONS -->';
 export const LOGIN_REGION_START = '<div id="login-screen">';
 export const LOGIN_REGION_END = '<!-- APP -->';
@@ -49,14 +50,11 @@ export function validateGeneratedDocument(document, source) {
   requireExactlyOnce(document, 'id="login-name"', 'login username control');
   requireExactlyOnce(document, 'function doLogin()', 'login entry point');
   requireExactlyOnce(document, NAV_MARKER, 'navigation build extension marker');
+  validateExtensionArchitecture(document);
 
   if (!document.trimEnd().endsWith('</html>')) {
     throw new Error('Generated document does not end with </html>.');
   }
-  if (/wednesday-observer|fleetflow-wednesday|src\/components\/Wednesday/i.test(document)) {
-    throw new Error('Wednesday runtime reference reached the production document.');
-  }
-
   let inlineScriptCount = 0;
   for (const match of document.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
     if (/\bsrc\s*=/.test(match[1])) continue;
@@ -69,4 +67,40 @@ export function validateGeneratedDocument(document, source) {
   }
   if (inlineScriptCount === 0) throw new Error('No inline FleetFlow runtime found.');
   if (source !== undefined) assertLoginRegionUnchanged(source, document);
+}
+
+export function validateExtensionArchitecture(document) {
+  requireExactlyOnce(document, EXTENSION_MARKER, 'post-readiness extension loader marker');
+  requireExactlyOnce(document, "function signalFleetFlowAppReady()", 'FleetFlow app-ready signal');
+  requireExactlyOnce(document, "window.dispatchEvent(new CustomEvent('fleetflow:app-ready'", 'FleetFlow app-ready dispatch');
+
+  const head = document.slice(document.indexOf('<head>'), document.indexOf('</head>'));
+  if (/Wednesday|wednesday-onboarding/i.test(head)) {
+    throw new Error('Wednesday must not be loaded synchronously from the document head.');
+  }
+  const readinessListener = document.indexOf("addEventListener('fleetflow:app-ready'");
+  if (readinessListener < 0) {
+    throw new Error('Extensions must be registered behind fleetflow:app-ready.');
+  }
+  if (!document.includes('if (!context || !context.username || !context.companyId) return;')) {
+    throw new Error('Extensions must initialize only after authenticated tenant context exists.');
+  }
+  if (/\b(?:import|require)\s*(?:\(|)[^\n;]*wednesday/i.test(document.replace(/import\(registration\.module\)/g, ''))) {
+    throw new Error('FleetFlow core must not directly import Wednesday.');
+  }
+  if (/await[^\n;]*wednesday/i.test(document)) {
+    throw new Error('FleetFlow core must not await Wednesday.');
+  }
+  if (!document.includes("import(registration.module).then(module => module.initialize(context)).catch(reportExtensionFailure)")) {
+    throw new Error('Extension initialization failures must be contained outside core startup.');
+  }
+
+  for (const coreEntry of ['function doLogin()', 'function doLogout()', 'function switchTab(tab)', 'function renderActiveTab()']) {
+    const start = document.indexOf(coreEntry);
+    const next = document.indexOf('\nfunction ', start + coreEntry.length);
+    const body = document.slice(start, next < 0 ? document.length : next);
+    if (/Wednesday|wednesday-onboarding/i.test(body)) {
+      throw new Error(`Wednesday must not be required by ${coreEntry}.`);
+    }
+  }
 }
