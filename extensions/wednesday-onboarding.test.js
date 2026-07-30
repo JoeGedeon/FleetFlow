@@ -39,3 +39,18 @@ test('resume control stays above mobile safe areas and browser toolbars', () => 
   assert.match(source, /\.ffw-resume\{display:block;margin-left:auto/);
   assert.doesNotMatch(source, /\.ffw-resume\{float:/);
 });
+
+test('voice narration is opt-in, adjustable, and lifecycle-contained', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+  assert.match(source, /Narration starts only when you press Play/);
+  assert.match(source, /no microphone, OpenAI Voice, or PACER connection/);
+  assert.match(source, /▶ Play voice/);
+  assert.match(source, />Pause</);
+  assert.match(source, />Stop</);
+  assert.match(source, /data-voice-setting="voice"/);
+  assert.match(source, /data-voice-setting="rate"/);
+  assert.match(source, /data-voice-setting="volume"/);
+  assert.match(source, /fleetflow:route-changed/);
+  assert.match(source, /function remove\(\) \{ stopNarration\(\)/);
+  assert.match(source, /Wednesday remains fully usable without it/);
+});

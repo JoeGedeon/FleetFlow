@@ -6796,6 +6796,7 @@ function switchTab(tab) {
   if (anyModalOpen) return;
   if (!planAllowsTab(tab)) { showTabLockedPrompt(tab); return; }
   activeTab = tab; buildTabs(); renderActiveTab();
+  window.dispatchEvent(new CustomEvent('fleetflow:route-changed', { detail: { tab } }));
 }
 
 function renderActiveTab() {
