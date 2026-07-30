@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fleetflow.app/schemas/fleetflow-context-packet-v1.schema.json",
+  "title": "FleetFlow Context Packet v1",
+  "description": "A read-only, authorized snapshot of the current FleetFlow screen for optional consumers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contextVersion",
+    "contextId",
+    "generatedAt",
+    "module",
+    "screen",
+    "selection",
+    "summary",
+    "attentionItems",
+    "allowedActions",
+    "citations"
+  ],
+  "properties": {
+    "contextVersion": { "const": "1.0" },
+    "contextId": { "type": "string", "pattern": "^ctx_[A-Za-z0-9_-]{8,128}$" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "module": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
+    "screen": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "version"],
+      "properties": {
+        "type": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
+        "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 160 }
+      }
+    },
+    "selection": { "$ref": "#/$defs/safeMap" },
+    "summary": { "$ref": "#/$defs/safeMap" },
+    "attentionItems": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "severity", "message", "citationIds"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
+          "severity": { "enum": ["info", "warning", "critical"] },
+          "message": { "type": "string", "maxLength": 500 },
+          "citationIds": {
+            "type": "array",
+            "maxItems": 20,
+            "items": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "allowedActions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
+      "uniqueItems": true
+    },
+    "citations": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "sourceType", "sourceId", "version", "locator"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "sourceType": { "type": "string", "pattern": "^fleetflow-[a-z0-9_-]+$" },
+          "sourceId": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "version": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "locator": { "type": "string", "minLength": 1, "maxLength": 300 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "safeMap": {
+      "type": "object",
+      "maxProperties": 100,
+      "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$" },
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "string", "maxLength": 1000 },
+          { "type": "number" },
+          { "type": "boolean" },
+          { "type": "null" }
+        ]
+      }
+    }
+  }
+}

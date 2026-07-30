@@ -154,6 +154,12 @@ Future engineers should understand not only what changed, but why it changed.
 
 Code shows what changed. Git shows when it changed. The decision log explains why it changed.
 
+Accepted architecture decisions:
+
+- [FleetFlow Read Gateway v1](docs/fleetflow-read-gateway-v1.md) — keeps FleetFlow
+  independent while providing authenticated, tenant-scoped, read-only records and
+  document access to Wednesday and optional, more restricted consumers such as PACER.
+
 ## Rollback Standard
 
 Every implementation pull request must include a clear rollback plan appropriate to the change.
