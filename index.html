@@ -13594,13 +13594,6 @@ function getDriverColor(driverName) {
 function renderCalendar() {
   const content_el = document.getElementById('main-content');
   const role = currentUser.role;
-  // Reset to current month if calendar is stale (more than 2 months behind)
-  const now = new Date();
-  const monthDiff = (now.getFullYear() - calYear) * 12 + (now.getMonth() - calMonth);
-  if (monthDiff > 2 || monthDiff < -6) {
-    calYear  = now.getFullYear();
-    calMonth = now.getMonth();
-  }
 
   // Scope jobs per role — include pending, active, AND complete; exclude only cancelled
   // Pending jobs MUST show on calendar even before driver is assigned
