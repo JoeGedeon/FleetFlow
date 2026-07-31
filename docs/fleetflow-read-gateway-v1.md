@@ -187,6 +187,8 @@ Example Calendar packet:
 {
   "contextVersion": "1.0",
   "contextId": "ctx_opaque_id",
+  "contextEpoch": 7,
+  "contextState": "ACTIVE",
   "generatedAt": "2026-07-30T12:00:00.000Z",
   "module": "calendar",
   "screen": "month",
@@ -230,6 +232,36 @@ PACER memory, call a model, mutate FleetFlow, or make core wait for an optional 
 Packets are ephemeral snapshots: consumers must discard them on route change, context
 invalidation, logout, or session expiry and request a new packet rather than assuming the
 screen is unchanged.
+
+### Packet lifecycle and acceptance
+
+The three lifecycle fields have separate purposes:
+
+- `contextId` identifies one packet for tracing and audit correlation;
+- `contextEpoch` binds the packet to the currently valid authenticated-session context;
+  and
+- `contextState` records the packet lifecycle state. Only `ACTIVE` may be consumed.
+
+The trusted FleetFlow runtime owns the current authenticated session, its context epoch,
+and an invalidation registry keyed by `contextId`. Browser state, packet contents, and
+consumer state are not authoritative for any of those values. Invalidating a context ID
+therefore revokes every cached or replayed copy of that packet, even when its serialized
+`contextState` remains `ACTIVE`.
+
+Wednesday, PACER, and any other approved consumer must accept a Context Packet v1 only
+when all of the following are true:
+
+1. The trusted runtime verifies that the packet was produced under the current
+   authenticated server session.
+2. `packet.contextEpoch` exactly equals the trusted runtime epoch. Greater-than,
+   less-than, and range comparisons are invalid.
+3. `packet.contextState` is exactly `ACTIVE`.
+4. `packet.contextId` is absent from the trusted runtime invalidation registry.
+5. The packet passes the closed Context Packet v1 schema.
+
+Failure of any check rejects the packet and requires a freshly generated packet. A
+consumer must not fall back to an earlier packet, infer a tenant from browser-selected
+state, or apply approximate authorization logic.
 
 ## Consumer policies
 
