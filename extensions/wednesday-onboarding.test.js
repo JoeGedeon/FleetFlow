@@ -54,3 +54,28 @@ test('voice narration is opt-in, adjustable, and lifecycle-contained', () => {
   assert.match(source, /function remove\(\) \{ stopNarration\(\)/);
   assert.match(source, /Wednesday remains fully usable without it/);
 });
+
+test('voice render cannot be overwritten by the legacy onboarding card', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+  const renderStart = source.indexOf('function render()');
+  const renderEnd = source.indexOf('\n  function advance()', renderStart);
+  const renderSource = source.slice(renderStart, renderEnd);
+  const cardAssignments = renderSource.match(/root\.innerHTML\s*=\s*`<section class="ffw-card"/g) || [];
+
+  assert.ok(renderStart >= 0 && renderEnd > renderStart);
+  assert.equal(cardAssignments.length, 1, 'render must assign the onboarding card exactly once');
+  assert.match(renderSource, /const voiceControls = [\s\S]*root\.innerHTML\s*=\s*`[^`]*\$\{voiceControls\}/);
+  assert.match(renderSource, /root\.querySelector\('\[data-voice="play"\]'\)\.onclick/);
+  assert.equal((renderSource.match(/root\.querySelector\('\[data-action="back"\]'\)\.onclick/g) || []).length, 1);
+  assert.equal((renderSource.match(/root\.querySelector\('\[data-action="skip"\]'\)\.onclick/g) || []).length, 1);
+  assert.equal((renderSource.match(/root\.querySelector\('\[data-action="continue"\]'\)\.onclick/g) || []).length, 1);
+  assert.match(renderSource, /if \(narrationEnabled\) queueMicrotask\(speakCurrent\);\s*return;\s*}\s*$/);
+});
+
+test('onboarding lifecycle helpers have single definitions', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+
+  assert.equal((source.match(/\bfunction persist\s*\(/g) || []).length, 1);
+  assert.equal((source.match(/\bfunction remove\s*\(/g) || []).length, 1);
+  assert.match(source, /function remove\(\) \{ stopNarration\(\); root\.remove\(\); style\.remove\(\); \}/);
+});
