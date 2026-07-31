@@ -19,16 +19,38 @@ test('Context Packet v1 has one strict, read-only screen envelope', () => {
   assert.equal(schema.properties.summary.$ref, '#/$defs/safeMap');
 });
 
-test('Context Packet epoch is freshness metadata, never tenant authority', () => {
+test('Context Packet epoch requires an exact current-session match', () => {
   const architecture = fs.readFileSync(
     new URL('../docs/fleetflow-read-gateway-v1.md', import.meta.url),
     'utf8'
   );
 
   assert.match(architecture, /server is the sole issuer of `contextEpoch`/);
-  assert.match(architecture, /discard packets from earlier epochs/);
-  assert.match(architecture, /reject pending proposals tied\s+to an earlier epoch/);
-  assert.match(architecture, /not tenant identity\s+or proof of authorization/);
+  assert.match(architecture, /packet\.contextEpoch === currentSession\.contextEpoch/);
+  assert.match(architecture, /produced under the current authenticated server session/);
+  assert.match(architecture, /must use exact equality/);
+  assert.match(architecture, /must never infer freshness with ordering logic/);
+  assert.match(architecture, /packet\.contextEpoch > previousContextEpoch/);
+  assert.match(architecture, /not chronology, tenant identity, proof of authorization/);
+});
+
+test('Context Packet epoch rotates for every authorization invalidation', () => {
+  const architecture = fs.readFileSync(
+    new URL('../docs/fleetflow-read-gateway-v1.md', import.meta.url),
+    'utf8'
+  );
+
+  for (const invalidation of [
+    'active-tenant switch',
+    'logout or session termination',
+    'authentication refresh that changes access',
+    'Creator permission change',
+    'tenant membership removal',
+    'policy, role, or authorization event'
+  ]) {
+    assert.match(architecture, new RegExp(invalidation));
+  }
+  assert.match(architecture, /visible company has not changed/);
 });
 
 test('Context Packet fields are bounded and citations point to FleetFlow sources', () => {

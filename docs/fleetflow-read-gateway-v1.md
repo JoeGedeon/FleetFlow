@@ -262,10 +262,36 @@ preference. FleetFlow performs it as one ordered boundary:
 8. Resume operational requests only after the new tenant context is ready.
 
 The server is the sole issuer of `contextEpoch`; browser code and consumers cannot choose
-or advance it. Wednesday and PACER must retain the latest epoch received from the verified
-session boundary, discard packets from earlier epochs, and reject pending proposals tied
-to an earlier epoch. An epoch is a freshness and invalidation token, not tenant identity
-or proof of authorization, and it must not be used to grant access.
+or advance it. An epoch is scoped to the authenticated server session and its established
+tenant context. Its numeric value has no meaning outside that scope: another login,
+browser session, tenant context, or server lifecycle may legitimately use the same value.
+
+Wednesday and PACER accept a packet only when both conditions hold:
+
+```text
+packet.contextEpoch === currentSession.contextEpoch
+AND the packet was produced under the current authenticated server session
+```
+
+The trusted FleetFlow runtime supplies the current session epoch and packet provenance.
+Consumers must use exact equality; they must never infer freshness with ordering logic
+such as `packet.contextEpoch > previousContextEpoch`. A numerically greater epoch is not
+newer, safer, or more authorized. Packets and pending proposals that do not exactly match
+the current authenticated session and epoch are rejected.
+
+FleetFlow rotates the session epoch whenever authorized context is invalidated, including:
+
+- an active-tenant switch;
+- logout or session termination;
+- an authentication refresh that changes access;
+- a Creator permission change;
+- tenant membership removal; or
+- any policy, role, or authorization event that invalidates the current context.
+
+Rotation invalidates every packet and proposal issued under the prior epoch even when the
+visible company has not changed. The epoch remains only a revocation and freshness token;
+it is not chronology, tenant identity, proof of authorization, or permission to read or
+write.
 
 ## Consumer policies
 
@@ -324,8 +350,10 @@ Implementation is blocked from production until tests prove:
 - every module Context Packet conforms to the shared v1 schema;
 - packet summaries and selections contain only fields approved by the Read Gateway;
 - allowed actions are never treated as write authorization;
-- context epochs are server-issued and stale packets or proposals are rejected after a
-  tenant switch;
+- context epochs are server-issued and session-scoped, consumers require an exact match,
+  and ordering comparisons are prohibited;
+- epoch rotation invalidates stale packets and proposals after tenant, session,
+  membership, role, permission, or policy changes;
 - packets are invalidated on route change, logout, and session expiry;
 - PACER receives no data without an explicit consumer policy;
 - PACER, Wednesday, and gateway failures do not affect FleetFlow core routes;
