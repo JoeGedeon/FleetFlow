@@ -24,11 +24,21 @@ test('progress persistence stores only guide state and safely restores it', () =
 test('guide has every deterministic emergency onboarding step', () => {
   assert.equal(STEPS.length, 14);
   assert.deepEqual(STEPS.map(step => step[0]), [
-    'Welcome to FleetFlow', 'Confirm ERSA Logistics company profile', 'Confirm owner and office access',
+    'Welcome to Wednesday', 'Review company profile', 'Confirm owner and office access',
     'Add drivers and helpers', 'Add trucks and fleet information', 'Review operational settings',
     'Create or review the first job', 'Explain Dashboard', 'Explain Jobs', 'Explain Calendar',
     'Explain Warehouse', 'Explain Payroll', 'Explain Documents', 'Onboarding completion summary'
   ]);
+});
+
+test('onboarding derives the active company without hardcoded tenant copy', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+
+  assert.doesNotMatch(source, /ERSA/i);
+  assert.match(source, /context\.companyName \|\| context\.companyId/);
+  assert.match(source, /data-active-company/);
+  assert.match(source, /\.textContent = companyLabel/);
+  assert.match(source, /FleetFlow operations guide/);
 });
 
 test('resume control stays above mobile safe areas and browser toolbars', () => {
@@ -38,6 +48,22 @@ test('resume control stays above mobile safe areas and browser toolbars', () => 
   assert.match(source, /z-index:7000/);
   assert.match(source, /\.ffw-resume\{display:block;margin-left:auto/);
   assert.doesNotMatch(source, /\.ffw-resume\{float:/);
+});
+
+test('floating assistant has reachable window controls and explicit restore states', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+
+  assert.match(source, /top:max\(20px,env\(safe-area-inset-top\)\)/);
+  assert.match(source, /class="ffw-head"/);
+  assert.match(source, /aria-label="Minimize Wednesday"/);
+  assert.match(source, /aria-label="Collapse Wednesday to the right edge"/);
+  assert.match(source, /aria-label="Close Wednesday"/);
+  assert.match(source, /aria-label="Open Wednesday"/);
+  assert.match(source, /windowState === 'collapsed'/);
+  assert.match(source, /windowState === 'minimized'/);
+  assert.match(source, /windowState === 'closed'/);
+  assert.match(source, /function enableDragging\(handle\)/);
+  assert.match(source, /handle\.onpointerdown/);
 });
 
 test('voice narration is opt-in, adjustable, and lifecycle-contained', () => {
