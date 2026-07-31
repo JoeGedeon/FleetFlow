@@ -1,0 +1,56 @@
+rules_version = '2';
+
+// =============================================================================
+// FleetFlow — Firestore Security Rules
+// EMERGENCY CONTAINMENT · proposed 2026-07-31 · NOT YET DEPLOYED
+// =============================================================================
+//
+// REPLACES (does not supplement) the rules published 2026-03-31 21:46:
+//
+//     match /{document=**} { allow read, write: if true; }
+//
+// Firestore evaluates overlapping `allow` statements with OR logic. A narrower
+// deny CANNOT override a broader allow, so adding an ff_users rule alongside
+// the old wildcard would have changed nothing. The wildcard must be replaced.
+// Do not "simplify" this back into a nested-deny form — it silently does nothing.
+//
+// -----------------------------------------------------------------------------
+// WHAT THIS DOES
+//   Blocks anonymous create / update / delete on ff_users, closing the
+//   account-takeover path: fabricating admin accounts, changing any user's
+//   password, or deleting user records.
+//
+// WHAT THIS DOES NOT DO — read this before assuming the incident is closed
+//   Public READ access remains open on every collection, including the
+//   plaintext `password` field in ff_users. Firestore authorizes whole
+//   documents; it cannot redact a field. Closing read access requires the
+//   coordinated Firebase Auth cutover, because the current login reads
+//   ff_users/{username} anonymously (index.html:6478) and would break.
+//
+// ACCEPTED BREAKAGE (deliberate — admin workflows, not the hot path)
+//   create user                  index.html:6048
+//   change password              index.html:6616
+//   onboarding status writes     index.html:2593, 2859
+//   employee-ID assignment       index.html:11053
+//   seed / first-run user write  index.html:5776, 5979, 5989
+//   These will fail with permission-denied. safeFirestoreSet() rethrows
+//   permission errors rather than queueing them, so failures surface as real
+//   errors rather than a false "saved offline" message.
+//
+// WHY A SINGLE-LEVEL MATCH IS SAFE HERE
+//   FleetFlow uses only flat top-level collections — verified: zero matches
+//   for `.doc(...).collection(...)` anywhere in index.html. A single-level
+//   wildcard therefore covers every document, including collections added
+//   later, without the enumeration risk of listing all 16 by name (three call
+//   sites pass collection names dynamically via the offline queue).
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /{colId}/{docId} {
+      allow read: if true;
+      allow create, update, delete: if colId != 'ff_users';
+    }
+  }
+}
