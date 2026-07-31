@@ -9,6 +9,7 @@
     "contextVersion",
     "contextId",
     "contextEpoch",
+    "contextState",
     "generatedAt",
     "module",
     "screen",
@@ -20,8 +21,9 @@
   ],
   "properties": {
     "contextVersion": { "const": "1.0" },
-    "contextId": { "type": "string", "pattern": "^ctx_[A-Za-z0-9_-]{8,128}$" },
+    "contextId": { "type": "string", "format": "uuid" },
     "contextEpoch": { "type": "integer", "minimum": 0 },
+    "contextState": { "enum": ["ACTIVE", "INVALIDATED", "REGENERATING"] },
     "generatedAt": { "type": "string", "format": "date-time" },
     "module": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
     "screen": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },

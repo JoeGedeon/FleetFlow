@@ -190,19 +190,26 @@ Every packet answers the same questions:
 - Which capabilities may be proposed to this user?
 - Which immutable FleetFlow sources support those facts?
 
-The minimum envelope contains a version, module, screen, opaque context ID, server-issued
-context epoch, generated timestamp, selection, summary, attention items, allowed actions,
-and citations. Optional entity references use opaque FleetFlow IDs and versions. Packet
-generation occurs after the Read Gateway has applied tenant, role, resource, and field
-policies.
+The minimum envelope contains a version, module, screen, packet-unique UUID `contextId`,
+server-issued context epoch, explicit context state, generated timestamp, selection,
+summary, attention items, allowed actions, and citations. Optional entity references use
+opaque FleetFlow IDs and versions. Packet generation occurs after the Read Gateway has
+applied tenant, role, resource, and field policies.
+
+The server generates a new `contextId` for every packet. FleetFlow, Wednesday, PACER, and
+audit records use that identifier to correlate an explanation, recommendation, proposal,
+or outcome with the exact packet that informed it. A `contextId` is correlation metadata;
+it is never identity, authorization, tenant scope, freshness, or permission, and consumers
+must not accept a packet merely because its identifier is well formed or previously seen.
 
 Example Calendar packet:
 
 ```json
 {
   "contextVersion": "1.0",
-  "contextId": "ctx_opaque_id",
+  "contextId": "93f14d3e-6d77-4a65-9708-832ac43e5c09",
   "contextEpoch": 42,
+  "contextState": "ACTIVE",
   "generatedAt": "2026-07-30T12:00:00.000Z",
   "module": "calendar",
   "screen": "month",
@@ -279,6 +286,20 @@ such as `packet.contextEpoch > previousContextEpoch`. A numerically greater epoc
 newer, safer, or more authorized. Packets and pending proposals that do not exactly match
 the current authenticated session and epoch are rejected.
 
+Consumers may use a packet for explanation, recommendation, or proposal only when
+`packet.contextState === "ACTIVE"`. `REGENERATING` means the trusted runtime is replacing
+the authorized context, and `INVALIDATED` means the packet must never be used again. Both
+states fail closed even when the session and epoch otherwise match. Packet state is
+server-issued lifecycle metadata, not authorization; browser code and optional consumers
+cannot promote a packet to `ACTIVE`.
+
+Packets are immutable after issuance. FleetFlow does not mutate an old packet from
+`ACTIVE` to `INVALIDATED`; instead, its trusted runtime invalidates the packet ID, emits or
+returns the lifecycle state for consumers, and refuses subsequent use of that ID. A cached
+`ACTIVE` value cannot override the runtime's invalidation registry, current session, epoch,
+or state. During regeneration, consumers suspend context-driven work until FleetFlow
+issues a new `ACTIVE` packet with a new `contextId`.
+
 FleetFlow rotates the session epoch whenever authorized context is invalidated, including:
 
 - an active-tenant switch;
@@ -352,6 +373,9 @@ Implementation is blocked from production until tests prove:
 - allowed actions are never treated as write authorization;
 - context epochs are server-issued and session-scoped, consumers require an exact match,
   and ordering comparisons are prohibited;
+- every packet has a server-generated UUID for audit correlation, never authorization;
+- consumers act only on `ACTIVE` packets and fail closed for `INVALIDATED` or
+  `REGENERATING` lifecycle states;
 - epoch rotation invalidates stale packets and proposals after tenant, session,
   membership, role, permission, or policy changes;
 - packets are invalidated on route change, logout, and session expiry;
