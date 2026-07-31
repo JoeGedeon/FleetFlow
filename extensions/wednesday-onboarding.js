@@ -55,6 +55,7 @@ export function initialize(context) {
   style.textContent = `
     #ff-wednesday-onboarding{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 72px);z-index:7000;width:min(390px,calc(100vw - 32px));font-family:var(--font-mono,monospace);color:#e5e7eb}
     .ffw-card{border:1px solid #22c55e;border-radius:12px;background:#071426;box-shadow:0 18px 60px #000b;overflow:hidden}.ffw-head{display:flex;justify-content:space-between;gap:12px;padding:16px;background:#0d2038}.ffw-title{margin:0;color:#22c55e;font-size:20px}.ffw-kicker,.ffw-count{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8}.ffw-body{padding:18px}.ffw-progress{height:6px;background:#1e293b;border-radius:9px;overflow:hidden;margin:10px 0 18px}.ffw-progress span{display:block;height:100%;background:#22c55e}.ffw-step{font-size:17px;margin:0 0 10px}.ffw-copy{font:13px/1.55 system-ui,sans-serif;color:#cbd5e1}.ffw-actions,.ffw-voice-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.ffw-actions button,.ffw-voice-actions button,.ffw-resume{border:1px solid #475569;border-radius:6px;background:#0f223c;color:#e5e7eb;padding:9px 11px;cursor:pointer;font:700 10px var(--font-mono,monospace);text-transform:uppercase}.ffw-actions .primary,.ffw-voice-actions .primary{background:#22c55e;border-color:#22c55e;color:#03120a}.ffw-voice{margin-top:16px;padding:12px;border:1px solid #334155;border-radius:8px;background:#081a30}.ffw-voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.ffw-voice label{font-size:9px;color:#94a3b8;text-transform:uppercase}.ffw-voice select,.ffw-voice input{display:block;width:100%;margin-top:5px}.ffw-voice-status{margin:8px 0 0;font-size:10px;color:#94a3b8}.ffw-contact{display:block;margin-top:15px;color:#4ade80;font-size:11px}.ffw-close{border:0;background:transparent;color:#94a3b8;cursor:pointer;font-size:18px}.ffw-resume{display:block;margin-left:auto;background:#22c55e;color:#03120a;border-color:#22c55e;box-shadow:0 8px 30px #0009}.ffw-note{font-size:10px;color:#94a3b8;margin-top:12px}
+    .ffw-card{border:1px solid #22c55e;border-radius:12px;background:#071426;box-shadow:0 18px 60px #000b;overflow:hidden}.ffw-head{display:flex;justify-content:space-between;gap:12px;padding:16px;background:#0d2038}.ffw-title{margin:0;color:#22c55e;font-size:20px}.ffw-kicker,.ffw-count{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8}.ffw-body{padding:18px}.ffw-progress{height:6px;background:#1e293b;border-radius:9px;overflow:hidden;margin:10px 0 18px}.ffw-progress span{display:block;height:100%;background:#22c55e}.ffw-step{font-size:17px;margin:0 0 10px}.ffw-copy{font:13px/1.55 system-ui,sans-serif;color:#cbd5e1}.ffw-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.ffw-actions button,.ffw-resume{border:1px solid #475569;border-radius:6px;background:#0f223c;color:#e5e7eb;padding:9px 11px;cursor:pointer;font:700 10px var(--font-mono,monospace);text-transform:uppercase}.ffw-actions .primary{background:#22c55e;border-color:#22c55e;color:#03120a}.ffw-contact{display:block;margin-top:15px;color:#4ade80;font-size:11px}.ffw-close{border:0;background:transparent;color:#94a3b8;cursor:pointer;font-size:18px}.ffw-resume{display:block;margin-left:auto;background:#22c55e;color:#03120a;border-color:#22c55e;box-shadow:0 8px 30px #0009}.ffw-note{font-size:10px;color:#94a3b8;margin-top:12px}
   `;
   document.head.appendChild(style);
   const root = document.createElement('aside');
@@ -84,6 +85,8 @@ export function initialize(context) {
     utterance.voice = speech.getVoices().find(voice => voice.name === selectedVoice) || null;
     speech.speak(utterance);
   }
+
+  function persist() { writeProgress(localStorage, context, progress); }
   function navigate(tab) {
     if (tab && typeof globalThis.switchTab === 'function') globalThis.switchTab(tab);
   }
@@ -119,6 +122,11 @@ export function initialize(context) {
     root.querySelector('[data-action="continue"]').onclick = () => { navigate(tab); advance(); };
     if (narrationEnabled) queueMicrotask(speakCurrent);
     return;
+    root.innerHTML = `<section class="ffw-card"><header class="ffw-head"><div><div class="ffw-kicker">ERSA Logistics onboarding</div><h2 class="ffw-title">Wednesday</h2></div><button class="ffw-close" type="button" aria-label="Exit onboarding">×</button></header><div class="ffw-body"><div class="ffw-count">Step ${progress.step + 1} of ${STEPS.length} · ${percent}%</div><div class="ffw-progress" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"><span style="width:${percent}%"></span></div><h3 class="ffw-step">${title}</h3><p class="ffw-copy">${copy}</p><div class="ffw-actions"><button data-action="back" type="button" ${progress.step === 0 ? 'disabled' : ''}>Back</button><button data-action="skip" type="button">Skip for now</button><button data-action="continue" class="primary" type="button">${progress.step === STEPS.length - 1 ? 'Complete' : 'Continue'}</button></div><a class="ffw-contact" href="mailto:JPGventures22@gmail.com?subject=ERSA%20FleetFlow%20onboarding">Contact Joe when information is unknown →</a><p class="ffw-note">Wednesday saves guide progress only. It does not create or change operational records.</p></div></section>`;
+    root.querySelector('.ffw-close').onclick = () => { progress.status = 'paused'; persist(); render(); };
+    root.querySelector('[data-action="back"]').onclick = () => { progress.step = Math.max(0, progress.step - 1); persist(); render(); };
+    root.querySelector('[data-action="skip"]').onclick = () => { if (!progress.skipped.includes(progress.step)) progress.skipped.push(progress.step); advance(); };
+    root.querySelector('[data-action="continue"]').onclick = () => { navigate(tab); advance(); };
   }
   function advance() {
     if (progress.step === STEPS.length - 1) progress.status = 'complete';
@@ -127,6 +135,7 @@ export function initialize(context) {
   }
   function remove() { stopNarration(); root.remove(); style.remove(); }
   window.addEventListener('fleetflow:route-changed', stopNarration);
+  function remove() { root.remove(); style.remove(); }
   window.addEventListener('fleetflow:session-ended', remove, { once: true });
   render();
 }
