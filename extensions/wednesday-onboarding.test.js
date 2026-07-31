@@ -40,6 +40,22 @@ test('resume control stays above mobile safe areas and browser toolbars', () => 
   assert.doesNotMatch(source, /\.ffw-resume\{float:/);
 });
 
+test('floating assistant has reachable window controls and explicit restore states', () => {
+  const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
+
+  assert.match(source, /top:max\(20px,env\(safe-area-inset-top\)\)/);
+  assert.match(source, /class="ffw-head"/);
+  assert.match(source, /aria-label="Minimize Wednesday"/);
+  assert.match(source, /aria-label="Collapse Wednesday to the right edge"/);
+  assert.match(source, /aria-label="Close Wednesday"/);
+  assert.match(source, /aria-label="Open Wednesday"/);
+  assert.match(source, /windowState === 'collapsed'/);
+  assert.match(source, /windowState === 'minimized'/);
+  assert.match(source, /windowState === 'closed'/);
+  assert.match(source, /function enableDragging\(handle\)/);
+  assert.match(source, /handle\.onpointerdown/);
+});
+
 test('voice narration is opt-in, adjustable, and lifecycle-contained', () => {
   const source = fs.readFileSync(new URL('./wednesday-onboarding.js', import.meta.url), 'utf8');
   assert.match(source, /Narration starts only when you press Play/);
