@@ -9,16 +9,17 @@
     "validate:dist": "node scripts/validate-dist.mjs",
     "verify:artifact": "npm run build && npm run validate:dist && node scripts/verify-artifact.mjs",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "test": "node --test src/shared/*.test.js scripts/*.test.mjs extensions/*.test.js",
+    "test": "node --test src/shared/*.test.js scripts/*.test.mjs extensions/*.test.js netlify/functions/*.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "clsx": "^2.1.0",
+    "firebase": "^10.11.0",
+    "firebase-admin": "^13.4.0",
+    "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "lucide-react": "^0.344.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.1",
-    "firebase": "^10.11.0"
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",
