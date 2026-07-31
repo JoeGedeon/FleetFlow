@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import {
   HEAD_EXTENSION_ANCHOR,
+  EXTENSION_MARKER,
   NAV_MARKER,
   requireExactlyOnce,
   validateGeneratedDocument,
@@ -84,6 +85,36 @@ if (!html.includes(marker)) {
   console.log('Original navigation coordinate-system fix already present.');
 }
 
+const extensionLoader = `
+<script id="${EXTENSION_MARKER}">
+(function () {
+  const registrations = [
+    { id: 'wednesday', module: './extensions/wednesday-onboarding.js' }
+  ];
+  const started = new Set();
+  function reportExtensionFailure(error) {
+    console.warn('Optional FleetFlow extension failed:', error);
+  }
+  function startExtensions(context) {
+    if (!context || !context.username || !context.companyId) return;
+    registrations.forEach(function (registration) {
+      if (started.has(registration.id)) return;
+      started.add(registration.id);
+      import(registration.module).then(module => module.initialize(context)).catch(reportExtensionFailure);
+    });
+  }
+  window.addEventListener('fleetflow:app-ready', function (event) {
+    queueMicrotask(function () { startExtensions(event.detail); });
+  });
+  window.addEventListener('fleetflow:session-ended', function () { started.clear(); });
+  if (window.__fleetflowReadyContext) queueMicrotask(function () { startExtensions(window.__fleetflowReadyContext); });
+}());
+</script>
+`;
+const bodyEnd = html.lastIndexOf('</body>');
+if (bodyEnd < 0) throw new Error('FleetFlow document has no closing body tag.');
+html = html.slice(0, bodyEnd) + extensionLoader + html.slice(bodyEnd);
+
 validateGeneratedDocument(html, sourceHtml);
 
 // Building must never modify the authoritative production monolith.
@@ -94,5 +125,6 @@ if (fs.readFileSync(sourcePath, 'utf8') !== sourceHtml) {
 fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(distIndexPath, html);
+fs.cpSync(new URL('../extensions/', import.meta.url), new URL('../dist/extensions/', import.meta.url), { recursive: true });
 validateGeneratedDocument(fs.readFileSync(distIndexPath, 'utf8'), sourceHtml);
 console.log('Validated and staged patched legacy FleetFlow index.html in dist/.');

@@ -9,7 +9,7 @@
     "validate:dist": "node scripts/validate-dist.mjs",
     "verify:artifact": "npm run build && npm run validate:dist && node scripts/verify-artifact.mjs",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "test": "node --test src/shared/*.test.js scripts/*.test.mjs",
+    "test": "node --test src/shared/*.test.js scripts/*.test.mjs extensions/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
